@@ -28,5 +28,7 @@ public class CarDrive : MonoBehaviour {
         else if (Input.GetKey(KeyCode.A)) {
             rb.AddTorque(- Vector3.up * turnSpeed);
         }
+        
+        
     }
 }
