@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CarDrive : MonoBehaviour {
-    public float speed = 50;
-    public float turnSpeed = 50;
-    public float gravityMultiplier = 50;
+    public float speed = 90;
+    public float turnSpeed = 65;
+    public float gravityMultiplier = 3;
     private Rigidbody rb;
 
     // Start is called before the first frame update
