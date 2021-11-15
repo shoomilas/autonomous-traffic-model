@@ -39,7 +39,8 @@ public class CarDrive : MonoBehaviour {
 
     void Move() {
         if (Input.GetKey(KeyCode.W)) {
-            rb.AddRelativeForce(Vector3.forward * speed);
+            // rb.AddRelativeForce(Vector3.forward * speed);
+            rb.AddRelativeForce(new Vector3(Vector3.forward.x, 0, Vector3.forward.z) * speed);
         }
         if (Input.GetKey(KeyCode.S)) {
             rb.AddRelativeForce(-Vector3.forward * speed);
