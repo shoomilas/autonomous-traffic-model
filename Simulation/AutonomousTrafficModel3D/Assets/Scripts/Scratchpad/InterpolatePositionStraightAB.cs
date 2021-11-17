@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Testing : MonoBehaviour
+public class InterpolatePositionStraightAB : MonoBehaviour
 {
     [SerializeField] private Transform pointA;
     [SerializeField] private Transform pointB;
