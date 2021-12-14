@@ -19,17 +19,12 @@ public class SplineDone : MonoBehaviour {
     private float pointAmountInCurve;
     private float pointAmountPerUnitInCurve = 2f;
 
-
     private List<Point> pointList;
     private float splineLength;
 
     private void Awake() {
         splineLength = GetSplineLength();
         SetupPointList();
-    }
-
-    private void Start() {
-        //PrintPath();
     }
 
     private Vector3 QuadraticLerp(Vector3 a, Vector3 b, Vector3 c, float t) {
