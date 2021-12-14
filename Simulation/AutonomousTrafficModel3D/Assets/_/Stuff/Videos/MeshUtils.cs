@@ -22,7 +22,7 @@ public static class MeshUtils {
     private static readonly Vector3 normal2D = new Vector3(0, 0, -1f);
 
 
-    private static Quaternion[] cachedQuaternionEulerArr;
+    private static Quaternion[] cachedQuaternionEulerArr;f
     private static void CacheQuaternionEuler() {
         if (cachedQuaternionEulerArr != null) return;
         cachedQuaternionEulerArr = new Quaternion[360];

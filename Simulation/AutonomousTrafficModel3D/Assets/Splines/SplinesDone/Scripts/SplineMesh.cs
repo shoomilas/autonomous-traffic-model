@@ -14,8 +14,7 @@ public class SplineMesh : MonoBehaviour {
     private void Awake() {
         if (spline == null) spline = GetComponent<SplineDone>();
         meshFilter = GetComponent<MeshFilter>();
-
-        transform.position = Vector3.zero;
+        // transform.position = Vector3.zero;
     }
 
     private void Start() {
