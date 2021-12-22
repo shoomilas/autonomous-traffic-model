@@ -10,7 +10,6 @@ namespace PathCreationEditor {
 
     [CustomEditor (typeof (PathCreator))]
     public class PathEditor : Editor {
-
         #region Fields
 
         // Interaction:
@@ -277,8 +276,7 @@ namespace PathCreationEditor {
             }
 
             EventType eventType = Event.current.type;
-
-            using (var check = new EditorGUI.ChangeCheckScope ()) {
+            using (var check = new EditorGUI.ChangeCheckScope()) {
                 handlesStartCol = Handles.color;
                 switch (data.tabIndex) {
                     case bezierPathTab:
@@ -348,7 +346,6 @@ namespace PathCreationEditor {
             int previousMouseOverHandleIndex = (mouseOverHandleIndex == -1) ? 0 : mouseOverHandleIndex;
             mouseOverHandleIndex = -1;
             for (int i = 0; i < bezierPath.NumPoints; i += 3) {
-
                 int handleIndex = (previousMouseOverHandleIndex + i) % bezierPath.NumPoints;
                 float handleRadius = GetHandleDiameter (globalDisplaySettings.anchorSize * data.bezierHandleScale, bezierPath[handleIndex]) / 2f;
                 Vector3 pos = MathUtility.TransformPoint (bezierPath[handleIndex], creator.transform, bezierPath.Space);
@@ -428,7 +425,6 @@ namespace PathCreationEditor {
         }
 
         void DrawBezierPathSceneEditor () {
-
             bool displayControlPoints = data.displayControlPoints && (bezierPath.ControlPointMode != BezierPath.ControlMode.Automatic || !globalDisplaySettings.hideAutoControls);
             Bounds bounds = bezierPath.CalculateBoundsWithTransform (creator.transform);
 
