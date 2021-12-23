@@ -336,8 +336,9 @@ MonoBehaviour:
   Aggregator: {fileID: 1425653874}
   ObjectToMove: {fileID: 1063834963}
   speed: 2
-  endOfPathInstruction: 0
+  endOfPathInstruction: 2
   updateLocked: 1
+  updateLockUpperLimit: 0.992
   splineIndex: 0
 --- !u!1 &932251743
 GameObject:

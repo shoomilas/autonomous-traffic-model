@@ -17,7 +17,7 @@ namespace PathCreator.Aggregator
         public EndOfPathInstruction endOfPathInstruction;
         float distanceTravelled;
         public bool updateLocked = true;
-        public float upperLimit = .99999f;
+        public float updateLockUpperLimit = .998f;
         // public PathCreation.PathCreator CurrentPathCreator; 
         
         void Start() {
@@ -48,7 +48,7 @@ namespace PathCreator.Aggregator
             if (pathPercentage < 0.1f) {
                 updateLocked = false;
             }
-            if ( pathPercentage > upperLimit && (!updateLocked)) {
+            if ( pathPercentage > updateLockUpperLimit && (!updateLocked)) {
                 Debug.Log("NOW");
                 updateLocked = true;
                 splineIndex += 1;
