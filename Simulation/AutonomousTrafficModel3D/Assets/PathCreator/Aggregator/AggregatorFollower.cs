@@ -17,13 +17,10 @@ namespace PathCreator.Aggregator
         public EndOfPathInstruction endOfPathInstruction;
         float distanceTravelled;
         public bool updateLocked = true;
+        public float upperLimit = .99999f;
+        // public PathCreation.PathCreator CurrentPathCreator; 
         
         void Start() {
-            // foreach (var boo in Aggregator.Paths) {
-            //     Debug.Log(boo.name);
-            // }
-            // Debug.Log(Aggregator.Paths.Count);
-            
             if (Aggregator != null)
             {
                 // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
@@ -51,7 +48,7 @@ namespace PathCreator.Aggregator
             if (pathPercentage < 0.1f) {
                 updateLocked = false;
             }
-            if ( pathPercentage > .99f && (!updateLocked)) {
+            if ( pathPercentage > upperLimit && (!updateLocked)) {
                 Debug.Log("NOW");
                 updateLocked = true;
                 splineIndex += 1;
@@ -60,8 +57,9 @@ namespace PathCreator.Aggregator
         
         void Update()
         {
-            Debug.Log($"Aggregator.Paths.Count: {Aggregator.Paths.Count} | SplineIndex: {splineIndex}");
-            if(splineIndex < (Aggregator.Paths.Count)) {
+            // if(splineIndex == 0) {}
+            if (splineIndex < (Aggregator.Paths.Count)) {
+                Debug.Log($"Aggregator.Paths.Count: {Aggregator.Paths.Count} | SplineIndex: {splineIndex}");
                 var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
                 moveObject(pathCreator);
                 actionOnEnd(pathCreator);
