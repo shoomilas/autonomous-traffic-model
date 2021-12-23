@@ -266,11 +266,16 @@ namespace PathCreation {
                 case EndOfPathInstruction.Stop:
                     t = Mathf.Clamp01 (t);
                     break;
+                case EndOfPathInstruction.RailStop:
+                    t = Mathf.Clamp01(t);
+                    break; 
             }
 
             int prevIndex = 0;
             int nextIndex = NumPoints - 1;
             int i = Mathf.RoundToInt (t * (NumPoints - 1)); // starting guess
+
+            // Debug.Log(t);
 
             // Starts by looking at middle vertex and determines if t lies to the left or to the right of that vertex.
             // Continues dividing in half until closest surrounding vertices have been found.

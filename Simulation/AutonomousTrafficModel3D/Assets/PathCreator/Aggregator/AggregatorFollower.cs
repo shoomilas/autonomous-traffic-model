@@ -16,12 +16,13 @@ namespace PathCreator.Aggregator
         
         public EndOfPathInstruction endOfPathInstruction;
         float distanceTravelled;
-
+        public bool updateLocked = true;
+        
         void Start() {
             // foreach (var boo in Aggregator.Paths) {
             //     Debug.Log(boo.name);
             // }
-            Debug.Log(Aggregator.Paths.Count);
+            // Debug.Log(Aggregator.Paths.Count);
             
             if (Aggregator != null)
             {
@@ -43,43 +44,28 @@ namespace PathCreator.Aggregator
             }
         }
 
-        private bool checkIfEnd(PathCreation.PathCreator pathCreator) {
-            // check if end.
-            // var vertexCount = pathCreator.path.NumPoints;
-            // var lastPosition = pathCreator.path.GetPoint(vertexCount-1);
-            // Debug.Log(lastPosition);
-            // var count = pathCreator.bezierPath.NumPoints;
-            // var lastPosition = pathCreator.bezierPath.GetPoint(count-1);
-            // Debug.Log($"Current percentage: {pathCreator.path.CalculatedPercentageOfTotalPath}");
-            //
-            // if (pathCreator.path.GetClosestPointOnPath(ObjectToMove.transform.position) == lastPosition)
-            // {
-            //     Debug.Log("NOW");
-            // }
-            //
-            // var distance = Vector3.Distance (lastPosition, ObjectToMove.transform.position);
-            // // Debug.Log(distance);
-            // if (distance < .2f)
-            // {
-            //     Debug.Log("NOW");
-            // }
 
-            if (pathCreator.path.CalculatedPercentageOfTotalPath > 0.99f) {
-                Debug.Log("NOW");
-                // splineIndex += 1;
-                splineIndex = 1;
+        private void actionOnEnd(PathCreation.PathCreator pathCreator) {
+            // TODO: Safe "increment once method"
+            var pathPercentage = pathCreator.path.CalculatedPercentageOfTotalPath;
+            if (pathPercentage < 0.1f) {
+                updateLocked = false;
             }
-            
-            return true;
+            if ( pathPercentage > .99f && (!updateLocked)) {
+                Debug.Log("NOW");
+                updateLocked = true;
+                splineIndex += 1;
+            }
         }
         
         void Update()
         {
-            
-            var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
-            moveObject(pathCreator);
-            var isSplineEnded = checkIfEnd(pathCreator);
-            // TODO: onEnd, move to next spline
+            Debug.Log($"Aggregator.Paths.Count: {Aggregator.Paths.Count} | SplineIndex: {splineIndex}");
+            if(splineIndex < (Aggregator.Paths.Count)) {
+                var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
+                moveObject(pathCreator);
+                actionOnEnd(pathCreator);
+            }
         }
     }
 }
