@@ -26,23 +26,24 @@ namespace PathCreator.Aggregator
         }
 
         public int splineIndex = 0;
-        void Update()
-        {
-            var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
+        
+        private void moveObject(PathCreation.PathCreator pathCreator) {
             if (pathCreator != null)
             {
                 distanceTravelled += speed * Time.deltaTime;
                 ObjectToMove.transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
-                
                 var initial = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
                 initial *= Quaternion.Euler(additionalXRotation, additionalYRotation, additionalZRotation);
                 ObjectToMove.transform.rotation = initial;
             }
+        }
+
+        private bool checkIfEnd(PathCreation.PathCreator pathCreator) {
             // check if end.
             // var vertexCount = pathCreator.path.NumPoints;
             // var lastPosition = pathCreator.path.GetPoint(vertexCount-1);
             // Debug.Log(lastPosition);
-
+            
             var count = pathCreator.bezierPath.NumPoints;
             var lastPosition = pathCreator.bezierPath.GetPoint(count-1);
             Debug.Log(pathCreator.path.GetClosestPointOnPath(ObjectToMove.transform.position) );
@@ -58,14 +59,26 @@ namespace PathCreator.Aggregator
             {
                 Debug.Log("NOW");
             }
-
-            // Debug.Log($"BOO: {ObjectToMove.transform.position}");
+            
+            return true;
         }
-
-        // If the path changes during the game, update the distance travelled so that the follower's position on the new path
-        // is as close as possible to its position on the old path
-        // void OnPathChanged() {
-        //     distanceTravelled = pathCreator.path.GetClosestDistanceAlongPath(transform.position);
-        // }
+        
+        void Update()
+        {
+            var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
+            moveObject(pathCreator);
+            var isSplineEnded = checkIfEnd(pathCreator);
+            // TODO: onEnd, move to next spline
+        }
     }
 }
+
+
+
+
+
+// If the path changes during the game, update the distance travelled so that the follower's position on the new path
+// is as close as possible to its position on the old path
+// void OnPathChanged() {
+//     distanceTravelled = pathCreator.path.GetClosestDistanceAlongPath(transform.position);
+// }
