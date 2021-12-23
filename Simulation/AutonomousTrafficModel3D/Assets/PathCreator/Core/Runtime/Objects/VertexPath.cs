@@ -291,9 +291,22 @@ namespace PathCreation {
             }
 
             float abPercent = Mathf.InverseLerp (times[prevIndex], times[nextIndex], t);
+            
+            // Debug.Log($"CALCULATE PERCENT ON PATH DATA: index: {i} | {i + abPercent} |  | {abPercent}"); // TODO:
+            // var calculatedPercentage = (i + abPercent) / (NumPoints - 1);
+            calculatedPercentageOfTotalPath = (i + abPercent) / (NumPoints - 1);
+            
+            // Debug.Log($"CALCULATE PERCENT ON PATH DATA: total {NumPoints} | calculated: {(i+abPercent) / (NumPoints-1)} | i: {i}  | <{prevIndex},{nextIndex}>"); // TODO:
+             
             return new TimeOnPathData (prevIndex, nextIndex, abPercent);
         }
 
+        private float calculatedPercentageOfTotalPath;
+        public float CalculatedPercentageOfTotalPath
+        {
+            get => calculatedPercentageOfTotalPath;
+        }
+        
         /// Calculate time data for closest point on the path from given world point
         TimeOnPathData CalculateClosestPointOnPathData (Vector3 worldPoint) {
             float minSqrDst = float.MaxValue;

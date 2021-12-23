@@ -18,6 +18,11 @@ namespace PathCreator.Aggregator
         float distanceTravelled;
 
         void Start() {
+            // foreach (var boo in Aggregator.Paths) {
+            //     Debug.Log(boo.name);
+            // }
+            Debug.Log(Aggregator.Paths.Count);
+            
             if (Aggregator != null)
             {
                 // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
@@ -43,21 +48,26 @@ namespace PathCreator.Aggregator
             // var vertexCount = pathCreator.path.NumPoints;
             // var lastPosition = pathCreator.path.GetPoint(vertexCount-1);
             // Debug.Log(lastPosition);
-            
-            var count = pathCreator.bezierPath.NumPoints;
-            var lastPosition = pathCreator.bezierPath.GetPoint(count-1);
-            Debug.Log(pathCreator.path.GetClosestPointOnPath(ObjectToMove.transform.position) );
+            // var count = pathCreator.bezierPath.NumPoints;
+            // var lastPosition = pathCreator.bezierPath.GetPoint(count-1);
+            // Debug.Log($"Current percentage: {pathCreator.path.CalculatedPercentageOfTotalPath}");
+            //
+            // if (pathCreator.path.GetClosestPointOnPath(ObjectToMove.transform.position) == lastPosition)
+            // {
+            //     Debug.Log("NOW");
+            // }
+            //
+            // var distance = Vector3.Distance (lastPosition, ObjectToMove.transform.position);
+            // // Debug.Log(distance);
+            // if (distance < .2f)
+            // {
+            //     Debug.Log("NOW");
+            // }
 
-            if (pathCreator.path.GetClosestPointOnPath(ObjectToMove.transform.position) == lastPosition)
-            {
+            if (pathCreator.path.CalculatedPercentageOfTotalPath > 0.99f) {
                 Debug.Log("NOW");
-            }
-            
-            var distance = Vector3.Distance (lastPosition, ObjectToMove.transform.position);
-            // Debug.Log(distance);
-            if (distance < .2f)
-            {
-                Debug.Log("NOW");
+                // splineIndex += 1;
+                splineIndex = 1;
             }
             
             return true;
@@ -65,6 +75,7 @@ namespace PathCreator.Aggregator
         
         void Update()
         {
+            
             var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
             moveObject(pathCreator);
             var isSplineEnded = checkIfEnd(pathCreator);
