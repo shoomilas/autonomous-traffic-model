@@ -9,7 +9,9 @@ namespace PathCreation {
 
         public event System.Action pathUpdated;
 
-        [SerializeField, HideInInspector]
+        [SerializeField
+         // , HideInInspector
+        ]
         PathCreatorData editorData;
         [SerializeField, HideInInspector]
         bool initialized;
