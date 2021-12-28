@@ -68,14 +68,11 @@ public class PathNodeEditor : Editor {
             Debug.Log("Not implemented.");
             // TODO: PathNode.DeletePathNodeSafe(typedTarget); // also should remove splines going to and from surrounding nodes
         }
-        if (GUILayout.Button("Select All")) {
-           
-        }
     }
 
     private void AddSplineToPathNode(PathNode node) { // move to PathNode class
         var newNode = AddPathNode(node);
-        SelectObject(node.gameObject);
+        PathNodeHelper.SelectObject(node.gameObject);
         // NewSpline
     }
 
@@ -91,10 +88,6 @@ public class PathNodeEditor : Editor {
         return goo;
     }
 
-    public static void SelectObject(GameObject obj) {
-        Selection.objects = new UnityEngine.Object[] { obj.gameObject };
-    }
-    
     ////////////////// ADDITIONAL ////////////////
     private void SelectAllPathNodes() {
         var objects = FindObjectsOfType<PathNode>();

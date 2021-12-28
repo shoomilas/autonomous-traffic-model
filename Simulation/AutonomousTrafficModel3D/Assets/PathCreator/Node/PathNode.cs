@@ -29,7 +29,7 @@ namespace PathCreator.Aggregator {
             node.nextPathNodes.ForEach(next => next.previousPathNodes.Remove(node));
             DestroyImmediate(node.gameObject);
             if (firstPreviousNode != null) {
-                // PathNodeEditor.SelectObject(firstPreviousNode.gameObject);
+                PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
             }
         }
 
