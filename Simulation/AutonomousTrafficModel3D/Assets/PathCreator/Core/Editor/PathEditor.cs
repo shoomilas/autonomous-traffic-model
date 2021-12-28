@@ -404,9 +404,7 @@ namespace PathCreationEditor {
             if (draggingHandleIndex == -1 && mouseOverHandleIndex == -1) {
                 bool shiftDown = e.shift && !shiftLastFrame;
                 if (shiftDown || ((e.type == EventType.MouseMove || e.type == EventType.MouseDrag) && e.shift)) {
-
                     UpdatePathMouseInfo ();
-
                     if (pathMouseInfo.mouseDstToLine < segmentSelectDistanceThreshold) {
                         if (pathMouseInfo.closestSegmentIndex != selectedSegmentIndex) {
                             selectedSegmentIndex = pathMouseInfo.closestSegmentIndex;
@@ -416,12 +414,10 @@ namespace PathCreationEditor {
                         selectedSegmentIndex = -1;
                         HandleUtility.Repaint ();
                     }
-
                 }
             }
 
             shiftLastFrame = e.shift;
-
         }
 
         void DrawBezierPathSceneEditor () {
@@ -539,11 +535,9 @@ namespace PathCreationEditor {
                             bezierPath.SetAnchorNormalAngle (i / 3, anchorAngleHandle.angle - handleRotOffset);
                         }
                     }
-
                 } else {
                     handlePosition = Handles.DoPositionHandle (handlePosition, Quaternion.identity);
                 }
-
             }
 
             switch (handleInputType) {
@@ -585,7 +579,6 @@ namespace PathCreationEditor {
                 bezierPath.MovePoint (i, localHandlePosition);
 
             }
-
         }
 
         #endregion
@@ -628,7 +621,6 @@ namespace PathCreationEditor {
             hasUpdatedScreenSpaceLine = false;
             hasUpdatedNormalsVertexPath = false;
             selectedSegmentIndex = -1;
-
             Repaint ();
         }
 
@@ -639,7 +631,7 @@ namespace PathCreationEditor {
 
         void LoadDisplaySettings () {
             globalDisplaySettings = GlobalDisplaySettings.Load ();
-
+            
             capFunctions = new Dictionary<GlobalDisplaySettings.HandleType, Handles.CapFunction> ();
             capFunctions.Add (GlobalDisplaySettings.HandleType.Circle, Handles.CylinderHandleCap);
             capFunctions.Add (GlobalDisplaySettings.HandleType.Sphere, Handles.SphereHandleCap);
@@ -707,11 +699,13 @@ namespace PathCreationEditor {
             return scaledDiameter;
         }
 
-        BezierPath bezierPath {
-            get {
-                return data.bezierPath;
-            }
-        }
+        public BezierPath bezierPath => data.bezierPath;
+        
+        // BezierPath bezierPath {
+        //     get {
+        //         return data.bezierPath;
+        //     }
+        // }
 
         PathCreatorData data {
             get {
