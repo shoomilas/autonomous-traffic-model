@@ -20,8 +20,7 @@ public class PathNodeEditor : Editor {
     }
 
     private void CustomOnSceneGUI(SceneView view) {
-        var typedTarget = (PathNode)target;
-
+        // var typedTarget = (PathNode)target;
         // float size = 1f;
         // Transform transform = typedTarget.transform;
         // Handles.color = Color.red;
@@ -65,18 +64,20 @@ public class PathNodeEditor : Editor {
             PathNode.DeletePathNode(typedTarget);
         }
 
-        if (GUILayout.Button("(TODO) Safe Remove Current PathNode")) {
+        if (GUILayout.Button("(TODO)")) {
             Debug.Log("Not implemented.");
-            // TODO: PathNode.DeletePathNodeSafe(typedTarget); // also should remove splines going to and from surrounding nodes
         }
     }
 
     private void AddSplineToPathNode(PathNode node) {
+        // Undo.RecordObject(node, "Add new Path Node");
+        Undo.RecordObject(node.transform.parent, "Add new Path Node");
+        
         // move to PathNode class
         var newNode = AddPathNode(node);
-        var newSpline = AddNewSplineToPathNodes(node, newNode);
+        var newSpline = AddSplineBetweenPathNodes(node, newNode);
         var splineData = (newSpline, Direction.Unknown, newNode);
-        node.Splines.Add(splineData);
+        node.SplinesOut.Add(splineData);
         PathNodeHelper.SelectObject(node.gameObject);
 
         // NewSpline
@@ -85,7 +86,7 @@ public class PathNodeEditor : Editor {
         // var 
     }
 
-    private PathCreation.PathCreator AddNewSplineToPathNodes(PathNode node1, PathNode node2) {
+    private PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
     // private PathCreation.PathCreator AddNewSplineToPathNodes(PathNode node1, PathNode node2) {
         // var spline = new PathCreation.PathCreator();
         var pos1 = node1.transform.position;
