@@ -56,41 +56,17 @@ namespace PathCreator.Aggregator {
             return foo;
         }
 
-        public static void RemoveSplinesLeadingToGivenPathNode1Try(PathNode node) {
-            // find all PathNode gameobjects
-            var allPathNodes = FindObjectsOfType<PathNode>();
-            
-            foreach (var pathNode in allPathNodes) {
-                var nodesLeadingToRemovedNode = 
-                    pathNode.SplinesOut.Where(
-                        currentNode => currentNode.dstNode == node)
-                        .ToList();
-                
-                if (nodesLeadingToRemovedNode.Count != 0) {
-                    nodesLeadingToRemovedNode.ForEach(n => {
-                        
-                        DestroyImmediate(n.spline.gameObject);
-                    });
-                }
-            }
-            
-            // allPathNodes
-            //     .Where(pathNode => pathNode.SplinesOut.)
-            //     .ToList()
-            //     .ForEach(n => {
-            //         SplinesOut.Remove(n);
-            //         DestroyImmediate(n.spline.gameObject);
-            //     });
-        }
-
         public static void RemoveSplinesLeadingToGivenPathNode(PathNode removedPathNode) {
-            var previousNodes = removedPathNode.previousPathNodes;
-            foreach (var previousNode in previousNodes) {
-                previousNode.SplinesOut.Where(x => x.dstNode == removedPathNode).ToList().ForEach(_ => {
-                    DestroyImmediate(_.spline.gameObject);
-                    previousNode.SplinesOut.Remove(_);
+            removedPathNode.previousPathNodes
+                .ForEach(previousNode => {
+                    previousNode.SplinesOut
+                        .Where(splineOutData => splineOutData.dstNode == removedPathNode)
+                        .ToList()
+                        .ForEach(_ => {
+                            DestroyImmediate(_.spline.gameObject);
+                            previousNode.SplinesOut.Remove(_);
+                        });
                 });
-            }
         }
 
         public static void DeletePathNode(PathNode node) {
