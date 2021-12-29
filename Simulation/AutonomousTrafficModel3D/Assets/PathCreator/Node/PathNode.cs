@@ -11,6 +11,18 @@ namespace PathCreator.Aggregator {
         Forward,
         Unknown
     }
+
+    public class SplineOutData {
+        public PathCreation.PathCreator spline;
+        public Direction? splineDirection;
+        public PathNode dstNode;
+
+        public SplineOutData(PathCreation.PathCreator spline, Direction? splineDirection, PathNode dstNode) {
+            this.spline = spline;
+            this.splineDirection = splineDirection;
+            this.dstNode = dstNode;
+        }
+    }
     
     public class PathNode : MonoBehaviour {
         // List of splines going OUT of the node.
@@ -69,10 +81,16 @@ namespace PathCreator.Aggregator {
         }
 
         public static void RemoveSplinesLeadingToGivenPathNode(PathNode removedPathNode) {
-            removedPathNode.previousPathNodes.ForEach(previousPathNode => {
-                previousPathNode.SplinesOut.Where(tuple => tuple.dstNode == removedPathNode).ToList().ForEach( _ =>
-                     DestroyImmediate(_.spline.gameObject));
-                });
+            // removedPathNode.previousPathNodes.ForEach(previousPathNode => {
+            //     previousPathNode.SplinesOut.Where(tuple => tuple.dstNode == removedPathNode).ToList().ForEach( _ =>
+            //          DestroyImmediate(_.spline.gameObject));
+            //     });
+            
+            // TRY 2:
+            var previous = removedPathNode.previousPathNodes[0];
+            var previousOneSplineData = previous.SplinesOut[0];
+            var spline = previousOneSplineData.spline;
+            DestroyImmediate(spline.gameObject);
         }
 
         public static void DeletePathNode(PathNode node) {
