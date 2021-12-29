@@ -70,19 +70,18 @@ namespace PathCreator.Aggregator {
         }
 
         public static void DeletePathNode(PathNode node) {
-            // 1. Remove splines leading to this node
             RemoveSplinesLeadingToGivenPathNode(node);
-            
-            // 2. Remove from previous and following path nodes
             var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
-            node.previousPathNodes.ForEach(previous => {
-                previous.nextPathNodes.Remove(node);
-            });
-            node.nextPathNodes.ForEach(next => next.previousPathNodes.Remove(node));
+            RemovePathNodeFromPreviousAndFollowing(node);
             DestroyImmediate(node.gameObject);
             if (firstPreviousNode != null) {
                 PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
             }
+        }
+
+        private static void RemovePathNodeFromPreviousAndFollowing(PathNode node) {
+            node.previousPathNodes.ForEach(previous => { previous.nextPathNodes.Remove(node); });
+            node.nextPathNodes.ForEach(next => next.previousPathNodes.Remove(node));
         }
 
         public Vector3 AnchorPoint

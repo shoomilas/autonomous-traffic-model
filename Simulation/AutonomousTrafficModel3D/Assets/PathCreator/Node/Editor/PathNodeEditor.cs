@@ -57,9 +57,14 @@ public class PathNodeEditor : Editor {
         base.OnInspectorGUI();
         var typedTarget = (PathNode)target;
         GUILayout.Space(45);
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("Add Spline To Current PathNode")) {
             AddSplineToPathNode(typedTarget);
         }
+        if (GUILayout.Button("Add Spline (and select)")) {
+            AddSplineToPathNodeAndSelect(typedTarget);
+        }
+        GUILayout.EndHorizontal();
 
         if (GUILayout.Button("Remove Current PathNode")) {
             PathNode.DeletePathNode(typedTarget);
@@ -68,25 +73,25 @@ public class PathNodeEditor : Editor {
         if (GUILayout.Button("(TODO) Update All Path Nodes")) {
             Debug.Log("Not implemented.");
         }
-
-      
     }
 
-    private void AddSplineToPathNode(PathNode node) {
+    private void AddSplineToPathNodeAndSelect(PathNode node) {
+        var newNode = AddSplineToPathNode(node);
+        if (newNode != null) {
+            PathNodeHelper.SelectObject(newNode.gameObject);
+        }
+    }
+
+    private PathNode AddSplineToPathNode(PathNode node) {
         // Undo.RecordObject(node, "Add new Path Node");
         Undo.RecordObject(node.transform.parent, "Add new Path Node");
         
-        // move to PathNode class
         var newNode = AddPathNode(node);
         var newSpline = AddSplineBetweenPathNodes(node, newNode);
         var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
         node.SplinesOut.Add(splineData);
         PathNodeHelper.SelectObject(node.gameObject);
-
-        // NewSpline
-        
-        
-        // var 
+        return newNode;
     }
 
     private PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
