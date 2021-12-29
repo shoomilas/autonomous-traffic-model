@@ -5,19 +5,21 @@ using PathCreationEditor;
 using UnityEngine;
 
 namespace PathCreator.Aggregator {
+    [Serializable]
     public enum Direction {
+        Unknown,
         Left,
         Right,
-        Forward,
-        Unknown
+        Forward
     }
 
+    [Serializable]
     public class SplineOutData {
         public PathCreation.PathCreator spline;
-        public Direction? splineDirection;
+        public Direction splineDirection;
         public PathNode dstNode;
 
-        public SplineOutData(PathCreation.PathCreator spline, Direction? splineDirection, PathNode dstNode) {
+        public SplineOutData(PathCreation.PathCreator spline, Direction splineDirection, PathNode dstNode) {
             this.spline = spline;
             this.splineDirection = splineDirection;
             this.dstNode = dstNode;
@@ -26,9 +28,10 @@ namespace PathCreator.Aggregator {
     
     public class PathNode : MonoBehaviour {
         // List of splines going OUT of the node.
-        public List<(PathCreation.PathCreator spline, Direction? splineDirection, PathNode dstNode)> SplinesOut = new List<(PathCreation.PathCreator, Direction?, PathNode)> {};
         
         private Vector3 anchorPoint;
+        // public List<(PathCreation.PathCreator spline, Direction? splineDirection, PathNode dstNode)> SplinesOut = new List<(PathCreation.PathCreator, Direction?, PathNode)> {};
+        public List<SplineOutData> SplinesOut = new List<SplineOutData>();
         public List<PathNode> nextPathNodes = new List<PathNode>();
         public List<PathNode> previousPathNodes = new List<PathNode>();
         
@@ -47,7 +50,7 @@ namespace PathCreator.Aggregator {
         }
 
         public static PathNode MakePathNode(PathNode previousNode) {
-            GameObject go = new GameObject("Path Node");
+            GameObject go = new GameObject($"Path Node");
             var foo = go.AddComponent<PathNode>();
             foo.previousPathNodes.Add(previousNode);
             return foo;
@@ -81,16 +84,13 @@ namespace PathCreator.Aggregator {
         }
 
         public static void RemoveSplinesLeadingToGivenPathNode(PathNode removedPathNode) {
-            // removedPathNode.previousPathNodes.ForEach(previousPathNode => {
-            //     previousPathNode.SplinesOut.Where(tuple => tuple.dstNode == removedPathNode).ToList().ForEach( _ =>
-            //          DestroyImmediate(_.spline.gameObject));
-            //     });
-            
-            // TRY 2:
-            var previous = removedPathNode.previousPathNodes[0];
-            var previousOneSplineData = previous.SplinesOut[0];
-            var spline = previousOneSplineData.spline;
-            DestroyImmediate(spline.gameObject);
+            var previousNodes = removedPathNode.previousPathNodes;
+            foreach (var previousNode in previousNodes) {
+                previousNode.SplinesOut.Where(x => x.dstNode == removedPathNode).ToList().ForEach(_ => {
+                    DestroyImmediate(_.spline.gameObject);
+                    previousNode.SplinesOut.Remove(_);
+                });
+            }
         }
 
         public static void DeletePathNode(PathNode node) {
@@ -98,9 +98,8 @@ namespace PathCreator.Aggregator {
             RemoveSplinesLeadingToGivenPathNode(node);
             
             // 2. Remove from previous and following path nodes
-            var firstPreviousNode = node.previousPathNodes.First();
+            var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
             node.previousPathNodes.ForEach(previous => {
-                
                 previous.nextPathNodes.Remove(node);
             });
             node.nextPathNodes.ForEach(next => next.previousPathNodes.Remove(node));

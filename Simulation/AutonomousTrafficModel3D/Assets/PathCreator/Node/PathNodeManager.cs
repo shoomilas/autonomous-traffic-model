@@ -4,11 +4,21 @@ using UnityEditor;
 using UnityEngine;
 
 namespace PathCreator.Aggregator {
-    [Serializable]
     public class PathNodeManager : MonoBehaviour {
-        [SerializeField]
-        public static List<PathNode> AllThePathNodes = new List<PathNode>();
         
+        // For Naming Purposes
+        // private static int currentNumber = 0;
+        // public static int CurrentNumber
+        // {
+        //     get
+        //     {
+        //         currentNumber += 1;
+        //         return currentNumber;
+        //     }
+        // }
+        
+        public static List<PathNode> AllThePathNodes = new List<PathNode>();
+
         // // Draw gizmos works, handles doesn't
         // private void OnDrawGizmos() {
         //     foreach (var pathNode in AllThePathNodes) {

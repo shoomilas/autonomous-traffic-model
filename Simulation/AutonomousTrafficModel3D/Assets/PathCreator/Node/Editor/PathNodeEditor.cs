@@ -56,6 +56,7 @@ public class PathNodeEditor : Editor {
     public override void OnInspectorGUI() {
         base.OnInspectorGUI();
         var typedTarget = (PathNode)target;
+        GUILayout.Space(45);
         if (GUILayout.Button("Add Spline To Current PathNode")) {
             AddSplineToPathNode(typedTarget);
         }
@@ -64,9 +65,11 @@ public class PathNodeEditor : Editor {
             PathNode.DeletePathNode(typedTarget);
         }
 
-        if (GUILayout.Button("(TODO)")) {
+        if (GUILayout.Button("(TODO) Update All Path Nodes")) {
             Debug.Log("Not implemented.");
         }
+
+      
     }
 
     private void AddSplineToPathNode(PathNode node) {
@@ -76,7 +79,7 @@ public class PathNodeEditor : Editor {
         // move to PathNode class
         var newNode = AddPathNode(node);
         var newSpline = AddSplineBetweenPathNodes(node, newNode);
-        var splineData = (newSpline, Direction.Unknown, newNode);
+        var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
         node.SplinesOut.Add(splineData);
         PathNodeHelper.SelectObject(node.gameObject);
 
