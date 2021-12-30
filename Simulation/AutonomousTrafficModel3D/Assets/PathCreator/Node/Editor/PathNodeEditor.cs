@@ -92,16 +92,31 @@ public class PathNodeEditor : Editor {
         GUILayout.Space(spacerSize);
         PathNodeToConnectTo = (PathNode)EditorGUILayout
             .ObjectField(TextConnectNodesLabel, PathNodeToConnectTo, typeof(PathNode), true);
+        
         if (GUILayout.Button(TextConnectNodesButton)) {
             ConnectNodes(typedTarget, PathNodeToConnectTo);
             PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
         }
+        
         GUILayout.EndVertical();
     }
 
     private void ConnectNodes(PathNode srcNode, PathNode dstNode) {
+        bool isRequestNotValid =
+               srcNode.nextPathNodes.Contains(dstNode)
+                || srcNode.previousPathNodes.Contains(dstNode)
+                || srcNode == null
+                || dstNode == null;
+            
+        if (isRequestNotValid) {
+            Debug.Log("Request not valid");
+            return;
+        }
+        
+        AddSplineBetweenPathNodes(srcNode, dstNode);
+        srcNode.nextPathNodes.Add(dstNode);
+        dstNode.previousPathNodes.Add(srcNode);
     }
-     
 
     private void AddSplineToPathNodeAndSelect(PathNode node) {
         var newNode = AddSplineToPathNode(node);
