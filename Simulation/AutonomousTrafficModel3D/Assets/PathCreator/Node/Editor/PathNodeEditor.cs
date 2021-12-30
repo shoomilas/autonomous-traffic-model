@@ -15,6 +15,9 @@ public class PathNodeEditor : Editor {
     const string TextRemovePathNode = "Remove PathNode";
     const string TextAddPathNode = "Add Spline To PathNode";
     const string TextAddPathNodeAndSelect = "Add Spline To PathNode (and Select)";
+    const string TextConnectNodesButton = "Connect chosen PathNode";
+    private const string TextConnectNodesLabel = "Node to connect with:";
+    
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
     }
@@ -57,10 +60,15 @@ public class PathNodeEditor : Editor {
     // );
     // }
 
+    [SerializeField]
+    public PathNode PathNodeToConnectTo = null;
+    
     public override void OnInspectorGUI() {
-        base.OnInspectorGUI();
         var typedTarget = (PathNode)target;
-        GUILayout.Space(45);
+        base.OnInspectorGUI();
+        var spacerSize = 40;
+        GUILayout.Space(spacerSize);
+        
         GUILayout.BeginHorizontal();
         if (GUILayout.Button(TextAddPathNode)) {;
             AddSplineToPathNode(typedTarget);
@@ -70,7 +78,7 @@ public class PathNodeEditor : Editor {
             AddSplineToPathNodeAndSelect(typedTarget);
         }
         GUILayout.EndHorizontal();
-
+        
         if (GUILayout.Button(TextRemovePathNode)) {;
             UndoNodeAction(TextRemovePathNode, typedTarget);
             PathNode.DeletePathNode(typedTarget);
@@ -79,7 +87,21 @@ public class PathNodeEditor : Editor {
         if (GUILayout.Button("(TODO) Update All Path Nodes")) {
             Debug.Log("Not implemented.");
         }
+
+        GUILayout.BeginVertical();
+        GUILayout.Space(spacerSize);
+        PathNodeToConnectTo = (PathNode)EditorGUILayout
+            .ObjectField(TextConnectNodesLabel, PathNodeToConnectTo, typeof(PathNode), true);
+        if (GUILayout.Button(TextConnectNodesButton)) {
+            ConnectNodes(typedTarget, PathNodeToConnectTo);
+            PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
+        }
+        GUILayout.EndVertical();
     }
+
+    private void ConnectNodes(PathNode srcNode, PathNode dstNode) {
+    }
+     
 
     private void AddSplineToPathNodeAndSelect(PathNode node) {
         var newNode = AddSplineToPathNode(node);
