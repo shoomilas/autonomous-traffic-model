@@ -6,11 +6,15 @@ using PathCreation.Examples;
 using PathCreator.Aggregator;
 using UnityEditor;
 using UnityEngine;
+using Object = System.Object;
 using PathCreator = PathCreation.PathCreator;
 
 [CustomEditor(typeof(PathNode))]
 public class PathNodeEditor : Editor {
 
+    const string TextRemovePathNode = "Remove PathNode";
+    const string TextAddPathNode = "Add Spline To PathNode";
+    const string TextAddPathNodeAndSelect = "Add Spline To PathNode (and Select)";
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
     }
@@ -58,15 +62,17 @@ public class PathNodeEditor : Editor {
         var typedTarget = (PathNode)target;
         GUILayout.Space(45);
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Add Spline To Current PathNode")) {
+        if (GUILayout.Button(TextAddPathNode)) {;
             AddSplineToPathNode(typedTarget);
         }
-        if (GUILayout.Button("Add Spline (and select)")) {
+        if (GUILayout.Button(TextAddPathNodeAndSelect)) {
+            UndoNodeAction(TextAddPathNodeAndSelect, typedTarget);
             AddSplineToPathNodeAndSelect(typedTarget);
         }
         GUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Remove Current PathNode")) {
+        if (GUILayout.Button(TextRemovePathNode)) {;
+            UndoNodeAction(TextRemovePathNode, typedTarget);
             PathNode.DeletePathNode(typedTarget);
         }
 
@@ -83,9 +89,7 @@ public class PathNodeEditor : Editor {
     }
 
     private PathNode AddSplineToPathNode(PathNode node) {
-        // Undo.RecordObject(node, "Add new Path Node");
         Undo.RecordObject(node.transform.parent, "Add new Path Node");
-        
         var newNode = AddPathNode(node);
         var newSpline = AddSplineBetweenPathNodes(node, newNode);
         var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
@@ -94,9 +98,13 @@ public class PathNodeEditor : Editor {
         return newNode;
     }
 
+    private void UndoNodeAction(string undoString, PathNode node) {
+        node.nextPathNodes.ForEach(_=>Undo.RegisterCompleteObjectUndo(_, undoString));
+        node.previousPathNodes.ForEach(_=>Undo.RegisterCompleteObjectUndo(_, undoString));
+        Undo.RegisterCompleteObjectUndo(node, undoString);
+    }
+    
     private PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
-    // private PathCreation.PathCreator AddNewSplineToPathNodes(PathNode node1, PathNode node2) {
-        // var spline = new PathCreation.PathCreator();
         var pos1 = node1.transform.position;
         var pos2 = node2.transform.position;
         var pos3 = (pos1 + pos2) / 2;
@@ -105,7 +113,7 @@ public class PathNodeEditor : Editor {
         // Create a new bezier path from the waypoints.
         var bezier = new BezierPath(listOfPositions);
         
-        // create new GameObject
+        // Create new GameObject
         GameObject go = new GameObject("Spline");
         var foo = go.AddComponent<PathCreation.PathCreator>();
         foo.bezierPath = bezier;

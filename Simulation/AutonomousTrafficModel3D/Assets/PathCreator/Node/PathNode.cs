@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using PathCreationEditor;
+using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PathCreator.Aggregator {
     [Serializable]
@@ -27,10 +29,7 @@ namespace PathCreator.Aggregator {
     }
     
     public class PathNode : MonoBehaviour {
-        // List of splines going OUT of the node.
-        
         private Vector3 anchorPoint;
-        // public List<(PathCreation.PathCreator spline, Direction? splineDirection, PathNode dstNode)> SplinesOut = new List<(PathCreation.PathCreator, Direction?, PathNode)> {};
         public List<SplineOutData> SplinesOut = new List<SplineOutData>();
         public List<PathNode> nextPathNodes = new List<PathNode>();
         public List<PathNode> previousPathNodes = new List<PathNode>();
@@ -56,6 +55,16 @@ namespace PathCreator.Aggregator {
             return foo;
         }
 
+        public static void DeletePathNode(PathNode node) {
+            RemoveSplinesLeadingToGivenPathNode(node);
+            var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
+            RemovePathNodeFromPreviousAndFollowing(node);
+            Undo.DestroyObjectImmediate(node.gameObject);
+            if (firstPreviousNode != null) {
+                PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
+            }
+        }
+        
         public static void RemoveSplinesLeadingToGivenPathNode(PathNode removedPathNode) {
             removedPathNode.previousPathNodes
                 .ForEach(previousNode => {
@@ -63,25 +72,19 @@ namespace PathCreator.Aggregator {
                         .Where(splineOutData => splineOutData.dstNode == removedPathNode)
                         .ToList()
                         .ForEach(_ => {
-                            DestroyImmediate(_.spline.gameObject);
+                            Undo.DestroyObjectImmediate(_.spline.gameObject);
                             previousNode.SplinesOut.Remove(_);
                         });
                 });
         }
 
-        public static void DeletePathNode(PathNode node) {
-            RemoveSplinesLeadingToGivenPathNode(node);
-            var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
-            RemovePathNodeFromPreviousAndFollowing(node);
-            DestroyImmediate(node.gameObject);
-            if (firstPreviousNode != null) {
-                PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
-            }
-        }
-
         private static void RemovePathNodeFromPreviousAndFollowing(PathNode node) {
-            node.previousPathNodes.ForEach(previous => { previous.nextPathNodes.Remove(node); });
-            node.nextPathNodes.ForEach(next => next.previousPathNodes.Remove(node));
+            node.previousPathNodes?.ForEach(previous => { previous.nextPathNodes.Remove(node); });
+            node.nextPathNodes?.ForEach(next => {
+                if (next != null) {
+                    next.previousPathNodes?.Remove(node);
+                }
+            });
         }
 
         public Vector3 AnchorPoint
