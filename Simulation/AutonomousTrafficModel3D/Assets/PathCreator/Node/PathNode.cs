@@ -44,6 +44,7 @@ namespace PathCreator.Aggregator {
         }
 #endif
         public event System.Action PathNodeTransformedEvent;
+        public event System.Func<PathNode> sthEvent;
         public void OnPathNodeTransformedHandler() {
             PathNodeTransformedEvent?.Invoke();
         }
@@ -53,10 +54,21 @@ namespace PathCreator.Aggregator {
             if(isUpdateable) {
                 isUpdateable = false;
                 Debug.Log($"Transform changed for {gameObject.name}");
-                // UpdatePosition();
+                UpdatePathNodePosition();
                 await WaitSomeAsync();
                 isUpdateable = true;
             }
+        }
+
+        private void UpdatePathNodePosition() {
+            Debug.Log("UpdatePathNodePosition()");
+            // // update splines out startAnchor
+            // SplinesOut.ForEach(splineOutData => {
+            // 
+            //     // var numPoints = splineOutData.spline.bezierPath.NumPoints;
+            //     splineOutData.spline.bezierPath.SetPoint(0, gameObject.transform.position);
+            // });
+            // // update splines in endAnchor
         }
         
         private async Task WaitSomeAsync()
