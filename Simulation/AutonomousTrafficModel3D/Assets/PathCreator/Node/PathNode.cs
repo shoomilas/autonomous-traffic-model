@@ -56,33 +56,61 @@ namespace PathCreator.Aggregator {
         }
 
         public static void DeletePathNode(PathNode node) {
-            RemoveSplinesLeadingToGivenPathNode(node);
             var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
-            RemovePathNodeFromPreviousAndFollowing(node);
-            Undo.DestroyObjectImmediate(node.gameObject);
-            if (firstPreviousNode != null) {
-                PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
-            }
+            RemoveSplinesLeadingToGivenPathNode(node);
+            // RemovePathNodeFromPreviousAndFollowing(node); 
+            // Undo.DestroyObjectImmediate(node.gameObject);
+            // if (firstPreviousNode != null) {
+            //     PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
+            // }
         }
         
         public static void RemoveSplinesLeadingToGivenPathNode(PathNode removedPathNode) {
+            // removedPathNode.previousPathNodes
+            //     .ForEach(previousNode => {
+            //         previousNode.SplinesOut
+            //             .Where(splineOutData => {
+            //                 var isTheSameOld = splineOutData.dstNode == removedPathNode;
+            //                 var isTheSame = GameObject.ReferenceEquals(splineOutData.dstNode, removedPathNode);
+            //                 Debug.Log($"is dst node the same {isTheSame}");
+            //                 return isTheSame;
+            //             })
+            //             
+            //             .ToList()
+            //             .ForEach(_ => {
+            //                 Undo.DestroyObjectImmediate(_.spline.gameObject);
+            //                 previousNode.SplinesOut.Remove(_);
+            //                 Debug.Log("Removed spline");
+            //             });
+            //         Debug.Log("Went through a previous path node");
+            //     });
+
+            var g = removedPathNode;
             removedPathNode.previousPathNodes
                 .ForEach(previousNode => {
-                    previousNode.SplinesOut
-                        .Where(splineOutData => splineOutData.dstNode == removedPathNode)
-                        .ToList()
-                        .ForEach(_ => {
-                            Undo.DestroyObjectImmediate(_.spline.gameObject);
-                            previousNode.SplinesOut.Remove(_);
-                        });
+                        RemoveDstPathNodeAndSplines(previousNode, removedPathNode);
+                        Debug.Log($"RemoveDstPathNodeAndSplines({previousNode.name},{removedPathNode.name}) called" +
+                                  $" [{removedPathNode == g}]");
                 });
         }
 
+        public static void RemoveDstPathNodeAndSplines(PathNode srcNode, PathNode dstNode) {
+            // var b = 
+            srcNode.SplinesOut
+                .Where(splineOutData => splineOutData.dstNode == dstNode)
+                .ToList()
+                .ForEach(_ => Debug.Log($"YEAH. (src: {srcNode.name}, dst: {_.dstNode.name})"));
+        }
+
         private static void RemovePathNodeFromPreviousAndFollowing(PathNode node) {
-            node.previousPathNodes?.ForEach(previous => { previous.nextPathNodes.Remove(node); });
+            node.previousPathNodes?.ForEach(previous => {
+                var status = previous.nextPathNodes.Remove(node);
+                if(status) { Debug.Log(("Removed from previous node"));}
+            });
             node.nextPathNodes?.ForEach(next => {
                 if (next != null) {
-                    next.previousPathNodes?.Remove(node);
+                    var status = next.previousPathNodes.Remove(node);
+                    if(status) { Debug.Log(("Removed from next node"));}
                 }
             });
         }
