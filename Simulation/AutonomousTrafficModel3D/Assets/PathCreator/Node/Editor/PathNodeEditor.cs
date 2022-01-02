@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using PathCreation;
 using PathCreation.Examples;
 using PathCreator.Aggregator;
@@ -137,7 +138,9 @@ public class PathNodeEditor : Editor {
 
     private void UndoNodeAction(string undoString, PathNode node) {
         node.nextPathNodes.ForEach(_=>Undo.RegisterCompleteObjectUndo(_, undoString));
-        node.previousPathNodes.ForEach(_=>Undo.RegisterCompleteObjectUndo(_, undoString));
+        node.previousPathNodes.ForEach(_ => {
+            Undo.RegisterCompleteObjectUndo(_, undoString);
+        });
         Undo.RegisterCompleteObjectUndo(node, undoString);
     }
     
