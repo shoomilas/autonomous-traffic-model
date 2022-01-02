@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PathCreationEditor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngineInternal;
 using Object = UnityEngine.Object;
 
 namespace PathCreator.Aggregator {
@@ -29,20 +31,55 @@ namespace PathCreator.Aggregator {
         }
     }
     
+    [ExecuteInEditMode]
     public class PathNode : MonoBehaviour {
-        private Vector3 anchorPoint;
-        public List<SplineOutData> SplinesOut = new List<SplineOutData>();
-        public List<PathNode> nextPathNodes = new List<PathNode>();
-        public List<PathNode> previousPathNodes = new List<PathNode>();
+        ///////
+        private const double waitTime = 0.5;
+
+#if UNITY_EDITOR
+        private void Update() {
+            if(gameObject.transform.hasChanged) {
+                OnPathNodeTransformedHandler();
+            }
+        }
+#endif
+        public event System.Action PathNodeTransformedEvent;
+        public void OnPathNodeTransformedHandler() {
+            PathNodeTransformedEvent?.Invoke();
+        }
+
+        private bool isUpdateable;
+        public async void OnPathNodeTransformed() {
+            if(isUpdateable) {
+                isUpdateable = false;
+                Debug.Log($"Transform changed for {gameObject.name}");
+                // UpdatePosition();
+                await WaitSomeAsync();
+                isUpdateable = true;
+            }
+        }
+        
+        private async Task WaitSomeAsync()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(waitTime));
+        }
         
         private void OnEnable() {
+            isUpdateable = true;
             PathNodeManager.AllThePathNodes.Add(this);
+            PathNodeTransformedEvent += OnPathNodeTransformed;
         }
 
         private void OnDisable() {
             PathNodeManager.AllThePathNodes.Remove(this);
+            PathNodeTransformedEvent -= OnPathNodeTransformed;
         }
         
+        private Vector3 anchorPoint;
+        public List<SplineOutData> SplinesOut = new List<SplineOutData>();
+        public List<PathNode> nextPathNodes = new List<PathNode>();
+        public List<PathNode> previousPathNodes = new List<PathNode>();
+
         private void OnDrawGizmos() {
             float size = 1f;
             Gizmos.DrawCube(transform.position, Vector3.one/10f);
@@ -70,8 +107,6 @@ namespace PathCreator.Aggregator {
             removedPathNode.previousPathNodes
                 .ForEach(previousNode => {
                         RemoveDstPathNodeAndSplines(previousNode, removedPathNode);
-                        Debug.Log($"RemoveDstPathNodeAndSplines({previousNode.name},{removedPathNode.name}) called" +
-                                  $" [{removedPathNode == g}]");
                 });
         }
         
@@ -98,7 +133,7 @@ namespace PathCreator.Aggregator {
             Undo.DestroyObjectImmediate(removedPathNode.gameObject);
         } 
         
-        private static void RemovePathNodeFromPreviousAndFollowing(PathNode node) {
+        private static void RemovePathNodeFromPreviousAndFollowing(PathNode node) { // Obsolete
             node.previousPathNodes?.ForEach(previous => {
                 var status = previous.nextPathNodes.Remove(node);
                 if(status) { Debug.Log(("Removed from previous node"));}

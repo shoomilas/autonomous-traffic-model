@@ -91,7 +91,6 @@ namespace PathCreation {
                 if (bezierCreated != null) {
                     bezierCreated ();
                 }
-
             }
         }
 
