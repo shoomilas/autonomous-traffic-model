@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PathCreation;
 using PathCreationEditor;
 using UnityEditor;
 using UnityEngine;
@@ -63,20 +64,22 @@ namespace PathCreator.Aggregator {
             }
         }
 
+        public void UpdateAllNodesSplineConnections() {
+            var allAffectedBezierPaths = new List<PathCreation.PathCreator>();
+            SplinesOut.ForEach(splineOutData => {
+                allAffectedBezierPaths.Add(splineOutData.spline);
+            });
+            previousPathNodes.ForEach(previousPathNode => {
+                previousPathNode.SplinesOut.Where(data => data.dstNode==this).ToList().ForEach(_ => {
+                    
+                    allAffectedBezierPaths.Add(_.spline);
+                });
+            });
+            allAffectedBezierPaths.ForEach(_ => _.TriggerPathUpdate());
+        }
+        
         private void UpdatePathNodePosition() {
             anchorPoint = transform.position;
-            Debug.Log($"{transform.name}");
-            
-            // SPLINES OUT: Anchor
-            SplinesOut.ForEach(splineOutData => {
-                // set all last points to dstNodes:
-                // var numPoints = splineOutData.spline.bezierPath.NumPoints;
-                // splineOutData.spline.bezierPath.SetPoint(numPoints-2, splineOutData.dstNode.anchorPoint);
-                // splineOutData.spline.transform.position = anchorPoint;
-                // // splineOutData.spline.bezierPath.SetPoint(0, anchorPoint);
-                
-            });
-            
             
             // SPLINES IN: Anchor
             previousPathNodes.ForEach(previousPathNode => {
@@ -85,10 +88,40 @@ namespace PathCreator.Aggregator {
                     _.spline.bezierPath.SetPoint(numPoints-1, anchorPoint);
                 });
             });
+            
+            // SPLINES OUT: Add and remove:
+            SplinesOut.ForEach(data => {
+                var oldSpline = data.spline;
+                var dstNode = data.dstNode;
+                var newSpline = AddSplineBetweenPathNodes(this, dstNode);
+                data.spline = newSpline;
+                DestroyImmediate(oldSpline.gameObject);
+            });
+        }
+        public PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
+            var pos1 = node1.transform.position;
+            var pos2 = node2.transform.position;
+            var pos3 = (pos1 + pos2) / 2;
+            var listOfPositions = new List<Vector3> { node1.transform.position, pos3, node2.transform.position};
+        
+            // Create a new bezier path from the waypoints.
+            var bezier = new BezierPath(listOfPositions);
+        
+            // Create new GameObject
+            GameObject go = new GameObject("Spline");
+            var foo = go.AddComponent<PathCreation.PathCreator>();
+            foo.bezierPath = bezier;
+            var name1 = node1.transform.name;
+            var name2 = node2.transform.name;
+            foo.transform.name = $"Spline: {name1}-{name2}";
+        
+            foo.transform.parent = node1.transform; // as child
+            // foo.transform.parent = node1.transform.parent; // as sibling
+            // THIS ONE DOES NOT ADD TO SPLINES OUT DATA.
+            return foo;
         }
         
-        private async Task WaitSomeAsync()
-        {
+        private async Task WaitSomeAsync() {
             await Task.Delay(TimeSpan.FromSeconds(waitTime));
         }
         

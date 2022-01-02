@@ -7,15 +7,15 @@ namespace PathCreator.Aggregator {
     public class PathNodeManager : MonoBehaviour {
         
         // For Naming Purposes
-        // private static int currentNumber = 0;
-        // public static int CurrentNumber
-        // {
-        //     get
-        //     {
-        //         currentNumber += 1;
-        //         return currentNumber;
-        //     }
-        // }
+        private static int currentNumber = 0;
+        public static int CurrentNumber
+        {
+            get
+            {
+                currentNumber += 1;
+                return currentNumber;
+            }
+        }
         
         public static List<PathNode> AllThePathNodes = new List<PathNode>();
 

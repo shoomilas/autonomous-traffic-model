@@ -86,7 +86,7 @@ public class PathNodeEditor : Editor {
         }
 
         if (GUILayout.Button("(TODO) Update All Path Nodes")) {
-            Debug.Log("Not implemented.");
+            typedTarget.UpdateAllNodesSplineConnections();
         }
 
         GUILayout.BeginVertical();
@@ -144,7 +144,7 @@ public class PathNodeEditor : Editor {
         Undo.RegisterCompleteObjectUndo(node, undoString);
     }
     
-    private PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
+    public PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
         var pos1 = node1.transform.position;
         var pos2 = node2.transform.position;
         var pos3 = (pos1 + pos2) / 2;
@@ -157,13 +157,20 @@ public class PathNodeEditor : Editor {
         GameObject go = new GameObject("Spline");
         var foo = go.AddComponent<PathCreation.PathCreator>();
         foo.bezierPath = bezier;
-        foo.transform.parent = node1.transform;
+        var name1 = node1.transform.name;
+        var name2 = node2.transform.name;
+        foo.transform.name = $"Spline: {name1}-{name2}";foo.transform.name = $"Spline {NodeCounter}";
+        foo.transform.parent = node1.transform; // as child
+        // foo.transform.parent = node1.transform.parent; // as sibling
         
         // add splinesOutData to node1
         var splineOutData = new SplineOutData(foo, Direction.Unknown, node2);
         node1.SplinesOut.Add(splineOutData);
         return foo;
     }
+
+    public static int NodeCounter = 0;
+    public static int SplineCounter = 0;
 
     private PathNode AddPathNode(PathNode node) {
         // TODO: adding existing pathnodes - do not add as children then
@@ -172,7 +179,8 @@ public class PathNodeEditor : Editor {
         var transform = goo.transform;
         transform.parent = tr.transform.parent;
         transform.position = tr.position + Vector3.right + Vector3.forward;
-        transform.name = "Path Node";
+        transform.name = $"Path Node {NodeCounter}";
+        NodeCounter += 1;
         node.nextPathNodes.Add(goo);
         return goo;
     }
