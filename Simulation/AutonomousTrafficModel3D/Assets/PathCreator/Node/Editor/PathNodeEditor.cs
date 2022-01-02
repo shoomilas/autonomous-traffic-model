@@ -130,8 +130,8 @@ public class PathNodeEditor : Editor {
         Undo.RecordObject(node.transform.parent, "Add new Path Node");
         var newNode = AddPathNode(node);
         var newSpline = AddSplineBetweenPathNodes(node, newNode);
-        var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
-        node.SplinesOut.Add(splineData);
+        // var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
+        // node.SplinesOut.Add(splineData);
         PathNodeHelper.SelectObject(node.gameObject);
         return newNode;
     }
@@ -158,6 +158,10 @@ public class PathNodeEditor : Editor {
         var foo = go.AddComponent<PathCreation.PathCreator>();
         foo.bezierPath = bezier;
         foo.transform.parent = node1.transform;
+        
+        // add splinesOutData to node1
+        var splineOutData = new SplineOutData(foo, Direction.Unknown, node2);
+        node1.SplinesOut.Add(splineOutData);
         return foo;
     }
 

@@ -44,6 +44,7 @@ namespace PathCreator.Aggregator {
             }
         }
 #endif
+        
         public event System.Action PathNodeTransformedEvent;
         public void OnPathNodeTransformedHandler() {
             PathNodeTransformedEvent?.Invoke();
@@ -54,22 +55,37 @@ namespace PathCreator.Aggregator {
         public async void OnPathNodeTransformed() {
             if(isUpdateable) {
                 isUpdateable = false;
-                anchorPoint = transform.position;
-                Debug.Log($"{transform.name}");
+                UpdatePathNodePosition();
+                // anchorPoint = transform.position;
+                // Debug.Log($"{transform.name}");
                 await WaitSomeAsync();
                 isUpdateable = true;
             }
         }
 
-        // private void UpdatePathNodePosition() {
-        //     // // update splines out startAnchor
-        //     // SplinesOut.ForEach(splineOutData => {
-        //     // 
-        //     //     // var numPoints = splineOutData.spline.bezierPath.NumPoints;
-        //     //     splineOutData.spline.bezierPath.SetPoint(0, gameObject.transform.position);
-        //     // });
-        //     // // update splines in endAnchor
-        // }
+        private void UpdatePathNodePosition() {
+            anchorPoint = transform.position;
+            Debug.Log($"{transform.name}");
+            
+            // SPLINES OUT: Anchor
+            SplinesOut.ForEach(splineOutData => {
+                // set all last points to dstNodes:
+                // var numPoints = splineOutData.spline.bezierPath.NumPoints;
+                // splineOutData.spline.bezierPath.SetPoint(numPoints-2, splineOutData.dstNode.anchorPoint);
+                // splineOutData.spline.transform.position = anchorPoint;
+                // // splineOutData.spline.bezierPath.SetPoint(0, anchorPoint);
+                
+            });
+            
+            
+            // SPLINES IN: Anchor
+            previousPathNodes.ForEach(previousPathNode => {
+                previousPathNode.SplinesOut.Where(data => data.dstNode==this).ToList().ForEach(_ => {
+                    var numPoints = _.spline.bezierPath.NumPoints; 
+                    _.spline.bezierPath.SetPoint(numPoints-1, anchorPoint);
+                });
+            });
+        }
         
         private async Task WaitSomeAsync()
         {
