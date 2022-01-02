@@ -38,38 +38,38 @@ namespace PathCreator.Aggregator {
 
 #if UNITY_EDITOR
         private void Update() {
-            if(gameObject.transform.hasChanged) {
+            if(transform.hasChanged && (transform.position != anchorPoint)) {
+                isUpdateable = true;
                 OnPathNodeTransformedHandler();
             }
         }
 #endif
         public event System.Action PathNodeTransformedEvent;
-        public event System.Func<PathNode> sthEvent;
         public void OnPathNodeTransformedHandler() {
             PathNodeTransformedEvent?.Invoke();
         }
 
         private bool isUpdateable;
+        
         public async void OnPathNodeTransformed() {
             if(isUpdateable) {
                 isUpdateable = false;
-                Debug.Log($"Transform changed for {gameObject.name}");
-                UpdatePathNodePosition();
+                anchorPoint = transform.position;
+                Debug.Log($"{transform.name}");
                 await WaitSomeAsync();
                 isUpdateable = true;
             }
         }
 
-        private void UpdatePathNodePosition() {
-            Debug.Log("UpdatePathNodePosition()");
-            // // update splines out startAnchor
-            // SplinesOut.ForEach(splineOutData => {
-            // 
-            //     // var numPoints = splineOutData.spline.bezierPath.NumPoints;
-            //     splineOutData.spline.bezierPath.SetPoint(0, gameObject.transform.position);
-            // });
-            // // update splines in endAnchor
-        }
+        // private void UpdatePathNodePosition() {
+        //     // // update splines out startAnchor
+        //     // SplinesOut.ForEach(splineOutData => {
+        //     // 
+        //     //     // var numPoints = splineOutData.spline.bezierPath.NumPoints;
+        //     //     splineOutData.spline.bezierPath.SetPoint(0, gameObject.transform.position);
+        //     // });
+        //     // // update splines in endAnchor
+        // }
         
         private async Task WaitSomeAsync()
         {
@@ -77,7 +77,7 @@ namespace PathCreator.Aggregator {
         }
         
         private void OnEnable() {
-            isUpdateable = true;
+            isUpdateable = false;
             PathNodeManager.AllThePathNodes.Add(this);
             PathNodeTransformedEvent += OnPathNodeTransformed;
         }
@@ -160,7 +160,11 @@ namespace PathCreator.Aggregator {
 
         public Vector3 AnchorPoint
         {
-            get => this.transform.position;
+            get
+            {
+                anchorPoint = transform.position;
+                return anchorPoint;
+            }
             set => anchorPoint = value;
         }
     }
