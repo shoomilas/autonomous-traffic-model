@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 135298055}
   - component: {fileID: 135298056}
   m_Layer: 0
-  m_Name: Spline
+  m_Name: Spline B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -385,7 +385,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f48ab404c71548d282a597ca12bf01d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SplinesOut: []
+  SplinesOut:
+  - spline: {fileID: 1454315532}
+    splineDirection: 0
+    dstNode: {fileID: 1299408382}
+  - spline: {fileID: 135298056}
+    splineDirection: 0
+    dstNode: {fileID: 1683745207}
   nextPathNodes:
   - {fileID: 1299408382}
   - {fileID: 1683745207}
@@ -1574,7 +1580,7 @@ GameObject:
   - component: {fileID: 1454315531}
   - component: {fileID: 1454315532}
   m_Layer: 0
-  m_Name: Spline
+  m_Name: Spline A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

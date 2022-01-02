@@ -83,8 +83,8 @@ namespace PathCreator.Aggregator {
         }
 
         public void RemoveSplineOutDataFromPathNode(SplineOutData splineOut) {
-            Undo.DestroyObjectImmediate(splineOut.spline.gameObject);
             Undo.RecordObject(this,"Remove a splineOutData path node entry");
+            Undo.DestroyObjectImmediate(splineOut.spline.gameObject);
             this.SplinesOut.Remove(splineOut);
         }
         
