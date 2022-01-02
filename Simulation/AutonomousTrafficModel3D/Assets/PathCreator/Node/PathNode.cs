@@ -34,14 +34,17 @@ namespace PathCreator.Aggregator {
     
     [ExecuteInEditMode]
     public class PathNode : MonoBehaviour {
-        ///////
+        
+        public bool splinesAutoUpdate = false;
         private const double waitTime = 0.5;
 
 #if UNITY_EDITOR
         private void Update() {
-            if(transform.hasChanged && (transform.position != anchorPoint)) {
-                isUpdateable = true;
-                OnPathNodeTransformedHandler();
+            if(splinesAutoUpdate) {
+                if(transform.hasChanged && (transform.position != anchorPoint)) {
+                    isUpdateable = true;
+                    OnPathNodeTransformedHandler();
+                }
             }
         }
 #endif
@@ -64,21 +67,25 @@ namespace PathCreator.Aggregator {
             }
         }
 
-        public void UpdateAllNodesSplineConnections() {
-            var allAffectedBezierPaths = new List<PathCreation.PathCreator>();
-            SplinesOut.ForEach(splineOutData => {
-                allAffectedBezierPaths.Add(splineOutData.spline);
-            });
-            previousPathNodes.ForEach(previousPathNode => {
-                previousPathNode.SplinesOut.Where(data => data.dstNode==this).ToList().ForEach(_ => {
-                    
-                    allAffectedBezierPaths.Add(_.spline);
-                });
-            });
-            allAffectedBezierPaths.ForEach(_ => _.TriggerPathUpdate());
+        public void UpdateClosestSplineConnections() {
+            var pathNodes = FindObjectsOfType<PathNode>();
+            var splines = FindObjectsOfType<PathCreation.PathCreator>();
+            Undo.RecordObjects(pathNodes, "Update Positions");
+            if(splines != null ) {Undo.RecordObjects(splines, "Update Positions");}
+            UpdatePathNodePosition();
+            foreach (var previousNode in previousPathNodes) {
+                previousNode.UpdatePathNodePosition();
+            }
         }
         
-        private void UpdatePathNodePosition() {
+        public static void UpdateAllNodesSplineConnections() {
+            var pathNodes = FindObjectsOfType<PathNode>();
+            foreach (var pathNode in pathNodes) {
+                pathNode.UpdatePathNodePosition();
+            }
+        }
+        
+        public void UpdatePathNodePosition() {
             anchorPoint = transform.position;
             
             // SPLINES IN: Anchor

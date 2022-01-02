@@ -85,8 +85,11 @@ public class PathNodeEditor : Editor {
             PathNode.DeletePathNode(typedTarget);
         }
 
+        if (GUILayout.Button("(TODO) Update Closest Path Nodes")) {
+            typedTarget.UpdateClosestSplineConnections();
+        }
         if (GUILayout.Button("(TODO) Update All Path Nodes")) {
-            typedTarget.UpdateAllNodesSplineConnections();
+            PathNode.UpdateAllNodesSplineConnections();
         }
 
         GUILayout.BeginVertical();
