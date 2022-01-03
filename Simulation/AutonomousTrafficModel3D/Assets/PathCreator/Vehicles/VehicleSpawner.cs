@@ -16,15 +16,22 @@ namespace PathCreator.Vehicles {
         // List<PathNode>  
         // - Later on could spawn on any point (Transform) rather than on a path node and  
     }
-    
+
     public class VehicleSpawner : MonoBehaviour {
         public bool recurring;
         [Range(.1f, 10)] public float interval;
+        [Range(.1f, 10)] public float gizmoSize = .5f;
 
         public GameObject vehiclePrefab; // public Vehicle vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
         void Start() {
             StartCoroutine(Instantiator());
+        }
+        
+        private void OnDrawGizmos() {
+            Gizmos.color = Color.blue;
+            var position = transform.position;
+            Gizmos.DrawSphere(position, gizmoSize);
         }
 
         IEnumerator Instantiator() {

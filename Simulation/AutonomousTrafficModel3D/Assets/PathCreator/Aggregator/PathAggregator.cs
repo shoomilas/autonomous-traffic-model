@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PathCreator.Aggregator
 {
-    public class PathAggregator : MonoBehaviour {
+    public class PathAggregator : MonoBehaviour, IPathAggregator {
         public List<PathCreation.PathCreator> Paths => GetComponentsInChildren<PathCreation.PathCreator>().ToList();
 
         private void Start()

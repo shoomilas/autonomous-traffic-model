@@ -310,6 +310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 40571787}
+  - component: {fileID: 40571788}
   - component: {fileID: 40571786}
   m_Layer: 0
   m_Name: Path Node 0
@@ -354,6 +355,19 @@ Transform:
   m_Father: {fileID: 875641142}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &40571788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40571785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a62f9212904d5dafa7c01bb983798b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 0.5
 --- !u!1 &92686783
 GameObject:
   m_ObjectHideFlags: 0
@@ -1931,6 +1945,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 0
   interval: 1
+  gizmoSize: 0.5
   vehiclePrefab: {fileID: 1313479542986302751, guid: 059e37dbd741de3488d98d10326ede65, type: 3}
   Vehicles: []
 --- !u!1 &724425136

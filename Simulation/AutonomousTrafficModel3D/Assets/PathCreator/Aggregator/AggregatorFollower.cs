@@ -10,7 +10,7 @@ namespace PathCreator.Aggregator
         [SerializeField, Range(-360,360)] public float additionalYRotation = 90;
         [SerializeField, Range(-360,360)] public float additionalZRotation = 0;
 
-        public PathAggregator Aggregator;
+        public IPathAggregator Aggregator;
         public Transform ObjectToMove; // Or Transform?
         public float speed = 0.3f;
         
