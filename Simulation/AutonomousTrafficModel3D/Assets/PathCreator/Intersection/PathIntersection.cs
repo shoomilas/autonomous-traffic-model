@@ -26,12 +26,8 @@ namespace PathCreator.Intersection {
 
         public void GenerateSplinesBetweenIntersectionNodes(PathNode srcNode, PathNode dstNode, Direction direction) {
             var splineGenerated = srcNode.ConnectNodes(dstNode);
-            srcNode.SplinesOut
-                .Where(splineOutData => splineOutData.spline==splineGenerated)
-                .ToList()
-                .ForEach(_ => {
-                    _.splineDirection = direction;
-                });
+            var generatedSplineOutData = new SplineOutData(splineGenerated, direction, dstNode);
+            srcNode.SplinesOut.Add(generatedSplineOutData);
         }
     }
     
