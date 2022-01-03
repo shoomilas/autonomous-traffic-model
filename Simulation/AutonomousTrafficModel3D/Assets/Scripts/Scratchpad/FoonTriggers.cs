@@ -18,8 +18,6 @@ public class FoonTriggers : MonoBehaviour {
         if(other.name == "BBBB") {
             other.GetComponentInParent<PathFollower>().speed = 20;
         }
-        
-
     }
     
     private void OnTriggerStay(Collider other) {

@@ -1873,6 +1873,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 665415776}
+  - component: {fileID: 665415777}
   - component: {fileID: 665415775}
   m_Layer: 0
   m_Name: PathA
@@ -1916,6 +1917,22 @@ Transform:
   m_Father: {fileID: 875641142}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &665415777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665415774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c919a5986344759abd231aba9a3173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recurring: 0
+  interval: 1
+  vehiclePrefab: {fileID: 1313479542986302751, guid: 059e37dbd741de3488d98d10326ede65, type: 3}
+  Vehicles: []
 --- !u!1 &724425136
 GameObject:
   m_ObjectHideFlags: 0
@@ -2055,7 +2072,7 @@ Transform:
   - {fileID: 1339069139}
   - {fileID: 420267342}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832309429
 GameObject:
@@ -2237,7 +2254,7 @@ Transform:
   - {fileID: 153006672}
   - {fileID: 121488423}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &878856485
 GameObject:
