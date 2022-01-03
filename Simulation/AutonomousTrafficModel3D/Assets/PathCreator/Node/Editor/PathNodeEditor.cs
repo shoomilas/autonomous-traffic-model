@@ -17,7 +17,9 @@ public class PathNodeEditor : Editor {
     const string TextAddPathNode = "Add Spline To PathNode";
     const string TextAddPathNodeAndSelect = "Add Spline To PathNode (and Select)";
     const string TextConnectNodesButton = "Connect chosen PathNode";
-    private const string TextConnectNodesLabel = "Node to connect with:";
+    const string TextUpdateClosestPathNodesButton = "Update Closest Path Nodes";
+    private const string TextUpdateAllPathNodesButton = "[!] Update All Path Nodes";
+    private const string TextConnectNodesLabel = "Node to connect (as next node):";
     
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
@@ -85,10 +87,10 @@ public class PathNodeEditor : Editor {
             PathNode.DeletePathNode(typedTarget);
         }
 
-        if (GUILayout.Button("(TODO) Update Closest Path Nodes")) {
+        if (GUILayout.Button(TextUpdateClosestPathNodesButton)) {
             typedTarget.UpdateClosestSplineConnections();
         }
-        if (GUILayout.Button("(TODO) Update All Path Nodes")) {
+        if (GUILayout.Button(TextUpdateAllPathNodesButton)) {
             PathNode.UpdateAllNodesSplineConnections();
         }
 

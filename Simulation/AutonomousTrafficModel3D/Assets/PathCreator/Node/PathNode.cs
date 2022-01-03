@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PathCreation;
-using PathCreationEditor;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.TestTools;
-using UnityEngineInternal;
-using Object = UnityEngine.Object;
 
 namespace PathCreator.Aggregator {
     [Serializable]
