@@ -5,9 +5,29 @@ using UnityEditor;
 using UnityEngine;
 
 namespace PathCreator.Intersection {
+    public interface IIntersectionGenerator {
+        void RegenerateIntersection(PathIntersection intersection);
+    }
+
+    public class DefaultIntersectionGenerator : IIntersectionGenerator {
+        public void RegenerateIntersection(PathIntersection intersection) {
+            Debug.Log("Default Intersection Generation Happening");
+            
+            // Debug.Log("Regenerating intersection");
+            // // TODO: Connects every connected input to an output in an orderp
+            // // TODO: Generates directions for splines
+            // InputsA?.ForEach(inputA => {
+            //     // OutputsB
+            //     // OutputsC
+            //     // OutputsD
+            // });
+        }
+    }
+    
     public class PathIntersection : MonoBehaviour {
         // IIntersectionQueueHandler handler;
         // List<VehicleIntersectionVisa> VehicleQueue;
+        private IIntersectionGenerator IntersectionGenerator = new DefaultIntersectionGenerator();
         [ItemCanBeNull] public List<PathNode> InputsA;
         [ItemCanBeNull] public List<PathNode> InputsB;
         [ItemCanBeNull] public List<PathNode> InputsC;
@@ -33,7 +53,7 @@ namespace PathCreator.Intersection {
         }
 
         public void RegenerateIntersection() {
-            Debug.Log("Regenerating intersection");
+            IntersectionGenerator.RegenerateIntersection(this);
         }
     }
 }
