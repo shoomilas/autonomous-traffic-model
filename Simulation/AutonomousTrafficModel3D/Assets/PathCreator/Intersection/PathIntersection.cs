@@ -12,18 +12,30 @@ namespace PathCreator.Intersection {
 
     public class DefaultIntersectionGenerator : IIntersectionGenerator {
         public void RegenerateIntersection(PathIntersection intersection) {
-            Debug.Log("Default Intersection Generation Happening");
-            
-            Debug.Log("Regenerating intersection"); // TODO: Connects every connected input to an output in an order
-            // TODO: REMOVE INTERSECTION SPLINES, remove from following and delete spline objects
+            Debug.Log("Default Intersection Generation");
+            // TODO: REMOVE INTERSECTION SPLINES 
             var i = intersection;
-            i.InputsA?.ForEach(inputA => {
-                i.OutputsB?.ForEach(outputB => GenerateSplinesBetweenIntersectionNodes(inputA, outputB, Direction.Right) );
-                i.OutputsC?.ForEach(outputC => GenerateSplinesBetweenIntersectionNodes(inputA, outputC, Direction.Forward) );
-                i.OutputsD?.ForEach(outputD => GenerateSplinesBetweenIntersectionNodes(inputA, outputD, Direction.Left) );
-            });
+            ManyLaneIntersectionGeneratorForGivenInputNodes(i.InputsA, i.OutputsB, i.OutputsC, i.OutputsD);
+            ManyLaneIntersectionGeneratorForGivenInputNodes(i.InputsB, i.OutputsC, i.OutputsD, i.OutputsA);
+            ManyLaneIntersectionGeneratorForGivenInputNodes(i.InputsC, i.OutputsD, i.OutputsA, i.OutputsB);
+            ManyLaneIntersectionGeneratorForGivenInputNodes(i.InputsD, i.OutputsA, i.OutputsB, i.OutputsC);
         }
 
+        private void OneLaneIntersectionGeneratorForGivenInputNode(PathNode inputNode, PathNode outputRight, PathNode outputForward,
+            PathNode outputLeft) {
+            GenerateSplinesBetweenIntersectionNodes(inputNode, outputRight, Direction.Right);
+            GenerateSplinesBetweenIntersectionNodes(inputNode, outputForward, Direction.Forward);
+            GenerateSplinesBetweenIntersectionNodes(inputNode, outputLeft, Direction.Left);
+        }
+
+        private void ManyLaneIntersectionGeneratorForGivenInputNodes(List<PathNode> inputs, List<PathNode> outputsRight, List<PathNode> outputsForward, List<PathNode> outputsLeft) {
+            inputs?.ForEach(inputNode => {
+                outputsRight?.ForEach( outputRight => GenerateSplinesBetweenIntersectionNodes(inputNode, outputRight, Direction.Right) );
+                outputsForward?.ForEach( outputForward => GenerateSplinesBetweenIntersectionNodes(inputNode, outputForward, Direction.Forward) );
+                outputsLeft?.ForEach( outputLeft => GenerateSplinesBetweenIntersectionNodes(inputNode, outputLeft, Direction.Forward) );
+            });
+        }
+        
         public void GenerateSplinesBetweenIntersectionNodes(PathNode srcNode, PathNode dstNode, Direction direction) {
             var splineGenerated = srcNode.ConnectNodes(dstNode);
             var generatedSplineOutData = new SplineOutData(splineGenerated, direction, dstNode);
