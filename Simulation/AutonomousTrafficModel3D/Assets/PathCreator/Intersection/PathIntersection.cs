@@ -13,7 +13,7 @@ namespace PathCreator.Intersection {
         public void RegenerateIntersection(PathIntersection intersection) {
             Debug.Log("Default Intersection Generation Happening");
             
-            // Debug.Log("Regenerating intersection");
+            Debug.Log("Regenerating intersection");
             // // TODO: Connects every connected input to an output in an orderp
             // // TODO: Generates directions for splines
             // InputsA?.ForEach(inputA => {
