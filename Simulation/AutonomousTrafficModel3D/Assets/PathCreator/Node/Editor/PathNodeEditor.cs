@@ -107,24 +107,11 @@ public class PathNodeEditor : Editor {
         GUILayout.EndVertical();
     }
 
-    private void ConnectNodes(PathNode srcNode, PathNode dstNode) {
-        bool isRequestNotValid =
-               srcNode.nextPathNodes.Contains(dstNode)
-                || srcNode.previousPathNodes.Contains(dstNode)
-                || srcNode == null
-                || dstNode == null;
-            
-        if (isRequestNotValid) {
-            Debug.Log("Request not valid");
-            return;
-        }
-        
-        AddSplineBetweenPathNodes(srcNode, dstNode);
-        srcNode.nextPathNodes.Add(dstNode);
-        dstNode.previousPathNodes.Add(srcNode);
+    public void ConnectNodes(PathNode srcNode, PathNode dstNode) {
+        srcNode.ConnectNodes(dstNode);
     }
 
-    private void AddSplineToPathNodeAndSelect(PathNode node) {
+    public void AddSplineToPathNodeAndSelect(PathNode node) {
         var newNode = AddSplineToPathNode(node);
         if (newNode != null) {
             PathNodeHelper.SelectObject(newNode.gameObject);

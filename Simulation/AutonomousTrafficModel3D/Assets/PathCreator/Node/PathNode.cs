@@ -101,6 +101,26 @@ namespace PathCreator.Aggregator {
                 DestroyImmediate(oldSpline.gameObject);
             });
         }
+
+        public PathCreation.PathCreator ConnectNodes(PathNode dstNode) {
+            bool isRequestNotValid =
+                this.nextPathNodes.Contains(dstNode)
+                || this.previousPathNodes.Contains(dstNode)
+                || this == null
+                || dstNode == null;
+
+            if (isRequestNotValid) {
+                Debug.Log("Request not valid");
+                return null;
+            }
+
+            var createdSpline = AddSplineBetweenPathNodes(this, dstNode);
+            this.nextPathNodes.Add(dstNode);
+            dstNode.previousPathNodes.Add(this);
+            return createdSpline;
+        }
+
+
         public PathCreation.PathCreator AddSplineBetweenPathNodes(PathNode node1, PathNode node2) {
             var pos1 = node1.transform.position;
             var pos2 = node2.transform.position;

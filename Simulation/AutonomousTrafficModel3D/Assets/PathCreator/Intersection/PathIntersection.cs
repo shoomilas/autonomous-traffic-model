@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using PathCreator.Aggregator;
 using UnityEditor;
@@ -13,14 +14,24 @@ namespace PathCreator.Intersection {
         public void RegenerateIntersection(PathIntersection intersection) {
             Debug.Log("Default Intersection Generation Happening");
             
-            Debug.Log("Regenerating intersection");
-            // // TODO: Connects every connected input to an output in an orderp
-            // // TODO: Generates directions for splines
-            // InputsA?.ForEach(inputA => {
-            //     // OutputsB
-            //     // OutputsC
-            //     // OutputsD
-            // });
+            Debug.Log("Regenerating intersection"); // TODO: Connects every connected input to an output in an order
+            // TODO: REMOVE INTERSECTION SPLINES, remove from following and delete spline objects
+            var i = intersection;
+            i.InputsA?.ForEach(inputA => {
+                i.OutputsB?.ForEach(outputB => GenerateSplinesBetweenIntersectionNodes(inputA, outputB, Direction.Right) );
+                i.OutputsC?.ForEach(outputC => GenerateSplinesBetweenIntersectionNodes(inputA, outputC, Direction.Forward) );
+                i.OutputsD?.ForEach(outputD => GenerateSplinesBetweenIntersectionNodes(inputA, outputD, Direction.Left) );
+            });
+        }
+
+        public void GenerateSplinesBetweenIntersectionNodes(PathNode srcNode, PathNode dstNode, Direction direction) {
+            var splineGenerated = srcNode.ConnectNodes(dstNode);
+            srcNode.SplinesOut
+                .Where(splineOutData => splineOutData.spline==splineGenerated)
+                .ToList()
+                .ForEach(_ => {
+                    _.splineDirection = direction;
+                });
         }
     }
     
