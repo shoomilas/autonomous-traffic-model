@@ -2,14 +2,11 @@
 
 namespace PathCreator.Vehicles {
     public class VehicleDestroyer : MonoBehaviour {
-        // TODO: sphere/cube of given size
-        // TODO: Destroys spawned vehicles upon reaching 
         [Range(.1f, 10)] public float size = .5f;
 
         private void OnDrawGizmos() {
             Gizmos.color = Color.red;
             var position = transform.position;
-            // Gizmos.DrawSphere(position, size);
             Gizmos.DrawCube(position, Vector3.one*size);
         }
 
@@ -20,7 +17,7 @@ namespace PathCreator.Vehicles {
         }
         private void OnTriggerEnter(Collider other) {
             Debug.Log("Entered");
-            // var boo = GetComponent<FoonTriggers>() as PathFollower;
+            Destroy(other.gameObject);
             // var boo = GetComponent(other.name) as PathFollower;
             // var obj = new GameObject(other.name, typeof(PathFollower));
             // var rb = obj.GetComponent<PathFollower>();

@@ -38,6 +38,7 @@ namespace PathCreator.Vehicles {
         IEnumerator Instantiator() {
             var position = transform.position;
             var vehicle = Instantiate(vehiclePrefab, position + Vector3.one, Quaternion.identity);
+            yield return new WaitForSeconds(interval);
             vehicle.AddComponent<Rigidbody>();
             yield return new WaitForSeconds(interval);
             
