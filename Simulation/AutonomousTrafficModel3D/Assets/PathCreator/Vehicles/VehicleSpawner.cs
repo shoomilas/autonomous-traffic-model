@@ -41,11 +41,10 @@ namespace PathCreator.Vehicles {
             yield return new WaitForSeconds(interval);
             vehicle.AddComponent<Rigidbody>();
             yield return new WaitForSeconds(interval);
-            
-            // for (int i = 0;i<hardInstantiationLimit;) {
-            //     if((i < 1) || recurring ) { // Makes 
+            // if (recurring) {
+            //     for (int i = 1; i < hardInstantiationLimit; i++) {
             //         position += Vector3.one * i;
-            //         var vehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
+            //         var anotherVehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
             //         i++;
             //         yield return new WaitForSeconds(interval);
             //     }
