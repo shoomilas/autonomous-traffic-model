@@ -1975,7 +1975,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 0
   hardInstantiationLimit: 10
-  interval: 1
+  interval: 0.5
   gizmoSize: 0.5
   vehiclePrefab: {fileID: 1313479542986302751, guid: 059e37dbd741de3488d98d10326ede65, type: 3}
   Vehicles: []
