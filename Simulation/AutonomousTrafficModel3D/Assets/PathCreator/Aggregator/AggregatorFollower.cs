@@ -49,7 +49,7 @@ namespace PathCreator.Aggregator
                 updateLocked = false;
             }
             if ( pathPercentage > updateLockUpperLimit && (!updateLocked)) {
-                Debug.Log("NOW");
+                // Debug.Log("NOW");
                 updateLocked = true;
                 splineIndex += 1;
             }
@@ -59,7 +59,7 @@ namespace PathCreator.Aggregator
         {
             // if(splineIndex == 0) {}
             if (splineIndex < (Aggregator.Paths.Count)) {
-                Debug.Log($"Aggregator.Paths.Count: {Aggregator.Paths.Count} | SplineIndex: {splineIndex}");
+                // Debug.Log($"Aggregator.Paths.Count: {Aggregator.Paths.Count} | SplineIndex: {splineIndex}");
                 var pathCreator = Aggregator.Paths[splineIndex]; // currentPathCreator
                 moveObject(pathCreator);
                 actionOnEnd(pathCreator);
