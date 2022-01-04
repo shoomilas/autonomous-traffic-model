@@ -37,14 +37,17 @@ namespace PathCreator.Vehicles {
 
         IEnumerator Instantiator() {
             var position = transform.position;
-            for (int i = 0;i<hardInstantiationLimit;) {
-                if((i < 1) || recurring ) { // Makes 
-                    position += Vector3.one * i;
-                    var vehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
-                    i++;
-                    yield return new WaitForSeconds(interval);
-                }
-            }
+            Instantiate(vehiclePrefab, position + Vector3.one, Quaternion.identity);
+            yield return new WaitForSeconds(interval);
+            
+            // for (int i = 0;i<hardInstantiationLimit;) {
+            //     if((i < 1) || recurring ) { // Makes 
+            //         position += Vector3.one * i;
+            //         var vehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
+            //         i++;
+            //         yield return new WaitForSeconds(interval);
+            //     }
+            // }
         }
     }
 }
