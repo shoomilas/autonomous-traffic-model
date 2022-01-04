@@ -18,9 +18,9 @@ namespace PathCreator.Vehicles {
     }
 
     public class VehicleSpawner : MonoBehaviour {
-        public bool recurring;
-        public int hardInstantiationLimit = 20;
-        [Range(.1f, 10)] public float interval;
+        public bool recurring = false;
+        public int hardInstantiationLimit = 5;
+        [Range(.1f, 10)] public float interval = 1;
         [Range(.1f, 10)] public float gizmoSize = .5f;
 
         public GameObject vehiclePrefab; // public Vehicle vehiclePrefab;
@@ -37,15 +37,14 @@ namespace PathCreator.Vehicles {
 
         IEnumerator Instantiator() {
             var position = transform.position;
-            yield return new WaitForSeconds(10);
-            // for (int i = 0;i<hardInstantiationLimit;) {
-            //     if((i < 1) || recurring ) { // Makes 
-            //         position += Vector3.one * i;
-            //         var vehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
-            //         i++;
-            //         yield return new WaitForSeconds(interval);
-            //     }
-            // }
+            for (int i = 0;i<hardInstantiationLimit;) {
+                if((i < 1) || recurring ) { // Makes 
+                    position += Vector3.one * i;
+                    var vehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
+                    i++;
+                    yield return new WaitForSeconds(interval);
+                }
+            }
         }
     }
 }
