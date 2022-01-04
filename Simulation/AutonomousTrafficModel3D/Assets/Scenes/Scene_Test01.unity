@@ -833,7 +833,7 @@ Transform:
   m_GameObject: {fileID: 649064336}
   m_LocalRotation: {x: -0, y: -0.7078416, z: -0, w: 0.7063713}
   m_LocalPosition: {x: 21.83, y: 1.4500003, z: 0}
-  m_LocalScale: {x: 2.6364875, y: 1.3487948, z: 5.3841524}
+  m_LocalScale: {x: 1.4336507, y: 0.9511431, z: 2.9734564}
   m_Children: []
   m_Father: {fileID: 1098938840}
   m_RootOrder: 2
@@ -853,7 +853,7 @@ MonoBehaviour:
   isGrounded: 0
   fallSpeed: 10
   speed: 0
-  speedMax: 12
+  speedMax: 5
   speedMin: 0
   acceleration: 30
   brakeSpeed: 100
@@ -888,6 +888,9 @@ MonoBehaviour:
   PointsToFollow:
   - {fileID: 103868775}
   - {fileID: 1485480912}
+  - {fileID: 1524760930}
+  - {fileID: 1016762702}
+  - {fileID: 532808729}
   CurrentPoint: {fileID: 0}
   CurrentDriveStatus: 0
 --- !u!65 &649064340
