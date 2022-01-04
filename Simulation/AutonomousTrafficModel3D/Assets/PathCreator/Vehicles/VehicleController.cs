@@ -35,7 +35,7 @@ public class VehicleController : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        // GroundCheckAndSetEnabled();
+        GroundCheckAndSetEnabled();
     }
 
     public void GroundCheckAndSetEnabled() {
