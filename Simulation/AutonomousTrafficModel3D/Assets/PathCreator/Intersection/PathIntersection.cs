@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using JetBrains.Annotations;
 using PathCreator.Aggregator;
+using UnityEditor;
 using UnityEngine;
 
 namespace PathCreator.Intersection {
     public interface IIntersectionGenerator {
         void RegenerateIntersection(PathIntersection intersection);
+        void RemoveIntersectionSplines(PathIntersection intersection);
     }
 
     public class DefaultIntersectionGenerator : IIntersectionGenerator {
         public void RegenerateIntersection(PathIntersection intersection) {
             Debug.Log("Default Intersection Generation");
-            // TODO: REMOVE INTERSECTION SPLINES 
             var i = intersection;
+            RemoveIntersectionSplines(i); // TODO: REMOVE INTERSECTION SPLINES
             ManyLaneIntersectionGeneratorForGivenInputNodes(i.InputsA,
                 i.OutputsB,
                 i.OutputsC,
@@ -29,6 +33,16 @@ namespace PathCreator.Intersection {
                 i.OutputsA,
                 i.OutputsB,
                 i.OutputsC);
+        }
+
+        public void RemoveIntersectionSplines(PathIntersection intersection) {
+            intersection.InputsA?.ForEach(inputNode => {
+                inputNode.SplinesOut?.ForEach(splineOutData => {
+                    Undo.RecordObject(inputNode,"Remove a splineOutData path node entry");
+                    Undo.DestroyObjectImmediate(splineOutData.spline.gameObject);
+                    inputNode.SplinesOut.Remove(splineOutData);
+                });
+            });
         }
 
         private void OneLaneIntersectionGeneratorForGivenInputNode(PathNode inputNode, PathNode outputRight,
@@ -86,6 +100,10 @@ namespace PathCreator.Intersection {
 
         public void RegenerateIntersection() {
             IntersectionGenerator.RegenerateIntersection(this);
+        }
+
+        public void RemoveIntersectionSplines() {
+            IntersectionGenerator.RemoveIntersectionSplines(this);
         }
     }
 }
