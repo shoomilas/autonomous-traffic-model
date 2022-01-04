@@ -41,14 +41,14 @@ namespace PathCreator.Vehicles {
             yield return new WaitForSeconds(interval);
             vehicle.AddComponent<Rigidbody>();
             yield return new WaitForSeconds(interval);
-            // if (recurring) {
-            //     for (int i = 1; i < hardInstantiationLimit; i++) {
-            //         position += Vector3.one * i;
-            //         var anotherVehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
-            //         i++;
-            //         yield return new WaitForSeconds(interval);
-            //     }
-            // }
+            if (recurring) {
+                for (int i = 1; i < hardInstantiationLimit; i++) {
+                    position += Vector3.one * i;
+                    var anotherVehicle = Instantiate(vehiclePrefab, position, Quaternion.identity);
+                    i++;
+                    yield return new WaitForSeconds(interval);
+                }
+            }
         }
     }
 }
