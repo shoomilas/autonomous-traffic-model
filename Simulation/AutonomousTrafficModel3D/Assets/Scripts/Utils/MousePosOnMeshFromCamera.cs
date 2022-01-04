@@ -4,29 +4,26 @@ using UnityEngine;
 
 public class MousePosOnMeshFromCamera : MonoBehaviour
 {
-    public class CarAITargetMouse : MonoBehaviour {
+    [SerializeField] private Transform targetTransform;
+    [SerializeField]
+    private MeshCollider meshCollider;
+    Vector3 worldPosition;
+    Ray ray;
 
-        [SerializeField] private Transform targetTransform;
-        [SerializeField]
-        private MeshCollider meshCollider;
-        Vector3 worldPosition;
-        Ray ray;
+    void Start() {
+        meshCollider = meshCollider.GetComponent<MeshCollider>();
+    }
 
-        void Start() {
-            meshCollider = meshCollider.GetComponent<MeshCollider>();
-        }
+    void Update()
+    {
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitData;
 
-        void Update()
+        if(meshCollider.Raycast(ray, out hitData, 1000))
         {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitData;
-
-            if(meshCollider.Raycast(ray, out hitData, 1000))
-            {
-                worldPosition = hitData.point;
-                if (targetTransform != null) {
-                    targetTransform.position = worldPosition; 
-                }
+            worldPosition = hitData.point;
+            if (targetTransform != null) {
+                targetTransform.position = worldPosition; 
             }
         }
     }
