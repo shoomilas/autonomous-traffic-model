@@ -36,13 +36,22 @@ namespace PathCreator.Intersection {
         }
 
         public void RemoveIntersectionSplines(PathIntersection intersection) {
-            intersection.InputsA?.ForEach(inputNode => {
-                inputNode.SplinesOut?.ForEach(splineOutData => {
-                    Undo.RecordObject(inputNode,"Remove a splineOutData path node entry");
-                    Undo.DestroyObjectImmediate(splineOutData.spline.gameObject);
-                    inputNode.SplinesOut.Remove(splineOutData);
-                });
-            });
+            intersection.InputsA?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
+            intersection.InputsB?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
+            intersection.InputsC?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
+            intersection.InputsD?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
+        }
+
+        public void RemoveSplinesForSinglePathNode(PathNode pathNode) {
+            var toRemove = new List<SplineOutData>();
+            foreach (var splineOutData in pathNode.SplinesOut) {
+                Undo.RecordObject(pathNode,"Remove a splineOutData path node entry");
+                Undo.DestroyObjectImmediate(splineOutData.spline.gameObject);
+                toRemove.Add(splineOutData);
+            }
+            foreach (var splineOutData in toRemove) {
+                pathNode.SplinesOut.Remove(splineOutData);
+            }
         }
 
         private void OneLaneIntersectionGeneratorForGivenInputNode(PathNode inputNode, PathNode outputRight,
