@@ -12,6 +12,7 @@ namespace PathCreator.Intersection {
     public interface IIntersectionGenerator {
         void RegenerateIntersection(PathIntersection intersection);
         void RemoveIntersectionSplines(PathIntersection intersection);
+        void ReanchorPathNodesToIntersection(PathIntersectionPositionManger positionManager);
     }
 
     public class DefaultIntersectionGenerator : IIntersectionGenerator {
@@ -88,9 +89,16 @@ namespace PathCreator.Intersection {
             var generatedSplineOutData = new SplineOutData(splineGenerated, direction, dstNode);
             srcNode.SplinesOut.Add(generatedSplineOutData);
         }
+        
+        public void ReanchorPathNodesToIntersection(PathIntersectionPositionManger positionManager) {
+            
+        }  
     }
 
     public class PathIntersection : MonoBehaviour {
+        // IIntersectionQueueHandler handler;
+        // List<VehicleIntersectionVisa> VehicleQueue;
+        [Range(0.3f, 20f)] public float size = 5f;
         [ItemCanBeNull] public List<PathNode> InputsA;
         [ItemCanBeNull] public List<PathNode> InputsB;
         [ItemCanBeNull] public List<PathNode> InputsC;
@@ -99,14 +107,8 @@ namespace PathCreator.Intersection {
         [ItemCanBeNull] public List<PathNode> OutputsB;
         [ItemCanBeNull] public List<PathNode> OutputsC;
         [ItemCanBeNull] public List<PathNode> OutputsD;
-
-        [Range(0.3f, 20f)] public float size = 5f;
-
-        // IIntersectionQueueHandler handler;
-        // List<VehicleIntersectionVisa> VehicleQueue;
         private readonly IIntersectionGenerator IntersectionGenerator = new DefaultIntersectionGenerator();
-        // public Vector3 intersectionSize = new Vector3(defaultSize, defaultSize, defaultSize);
-
+        
         private void OnDrawGizmos() {
             var pos = transform.position;
             var ySize = size /2;
@@ -116,8 +118,6 @@ namespace PathCreator.Intersection {
             Gizmos.color = Color.gray;
             posVector = pos - Vector3.up * (ySize/2);
             Gizmos.DrawWireCube(posVector, sizeVector);
-            // Gizmos.DrawWireSphere( pos, size*2); // TODO: These will come with the handler though
-            // Gizmos.DrawWireSphere( pos, size);
         }
 
         public void RegenerateIntersection() {
@@ -128,11 +128,8 @@ namespace PathCreator.Intersection {
             IntersectionGenerator.RemoveIntersectionSplines(this);
         }
 
-        public void IntersectionVertices() {
-            var center = transform.position;
-            var rotation = transform.rotation;
-            var vertex1 = center + Vector3.forward * (size / 2) + Vector3.right * (size / 2);
-            Handles.DrawLine(vertex1+Vector3.up, vertex1 + Vector3.down);
+        public void AnchorPathNodesToIntersection(PathIntersectionPositionManger positionManager) {
+            IntersectionGenerator.ReanchorPathNodesToIntersection(positionManager);
         }
     }
 }

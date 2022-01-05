@@ -9,7 +9,8 @@ namespace DefaultNamespace {
     public class PathIntersectionEditor : Editor {
         private const string TextRegenerateIntersectionButton = "Regenerate Intersection";
         private const string TextRemoveIntersectionSplinesButton = "Remove Intersection Splines";
-        public PathIntersectionPositionManger _positionManger;
+        private const string TextAnchorPathNodesButton = "Anchor Path Nodes";
+        public PathIntersectionPositionManger PositionManager;
         private PathIntersection typedTarget;
         public override void OnInspectorGUI() {            
             base.OnInspectorGUI();
@@ -19,6 +20,9 @@ namespace DefaultNamespace {
             }
             if (GUILayout.Button(TextRemoveIntersectionSplinesButton)) {
                 typedTarget.RemoveIntersectionSplines();
+            }
+            if (GUILayout.Button(TextAnchorPathNodesButton)) {
+                typedTarget.AnchorPathNodesToIntersection(PositionManager);
             }
         }
         private void OnEnable()
@@ -50,20 +54,20 @@ namespace DefaultNamespace {
         }
 
         private void DrawHandles() {
-            if (_positionManger == null) {
-                _positionManger = typedTarget.GetComponent<PathIntersectionPositionManger>();
-                _positionManger = _positionManger.PrepData();
+            if (PositionManager == null) {
+                PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
+                PositionManager = PositionManager.PrepData();
             }
-            if (Event.current.type == EventType.Repaint && _positionManger != null) {
+            if (Event.current.type == EventType.Repaint && PositionManager != null) {
                 var sizeOfInMark = .2f;
                 Handles.color = Color.gray;
-                Handles.DrawLine(_positionManger.Sides.A, _positionManger.Sides.C);
-                Handles.DrawLine(_positionManger.Sides.B, _positionManger.Sides.D);
-                Handles.Label(_positionManger.Sides.A, "A");
-                Handles.Label(_positionManger.Sides.B, "B");
-                Handles.Label(_positionManger.Sides.C, "C");
-                Handles.Label(_positionManger.Sides.D, "D");
-                DrawInOutMarks(_positionManger.InsOuts, sizeOfInMark);
+                Handles.DrawLine(PositionManager.Sides.A, PositionManager.Sides.C);
+                Handles.DrawLine(PositionManager.Sides.B, PositionManager.Sides.D);
+                Handles.Label(PositionManager.Sides.A, "A");
+                Handles.Label(PositionManager.Sides.B, "B");
+                Handles.Label(PositionManager.Sides.C, "C");
+                Handles.Label(PositionManager.Sides.D, "D");
+                DrawInOutMarks(PositionManager.InsOuts, sizeOfInMark);
             }
         }
     }
