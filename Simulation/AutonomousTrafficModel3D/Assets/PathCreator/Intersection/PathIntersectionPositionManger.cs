@@ -4,7 +4,6 @@ using System.Linq;
 using PathCreator.Aggregator;
 using PathCreator.Intersection;
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 [Serializable]
 public class IntersectionSides {
@@ -34,9 +33,7 @@ public class IntersectionInsOuts {
     public List<Vector3> OutsD;
 }
 
-public class PathIntersectionPositionManger : MonoBehaviour
-{
-    // gets intersection component, computes stuff based on that
+public class PathIntersectionPositionManger : MonoBehaviour {
     public PathIntersection Intersection;
     public Vector3 Center;
     public float Size;
@@ -63,7 +60,7 @@ public class PathIntersectionPositionManger : MonoBehaviour
             Center + Vector3.right * Size,
             Center + Vector3.forward * Size
         );
-        return new IntersectionSides()
+        return new IntersectionSides
         {
             A = a,
             B = b,
@@ -79,7 +76,7 @@ public class PathIntersectionPositionManger : MonoBehaviour
             Sides.C + Vector3.forward * Size,
             Sides.D + Vector3.left * Size
         );
-        return new IntersectionCorners()
+        return new IntersectionCorners
         {
             AB = ab,
             BC = bc,
@@ -87,14 +84,14 @@ public class PathIntersectionPositionManger : MonoBehaviour
             DA = da
         };
     }
-    
+
     public IntersectionInsOuts ComputeInsOuts() {
         // TODO: Current assumption is that every intersection has the same number of lanes on each entry lane
         // In case of ever extending this to different types of intersections:
         // 1. adjust size of the intersection 2. Accomodate the difference in Sides and Corners computation
         // 3. Change this method as well.
-        
-        List<List<PathNode>> insAndOuts = new List<List<PathNode>>()
+
+        var insAndOuts = new List<List<PathNode>>
         {
             Intersection.InputsA,
             Intersection.InputsB,
@@ -103,7 +100,7 @@ public class PathIntersectionPositionManger : MonoBehaviour
             Intersection.OutputsA,
             Intersection.OutputsB,
             Intersection.OutputsC,
-            Intersection.OutputsD,
+            Intersection.OutputsD
         };
 
         var goo = new List<PathNode>();
@@ -125,13 +122,10 @@ public class PathIntersectionPositionManger : MonoBehaviour
         };
     }
 
-		private List<Vector3> GeneratePathNodePositions(int pointsCount, float distance, Vector3 srcPoint, Vector3 direction) {
-			var positions = new List<Vector3>();
-			var currentPos = srcPoint;
-			for (int i = 0; i < pointsCount; i++) {
-				positions.Add(srcPoint + direction * distance);
-			}
-
-			return positions;
-		}
+    private List<Vector3> GeneratePathNodePositions(int pointsCount, float distance, Vector3 srcPoint,
+        Vector3 direction) {
+        var positions = new List<Vector3>();
+        for (var i = 0; i < pointsCount; i++) positions.Add(srcPoint + direction * distance * (i + 1));
+        return positions;
+    }
 }
