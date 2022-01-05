@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using JetBrains.Annotations;
 using PathCreator.Aggregator;
 using UnityEditor;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace PathCreator.Intersection {
     public interface IIntersectionGenerator {
@@ -103,7 +105,6 @@ namespace PathCreator.Intersection {
         // IIntersectionQueueHandler handler;
         // List<VehicleIntersectionVisa> VehicleQueue;
         private readonly IIntersectionGenerator IntersectionGenerator = new DefaultIntersectionGenerator();
-
         // public Vector3 intersectionSize = new Vector3(defaultSize, defaultSize, defaultSize);
 
         private void OnDrawGizmos() {
@@ -113,6 +114,8 @@ namespace PathCreator.Intersection {
             // Gizmos.DrawWireSphere( pos, size*2); // TODO: These will come with the handler though
             // Gizmos.DrawWireSphere( pos, size);
         }
+        
+        
 
         public void RegenerateIntersection() {
             IntersectionGenerator.RegenerateIntersection(this);
@@ -120,6 +123,13 @@ namespace PathCreator.Intersection {
 
         public void RemoveIntersectionSplines() {
             IntersectionGenerator.RemoveIntersectionSplines(this);
+        }
+
+        public void IntersectionVertices() {
+            var center = transform.position;
+            var rotation = transform.rotation;
+            var vertex1 = center + Vector3.forward * (size / 2) + Vector3.right * (size / 2);
+            Handles.DrawLine(vertex1+Vector3.up, vertex1 + Vector3.down);
         }
     }
 }
