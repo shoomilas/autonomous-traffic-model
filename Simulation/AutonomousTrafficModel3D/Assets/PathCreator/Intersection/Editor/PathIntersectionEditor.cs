@@ -13,6 +13,7 @@ namespace DefaultNamespace {
         public PathIntersectionPositionManger PositionManager;
         public IntersectionPositionData PositionData;
         private PathIntersection typedTarget;
+        private bool keepHandlesWhenDeselected = true;
         public override void OnInspectorGUI() {            
             base.OnInspectorGUI();
             
@@ -44,7 +45,9 @@ namespace DefaultNamespace {
         }
         
         private void OnDisable() {
-            SceneView.duringSceneGui -= CustomOnSceneGUI;
+            if(!keepHandlesWhenDeselected) {
+                SceneView.duringSceneGui -= CustomOnSceneGUI;
+            }
         }
         
         private void CustomOnSceneGUI(SceneView view) {
@@ -67,7 +70,8 @@ namespace DefaultNamespace {
         }
 
         private void DrawHandles() {
-            if (Event.current.type == EventType.Repaint && PositionData != null) {
+            if (Event.current.type == EventType.Repaint && PositionManager != null) {
+                PositionData = PositionManager.PrepData(typedTarget);
                 var sizeOfInMark = .2f;
                 Handles.color = Color.gray;
                 Handles.DrawLine(PositionData.Sides.A, PositionData.Sides.C);
@@ -77,6 +81,16 @@ namespace DefaultNamespace {
                 Handles.Label(PositionData.Sides.C, "C");
                 Handles.Label(PositionData.Sides.D, "D");
                 DrawInOutMarks(PositionData.InsOuts, sizeOfInMark);
+                
+                Handles.color = Color.white;
+                var pos = typedTarget.transform.position;
+                var ySize = typedTarget.size /2;
+                var sizeVector = new Vector3(typedTarget.size*2, ySize, typedTarget.size*2);
+                var posVector = pos + Vector3.up * (ySize/2);
+                Handles.DrawWireCube(posVector, sizeVector);
+                Handles.color = Color.gray;
+                posVector = pos - Vector3.up * (ySize/2);
+                Handles.DrawWireCube(posVector, sizeVector);
             }
         }
     }

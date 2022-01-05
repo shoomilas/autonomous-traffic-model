@@ -110,14 +110,14 @@ namespace PathCreator.Intersection {
         private readonly IIntersectionGenerator IntersectionGenerator = new DefaultIntersectionGenerator();
         
         private void OnDrawGizmos() {
-            var pos = transform.position;
-            var ySize = size /2;
-            var sizeVector = new Vector3(size*2, ySize, size*2);
-            var posVector = pos + Vector3.up * (ySize/2);
-            Gizmos.DrawWireCube(posVector, sizeVector);
-            Gizmos.color = Color.gray;
-            posVector = pos - Vector3.up * (ySize/2);
-            Gizmos.DrawWireCube(posVector, sizeVector);
+            // var pos = transform.position;
+            // var ySize = size /2;
+            // var sizeVector = new Vector3(size*2, ySize, size*2);
+            // var posVector = pos + Vector3.up * (ySize/2);
+            // Gizmos.DrawWireCube(posVector, sizeVector);
+            // Gizmos.color = Color.gray;
+            // posVector = pos - Vector3.up * (ySize/2);
+            // Gizmos.DrawWireCube(posVector, sizeVector);
         }
 
         public void RegenerateIntersection() {

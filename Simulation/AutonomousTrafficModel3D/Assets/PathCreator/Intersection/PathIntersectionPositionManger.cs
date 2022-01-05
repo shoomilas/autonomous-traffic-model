@@ -52,7 +52,6 @@ public class PathIntersectionPositionManger : MonoBehaviour {
 
     private void Start() {
         Intersection = gameObject.GetComponent<PathIntersection>();
-        Debug.Log($"Start(): {Intersection}");
         PrepData(Intersection);
     }
 
