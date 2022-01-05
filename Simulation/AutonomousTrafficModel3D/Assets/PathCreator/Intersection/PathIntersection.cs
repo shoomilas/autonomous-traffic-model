@@ -91,7 +91,7 @@ namespace PathCreator.Intersection {
         }
         
         public void ReanchorPathNodesToIntersection(PathIntersectionPositionManger positionManager) {
-            
+            return;
         }  
     }
 

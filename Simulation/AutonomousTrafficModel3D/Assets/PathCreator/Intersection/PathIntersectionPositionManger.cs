@@ -33,6 +33,15 @@ public class IntersectionInsOuts {
     public List<Vector3> OutsD;
 }
 
+[Serializable]
+public class IntersectionPositionData {
+    public Vector3 Center;
+    public float Size;
+    public IntersectionSides Sides;
+    public IntersectionCorners Corners;
+    public IntersectionInsOuts InsOuts;
+}
+
 public class PathIntersectionPositionManger : MonoBehaviour {
     public PathIntersection Intersection;
     public Vector3 Center;
@@ -42,16 +51,26 @@ public class PathIntersectionPositionManger : MonoBehaviour {
     public IntersectionInsOuts InsOuts;
 
     private void Start() {
-        PrepData();
+        Intersection = gameObject.GetComponent<PathIntersection>();
+        Debug.Log($"Start(): {Intersection}");
+        PrepData(Intersection);
     }
 
-    public PathIntersectionPositionManger PrepData() {
+    public IntersectionPositionData PrepData(PathIntersection intersection) {
+        Intersection = intersection;
         Center = Intersection.transform.position;
         Size = Intersection.size;
         Sides = ComputeSides();
         Corners = ComputeCorners();
         InsOuts = ComputeInsOuts();
-        return this;
+        return new IntersectionPositionData()
+        {
+            Center = Center,
+            Size = Size,
+            Sides = Sides,
+            Corners = Corners,
+            InsOuts = InsOuts
+        };
     }
 
     public IntersectionSides ComputeSides() {

@@ -11,22 +11,35 @@ namespace DefaultNamespace {
         private const string TextRemoveIntersectionSplinesButton = "Remove Intersection Splines";
         private const string TextAnchorPathNodesButton = "Anchor Path Nodes";
         public PathIntersectionPositionManger PositionManager;
+        public IntersectionPositionData PositionData;
         private PathIntersection typedTarget;
         public override void OnInspectorGUI() {            
             base.OnInspectorGUI();
-            typedTarget = (PathIntersection)target; 
+            
             if (GUILayout.Button(TextRegenerateIntersectionButton)) {
                 typedTarget.RegenerateIntersection();
             }
             if (GUILayout.Button(TextRemoveIntersectionSplinesButton)) {
                 typedTarget.RemoveIntersectionSplines();
             }
-            if (GUILayout.Button(TextAnchorPathNodesButton)) {
-                typedTarget.AnchorPathNodesToIntersection(PositionManager);
-            }
+            // if (GUILayout.Button(TextAnchorPathNodesButton)) {
+            //     typedTarget.AnchorPathNodesToIntersection(PositionManager);
+            // }
         }
+
         private void OnEnable()
         {
+            Debug.Log("PathIntersectionEditorEnabled");
+            typedTarget = (PathIntersection)target;
+            PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
+            if(PositionManager != null)
+            {
+                Debug.Log("Prepped Position Manager Data");
+                Debug.Log($"TYPED TARGET: {typedTarget}");
+                Debug.Log($"POSITION MANAGER: {PositionManager}");
+                
+                PositionData = PositionManager.PrepData(typedTarget);
+            }
             SceneView.duringSceneGui += CustomOnSceneGUI;
         }
         
@@ -54,20 +67,16 @@ namespace DefaultNamespace {
         }
 
         private void DrawHandles() {
-            if (PositionManager == null) {
-                PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
-                PositionManager = PositionManager.PrepData();
-            }
-            if (Event.current.type == EventType.Repaint && PositionManager != null) {
+            if (Event.current.type == EventType.Repaint && PositionData != null) {
                 var sizeOfInMark = .2f;
                 Handles.color = Color.gray;
-                Handles.DrawLine(PositionManager.Sides.A, PositionManager.Sides.C);
-                Handles.DrawLine(PositionManager.Sides.B, PositionManager.Sides.D);
-                Handles.Label(PositionManager.Sides.A, "A");
-                Handles.Label(PositionManager.Sides.B, "B");
-                Handles.Label(PositionManager.Sides.C, "C");
-                Handles.Label(PositionManager.Sides.D, "D");
-                DrawInOutMarks(PositionManager.InsOuts, sizeOfInMark);
+                Handles.DrawLine(PositionData.Sides.A, PositionData.Sides.C);
+                Handles.DrawLine(PositionData.Sides.B, PositionData.Sides.D);
+                Handles.Label(PositionData.Sides.A, "A");
+                Handles.Label(PositionData.Sides.B, "B");
+                Handles.Label(PositionData.Sides.C, "C");
+                Handles.Label(PositionData.Sides.D, "D");
+                DrawInOutMarks(PositionData.InsOuts, sizeOfInMark);
             }
         }
     }

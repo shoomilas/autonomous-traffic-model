@@ -1451,8 +1451,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 567868696}
-  - component: {fileID: 567868697}
   - component: {fileID: 567868698}
+  - component: {fileID: 567868697}
   m_Layer: 0
   m_Name: Intersection
   m_TagString: Untagged
@@ -1486,6 +1486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed9f4750d4754c2890f404e0f70ef519, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 2.5
   InputsA:
   - {fileID: 229909410}
   InputsB:
@@ -1502,7 +1503,6 @@ MonoBehaviour:
   - {fileID: 242459691}
   OutputsD:
   - {fileID: 1751066336}
-  size: 5
 --- !u!114 &567868698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1516,27 +1516,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Intersection: {fileID: 567868697}
-  Center: {x: 0, y: 0, z: 0}
-  Size: 0
+  Center: {x: 1.1222992, y: -7.4195557, z: 25.982422}
+  Size: 2.5
   Sides:
-    A: {x: 0, y: 0, z: 0}
-    B: {x: 0, y: 0, z: 0}
-    C: {x: 0, y: 0, z: 0}
-    D: {x: 0, y: 0, z: 0}
+    A: {x: -1.3777008, y: -7.4195557, z: 25.982422}
+    B: {x: 1.1222992, y: -7.4195557, z: 23.482422}
+    C: {x: 3.6222992, y: -7.4195557, z: 25.982422}
+    D: {x: 1.1222992, y: -7.4195557, z: 28.482422}
   Corners:
-    AB: {x: 0, y: 0, z: 0}
-    BC: {x: 0, y: 0, z: 0}
-    CD: {x: 0, y: 0, z: 0}
-    DA: {x: 0, y: 0, z: 0}
+    AB: {x: -1.3777008, y: -7.4195557, z: 23.482422}
+    BC: {x: 3.6222992, y: -7.4195557, z: 23.482422}
+    CD: {x: 3.6222992, y: -7.4195557, z: 28.482422}
+    DA: {x: -1.3777008, y: -7.4195557, z: 28.482422}
   InsOuts:
-    InsA: []
-    InsB: []
-    InsC: []
-    InsD: []
-    OutsA: []
-    OutsB: []
-    OutsC: []
-    OutsD: []
+    InsA:
+    - {x: -1.3777008, y: -7.4195557, z: 24.732422}
+    InsB:
+    - {x: 2.3722992, y: -7.4195557, z: 23.482422}
+    InsC:
+    - {x: 3.6222992, y: -7.4195557, z: 27.232422}
+    InsD:
+    - {x: -0.1277008, y: -7.4195557, z: 28.482422}
+    OutsA:
+    - {x: -1.3777008, y: -7.4195557, z: 27.232422}
+    OutsB:
+    - {x: -0.1277008, y: -7.4195557, z: 23.482422}
+    OutsC:
+    - {x: 3.6222992, y: -7.4195557, z: 24.732422}
+    OutsD:
+    - {x: 2.3722992, y: -7.4195557, z: 28.482422}
 --- !u!1 &592084931
 GameObject:
   m_ObjectHideFlags: 0
