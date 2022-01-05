@@ -1,13 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using PathCreator.Aggregator;
 using PathCreator.Intersection;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using Vector3 = UnityEngine.Vector3;
 
 [Serializable]
