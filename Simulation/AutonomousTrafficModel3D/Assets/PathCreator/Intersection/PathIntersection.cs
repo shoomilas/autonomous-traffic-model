@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -57,7 +58,7 @@ namespace PathCreator.Intersection {
                     Debug.Log($"Null value occured for {pathNode.name}");
                 }
             }
-            
+            pathNode.nextPathNodes.Clear();
             pathNode.SplinesOut.Clear();
         }
 
@@ -110,7 +111,7 @@ namespace PathCreator.Intersection {
             SetPathNodesToGivenCoords(intersection.OutputsD, intersectionPositionData.InsOuts.OutsD);
         }  
     }
-
+    
     public class PathIntersection : MonoBehaviour {
         // IIntersectionQueueHandler handler;
         // List<VehicleIntersectionVisa> VehicleQueue;
@@ -138,6 +139,17 @@ namespace PathCreator.Intersection {
 
         public void AnchorPathNodesToIntersection(IntersectionPositionData intersectionPositionData) {
             IntersectionGenerator.AnchorPathNodesToIntersection(this, intersectionPositionData);
+        }
+
+        private void OnDrawGizmos() {
+            if (Event.current.type == EventType.Repaint && this.minimalHandles) {
+                Handles.color = Color.gray;
+                var pos = this.transform.position;
+                var ySize = this.size / 2;
+                var sizeVector = new Vector3(this.size*2, ySize, this.size*2);
+                var posVector = pos + Vector3.up * (ySize/2);
+                Handles.DrawWireCube(posVector, sizeVector);
+            }
         }
     }
 }

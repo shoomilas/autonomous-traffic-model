@@ -60,7 +60,7 @@ namespace DefaultNamespace {
         }
         
         private void CustomOnSceneGUI(SceneView view) {
-                DrawHandles();
+            DrawHandles();
         }
 
         private void DrawInOutMarks(IntersectionInsOuts posVectors, float sizeOfMark) {
@@ -77,7 +77,7 @@ namespace DefaultNamespace {
                 Handles.DrawWireDisc(posVector, Vector3.up, sizeOfMark);
             });
         }
-        private void DrawHandles() {
+        public void DrawHandles() {
             if (typedTarget == null) {
                 SceneView.duringSceneGui -= CustomOnSceneGUI;
                 return; 
@@ -90,7 +90,8 @@ namespace DefaultNamespace {
                 var posVector = pos + Vector3.up * (ySize/2);
                 Handles.DrawWireCube(posVector, sizeVector);
                 return;
-            } else if (Event.current.type == EventType.Repaint) {
+            } 
+            if (Event.current.type == EventType.Repaint) {
                 PositionData = PositionManager.PrepData(typedTarget);
                 var sizeOfInMark = .2f;
                 Handles.color = Color.gray;
