@@ -59,7 +59,7 @@ public class PathIntersectionPositionManger : MonoBehaviour
         Corners = ComputeCorners();
         InsOuts = ComputeInsOuts();
     }
-    
+
     public IntersectionSides ComputeSides() {
         var (a, b, c, d) = (
             Center + Vector3.left * Size,
@@ -73,6 +73,22 @@ public class PathIntersectionPositionManger : MonoBehaviour
             B = b,
             C = c,
             D = d
+        };
+    }
+
+    public IntersectionCorners ComputeCorners() {
+        var (ab, bc, cd, da) = (
+            Sides.A + Vector3.back * Size,
+            Sides.B + Vector3.right * Size,
+            Sides.C + Vector3.forward * Size,
+            Sides.D + Vector3.left * Size
+        );
+        return new IntersectionCorners()
+        {
+            AB = ab,
+            BC = bc,
+            CD = cd,
+            DA = da
         };
     }
     
@@ -112,30 +128,14 @@ public class PathIntersectionPositionManger : MonoBehaviour
             OutsD = GeneratePathNodePositions(pointsCount, distance, Sides.D, Vector3.right)
         };
     }
-    
-    public IntersectionCorners ComputeCorners() {
-        var (ab, bc, cd, da) = (
-            Sides.A + Vector3.back * Size,
-            Sides.B + Vector3.right * Size,
-            Sides.C + Vector3.forward * Size,
-            Sides.D + Vector3.left * Size
-        );
-        return new IntersectionCorners()
-        {
-            AB = ab,
-            BC = bc,
-            CD = cd,
-            DA = da
-        };
-    }
-    
-    private List<Vector3> GeneratePathNodePositions(int pointsCount, float distance, Vector3 srcPoint, Vector3 direction) {
-        var positions = new List<Vector3>();
-        var currentPos = srcPoint;
-        for (int i = 0; i < pointsCount; i++) {
-            positions.Add(srcPoint + direction * distance);
-        }
 
-        return positions;
-    }
+		private List<Vector3> GeneratePathNodePositions(int pointsCount, float distance, Vector3 srcPoint, Vector3 direction) {
+			var positions = new List<Vector3>();
+			var currentPos = srcPoint;
+			for (int i = 0; i < pointsCount; i++) {
+				positions.Add(srcPoint + direction * distance);
+			}
+
+			return positions;
+		}
 }
