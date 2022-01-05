@@ -59,4 +59,20 @@ public class PathIntersectionPositionManger : MonoBehaviour
         Corners = ComputeCorners();
         InsOuts = ComputeInsOuts();
     }
+    
+    public IntersectionSides ComputeSides() {
+        var (a, b, c, d) = (
+            Center + Vector3.left * Size,
+            Center + Vector3.back * Size,
+            Center + Vector3.right * Size,
+            Center + Vector3.forward * Size
+        );
+        return new IntersectionSides()
+        {
+            A = a,
+            B = b,
+            C = c,
+            D = d
+        };
+    }
 }
