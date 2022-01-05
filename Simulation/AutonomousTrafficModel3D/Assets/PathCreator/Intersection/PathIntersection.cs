@@ -16,7 +16,7 @@ namespace PathCreator.Intersection {
         public void RegenerateIntersection(PathIntersection intersection) {
             Debug.Log("Default Intersection Generation");
             var i = intersection;
-            RemoveIntersectionSplines(i); // TODO: REMOVE INTERSECTION SPLINES
+            RemoveIntersectionSplines(i);
             ManyLaneIntersectionGeneratorForGivenInputNodes(i.InputsA,
                 i.OutputsB,
                 i.OutputsC,
@@ -43,15 +43,19 @@ namespace PathCreator.Intersection {
         }
 
         public void RemoveSplinesForSinglePathNode(PathNode pathNode) {
-            var toRemove = new List<SplineOutData>();
+            var toRemove = new List<SplineOutData>();            
             foreach (var splineOutData in pathNode.SplinesOut) {
-                Undo.RecordObject(pathNode,"Remove a splineOutData path node entry");
-                Undo.DestroyObjectImmediate(splineOutData.spline.gameObject);
-                toRemove.Add(splineOutData);
+                pathNode.nextPathNodes.Remove(splineOutData.dstNode);
+                if (splineOutData.spline != null && splineOutData.spline.gameObject != null) {
+                    Undo.RecordObject(pathNode,"Remove a splineOutData path node entry");
+                    Undo.DestroyObjectImmediate(splineOutData.spline.gameObject);
+                }
+                else {
+                    Debug.Log($"Null value occured for {pathNode.name}");
+                }
             }
-            foreach (var splineOutData in toRemove) {
-                pathNode.SplinesOut.Remove(splineOutData);
-            }
+            
+            pathNode.SplinesOut.Clear();
         }
 
         private void OneLaneIntersectionGeneratorForGivenInputNode(PathNode inputNode, PathNode outputRight,
@@ -76,6 +80,9 @@ namespace PathCreator.Intersection {
 
         public void GenerateSplinesBetweenIntersectionNodes(PathNode srcNode, PathNode dstNode, Direction direction) {
             var splineGenerated = srcNode.ConnectNodes(dstNode);
+            if (splineGenerated is null) {
+                return;
+            }
             var generatedSplineOutData = new SplineOutData(splineGenerated, direction, dstNode);
             srcNode.SplinesOut.Add(generatedSplineOutData);
         }

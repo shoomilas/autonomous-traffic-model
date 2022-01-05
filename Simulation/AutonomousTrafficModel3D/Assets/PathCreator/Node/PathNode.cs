@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PathCreation;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace PathCreator.Aggregator {
     [Serializable]
@@ -109,8 +110,23 @@ namespace PathCreator.Aggregator {
                 || this == null
                 || dstNode == null;
 
+            var reason = "";
+            if (this.nextPathNodes.Contains(dstNode)) {
+                reason += "srcNode.nextPathNodes already contains dstNode; ";}
+
+            if (this.previousPathNodes.Contains(dstNode)) {
+                reason += "srcNode.previousPathNodes already contains dstNode; ";
+            }
+
+            if (this == null) {
+                reason += "srcNode is null; ";
+            }
+            if (dstNode == null) {
+                reason += "dstNode is null; ";
+            }
+                
             if (isRequestNotValid) {
-                Debug.Log("Request not valid");
+                Debug.Log($"Can't connect nodes: {this.name} to {dstNode.name}. Reason: [{reason}]");
                 return null;
             }
 
