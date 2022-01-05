@@ -76,6 +76,43 @@ public class PathIntersectionPositionManger : MonoBehaviour
         };
     }
     
+    public IntersectionInsOuts ComputeInsOuts() {
+        // TODO: Current assumption is that every intersection has the same number of lanes on each entry lane
+        // In case of ever extending this to different types of intersections:
+        // 1. adjust size of the intersection 2. Accomodate the difference in Sides and Corners computation
+        // 3. Change this method as well.
+        
+        List<List<PathNode>> insAndOuts = new List<List<PathNode>>()
+        {
+            Intersection.InputsA,
+            Intersection.InputsB,
+            Intersection.InputsC,
+            Intersection.InputsD,
+            Intersection.OutputsA,
+            Intersection.OutputsB,
+            Intersection.OutputsC,
+            Intersection.OutputsD,
+        };
+
+        var goo = new List<PathNode>();
+        var pointsCount = (insAndOuts
+            .OrderByDescending(oneSideInsOrOuts => oneSideInsOrOuts.Count)
+            .FirstOrDefault() ?? new List<PathNode>()).Count();
+        var distance = Size / (pointsCount + 1);
+
+        return new IntersectionInsOuts
+        {
+            InsA = GeneratePathNodePositions(pointsCount, distance, Sides.A, Vector3.back),
+            InsB = GeneratePathNodePositions(pointsCount, distance, Sides.B, Vector3.right),
+            InsC = GeneratePathNodePositions(pointsCount, distance, Sides.C, Vector3.forward),
+            InsD = GeneratePathNodePositions(pointsCount, distance, Sides.D, Vector3.left),
+            OutsA = GeneratePathNodePositions(pointsCount, distance, Sides.A, Vector3.forward),
+            OutsB = GeneratePathNodePositions(pointsCount, distance, Sides.B, Vector3.left),
+            OutsC = GeneratePathNodePositions(pointsCount, distance, Sides.C, Vector3.back),
+            OutsD = GeneratePathNodePositions(pointsCount, distance, Sides.D, Vector3.right)
+        };
+    }
+    
     public IntersectionCorners ComputeCorners() {
         var (ab, bc, cd, da) = (
             Sides.A + Vector3.back * Size,
