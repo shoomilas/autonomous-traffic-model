@@ -114,8 +114,6 @@ namespace PathCreator.Intersection {
             // Gizmos.DrawWireSphere( pos, size*2); // TODO: These will come with the handler though
             // Gizmos.DrawWireSphere( pos, size);
         }
-        
-        
 
         public void RegenerateIntersection() {
             IntersectionGenerator.RegenerateIntersection(this);
