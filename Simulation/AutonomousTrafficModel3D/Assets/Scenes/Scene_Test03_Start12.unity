@@ -1452,6 +1452,7 @@ GameObject:
   m_Component:
   - component: {fileID: 567868696}
   - component: {fileID: 567868697}
+  - component: {fileID: 567868698}
   m_Layer: 0
   m_Name: Intersection
   m_TagString: Untagged
@@ -1502,6 +1503,40 @@ MonoBehaviour:
   OutputsD:
   - {fileID: 1751066336}
   size: 5
+--- !u!114 &567868698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567868695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0905a26fcf2c69048bedb90f39cf05eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Intersection: {fileID: 567868697}
+  Center: {x: 0, y: 0, z: 0}
+  Size: 0
+  Sides:
+    A: {x: 0, y: 0, z: 0}
+    B: {x: 0, y: 0, z: 0}
+    C: {x: 0, y: 0, z: 0}
+    D: {x: 0, y: 0, z: 0}
+  Corners:
+    AB: {x: 0, y: 0, z: 0}
+    BC: {x: 0, y: 0, z: 0}
+    CD: {x: 0, y: 0, z: 0}
+    DA: {x: 0, y: 0, z: 0}
+  InsOuts:
+    InsA: []
+    InsB: []
+    InsC: []
+    InsD: []
+    OutsA: []
+    OutsB: []
+    OutsC: []
+    OutsD: []
 --- !u!1 &592084931
 GameObject:
   m_ObjectHideFlags: 0
