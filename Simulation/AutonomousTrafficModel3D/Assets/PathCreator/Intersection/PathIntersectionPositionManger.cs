@@ -122,10 +122,14 @@ public class PathIntersectionPositionManger : MonoBehaviour {
             Intersection.OutputsD
         };
 
-        var goo = new List<PathNode>();
-        var pointsCount = (insAndOuts
-            .OrderByDescending(oneSideInsOrOuts => oneSideInsOrOuts.Count)
-            .FirstOrDefault() ?? new List<PathNode>()).Count();
+        var pointsCount = 0;
+        if (insAndOuts.SelectMany(_ => _).ToList().Count != 0) {
+            pointsCount = (insAndOuts
+                .OrderByDescending
+                    (oneSideInsOrOuts => oneSideInsOrOuts.Count)
+                .FirstOrDefault() ?? new List<PathNode>()).Count();
+            
+        }
         var distance = Size / (pointsCount + 1);
 
         return new IntersectionInsOuts

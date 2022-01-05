@@ -99,18 +99,18 @@ namespace PathCreator.Intersection {
         // IIntersectionQueueHandler handler;
         // List<VehicleIntersectionVisa> VehicleQueue;
         [Range(0.3f, 20f)] public float size = 5f;
-        [ItemCanBeNull] public List<PathNode> InputsA;
-        [ItemCanBeNull] public List<PathNode> InputsB;
-        [ItemCanBeNull] public List<PathNode> InputsC;
-        [ItemCanBeNull] public List<PathNode> InputsD;
-        [ItemCanBeNull] public List<PathNode> OutputsA;
-        [ItemCanBeNull] public List<PathNode> OutputsB;
-        [ItemCanBeNull] public List<PathNode> OutputsC;
-        [ItemCanBeNull] public List<PathNode> OutputsD;
+        [ItemCanBeNull] public List<PathNode> InputsA = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> InputsB = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> InputsC = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> InputsD = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> OutputsA = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> OutputsB = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> OutputsC = new List<PathNode>();
+        [ItemCanBeNull] public List<PathNode> OutputsD = new List<PathNode>();
         private readonly IIntersectionGenerator IntersectionGenerator = new DefaultIntersectionGenerator();
         [HideInInspector] public bool minimalHandles = true;
         public bool keepFullHandlesWhenDeselected = false;
-        public bool keepHandlesWhenDeselected = false;
+        public bool keepHandlesWhenDeselected = true;
 
         public void RegenerateIntersection() {
             IntersectionGenerator.RegenerateIntersection(this);

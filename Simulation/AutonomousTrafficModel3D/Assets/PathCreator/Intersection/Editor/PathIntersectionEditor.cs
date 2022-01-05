@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using PathCreator.Intersection;
+using PlasticPipe.PlasticProtocol.Client;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,22 +28,26 @@ namespace DefaultNamespace {
             //     typedTarget.AnchorPathNodesToIntersection(PositionManager);
             // }
         }
-
+        
         private void OnEnable()
         {
             Debug.Log("PathIntersectionEditorEnabled");
             typedTarget = (PathIntersection)target;
             PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
-            if(PositionManager != null)
-            {
-                PositionData = PositionManager.PrepData(typedTarget);
+            if(PositionManager == null) {
+                PositionManager = typedTarget.gameObject.AddComponent<PathIntersectionPositionManger>();
+                
             }
 
+            PositionData = PositionManager.PrepData(typedTarget);
             typedTarget.minimalHandles = false;
             SceneView.duringSceneGui += CustomOnSceneGUI;
         }
 
         private void OnValidate() {
+            Debug.Log("PathIntersectionEditorValidated");
+            typedTarget = (PathIntersection)target;
+            SceneView.duringSceneGui += CustomOnSceneGUI;
         }
 
         private void OnDisable() {
@@ -73,16 +78,19 @@ namespace DefaultNamespace {
             });
         }
         private void DrawHandles() {
-            if (Event.current.type == EventType.Repaint && typedTarget.minimalHandles) {
+            if (typedTarget == null) {
+                SceneView.duringSceneGui -= CustomOnSceneGUI;
+                return; 
+            }
+            if (Event.current.type == EventType.Repaint && typedTarget.minimalHandles) { // && PositionManager != null) {
                 Handles.color = Color.gray;
                 var pos = typedTarget.transform.position;
-                var ySize = typedTarget.size /2;
+                var ySize = typedTarget.size / 2;
                 var sizeVector = new Vector3(typedTarget.size*2, ySize, typedTarget.size*2);
                 var posVector = pos + Vector3.up * (ySize/2);
                 Handles.DrawWireCube(posVector, sizeVector);
                 return;
-            }
-            if (Event.current.type == EventType.Repaint && PositionManager != null) {
+            } else if (Event.current.type == EventType.Repaint) {
                 PositionData = PositionManager.PrepData(typedTarget);
                 var sizeOfInMark = .2f;
                 Handles.color = Color.gray;
