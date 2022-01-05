@@ -31,7 +31,6 @@ namespace DefaultNamespace {
         
         private void OnEnable()
         {
-            Debug.Log("PathIntersectionEditorEnabled");
             typedTarget = (PathIntersection)target;
             PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
             if(PositionManager == null) {
@@ -45,7 +44,6 @@ namespace DefaultNamespace {
         }
 
         private void OnValidate() {
-            Debug.Log("PathIntersectionEditorValidated");
             typedTarget = (PathIntersection)target;
             SceneView.duringSceneGui += CustomOnSceneGUI;
         }
@@ -82,7 +80,7 @@ namespace DefaultNamespace {
                 SceneView.duringSceneGui -= CustomOnSceneGUI;
                 return; 
             }
-            if (Event.current.type == EventType.Repaint && typedTarget.minimalHandles) { // && PositionManager != null) {
+            if (Event.current.type == EventType.Repaint && typedTarget.minimalHandles) {
                 Handles.color = Color.gray;
                 var pos = typedTarget.transform.position;
                 var ySize = typedTarget.size / 2;
