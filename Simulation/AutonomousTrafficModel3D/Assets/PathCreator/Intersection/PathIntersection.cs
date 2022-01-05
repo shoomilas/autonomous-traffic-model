@@ -40,12 +40,22 @@ namespace PathCreator.Intersection {
         }
 
         public void RemoveIntersectionSplines(PathIntersection intersection) {
-            intersection.InputsA?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
-            intersection.InputsB?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
-            intersection.InputsC?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
-            intersection.InputsD?.ForEach(inputNode => RemoveSplinesForSinglePathNode(inputNode));
+            ClearInputNodes(
+                intersection.InputsA, intersection.InputsB, intersection.InputsC, intersection.InputsD
+            );
+            ClearOutputNodes(
+                intersection.OutputsA, intersection.OutputsB, intersection.OutputsC, intersection.OutputsD
+            );
         }
 
+        public void ClearInputNodes(params List<PathNode>[] outputs) {
+            outputs?.SelectMany(_ => _).ToList().ForEach(RemoveSplinesForSinglePathNode);
+        }
+
+        public void ClearOutputNodes(params List<PathNode>[] outputs) {
+            outputs?.SelectMany(_ => _).ToList().ForEach(node => node.previousPathNodes.Clear());
+        }
+        
         public void RemoveSplinesForSinglePathNode(PathNode pathNode) {
             var toRemove = new List<SplineOutData>();            
             foreach (var splineOutData in pathNode.SplinesOut) {
@@ -78,7 +88,7 @@ namespace PathCreator.Intersection {
                 outputsForward?.ForEach(outputForward =>
                     GenerateSplinesBetweenIntersectionNodes(inputNode, outputForward, Direction.Forward));
                 outputsLeft?.ForEach(outputLeft =>
-                    GenerateSplinesBetweenIntersectionNodes(inputNode, outputLeft, Direction.Forward));
+                    GenerateSplinesBetweenIntersectionNodes(inputNode, outputLeft, Direction.Left));
             });
         }
 
