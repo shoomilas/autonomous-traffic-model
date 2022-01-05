@@ -108,7 +108,8 @@ namespace PathCreator.Intersection {
         [ItemCanBeNull] public List<PathNode> OutputsC;
         [ItemCanBeNull] public List<PathNode> OutputsD;
         private readonly IIntersectionGenerator IntersectionGenerator = new DefaultIntersectionGenerator();
-        public bool minimalHandles = true;
+        [HideInInspector] public bool minimalHandles = true;
+        public bool keepFullHandlesWhenDeselected = false;
         public bool keepHandlesWhenDeselected = false;
 
         public void RegenerateIntersection() {

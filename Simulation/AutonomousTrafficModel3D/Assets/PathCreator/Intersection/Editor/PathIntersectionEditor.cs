@@ -37,7 +37,8 @@ namespace DefaultNamespace {
             {
                 PositionData = PositionManager.PrepData(typedTarget);
             }
-            
+
+            typedTarget.minimalHandles = false;
             SceneView.duringSceneGui += CustomOnSceneGUI;
         }
 
@@ -45,6 +46,9 @@ namespace DefaultNamespace {
         }
 
         private void OnDisable() {
+            if (!typedTarget.keepFullHandlesWhenDeselected) {
+                typedTarget.minimalHandles = true;   
+            }
             if(!typedTarget.keepHandlesWhenDeselected) {
                 SceneView.duringSceneGui -= CustomOnSceneGUI;
             }
