@@ -102,6 +102,29 @@ public class PathNodeEditor : Editor {
         GUILayout.BeginVertical();
         GUILayout.Space(spacerSize);
         
+        GUILayout.BeginHorizontal();
+        float amount = 0.0f;
+        GUILayout.Label("(A) Create new connected node:");
+        EditorGUILayout.FloatField(amount);
+        GUILayout.Button("←");
+        GUILayout.Button("↑");
+        GUILayout.Button("↓");
+        GUILayout.Button("→");
+        GUILayout.EndHorizontal();
+        
+        GUILayout.BeginHorizontal();
+        float forward = 1f;
+        float right = 1f;
+        GUILayout.Label("(B) create new node at right angles:");
+        GUILayout.Label("↑");
+        EditorGUILayout.FloatField(forward);
+        GUILayout.Label("→");
+        EditorGUILayout.FloatField(right);
+        GUILayout.Button("Create");
+        GUILayout.EndHorizontal();
+        
+        GUILayout.Space(spacerSize);
+        
         if (targets.Length > 1) {
             var label = $"First: {targets[0].name} | Second:";
             PathNodeToConnectTo = (PathNode)EditorGUILayout
