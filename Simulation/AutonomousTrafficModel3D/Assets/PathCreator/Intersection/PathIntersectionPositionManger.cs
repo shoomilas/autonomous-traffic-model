@@ -91,4 +91,14 @@ public class PathIntersectionPositionManger : MonoBehaviour
             DA = da
         };
     }
+    
+    private List<Vector3> GeneratePathNodePositions(int pointsCount, float distance, Vector3 srcPoint, Vector3 direction) {
+        var positions = new List<Vector3>();
+        var currentPos = srcPoint;
+        for (int i = 0; i < pointsCount; i++) {
+            positions.Add(srcPoint + direction * distance);
+        }
+
+        return positions;
+    }
 }
