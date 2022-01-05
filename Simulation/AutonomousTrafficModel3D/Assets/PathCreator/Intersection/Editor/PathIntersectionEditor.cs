@@ -51,7 +51,6 @@ namespace DefaultNamespace {
 
         private void DrawHandles() {
             if (_positionManger == null) {
-                Debug.Log("Got a PositionManager component");
                 _positionManger = typedTarget.GetComponent<PathIntersectionPositionManger>();
                 _positionManger = _positionManger.PrepData();
             }
