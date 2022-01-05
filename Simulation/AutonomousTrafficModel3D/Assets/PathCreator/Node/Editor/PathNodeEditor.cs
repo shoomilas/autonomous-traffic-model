@@ -10,6 +10,7 @@ using UnityEngine;
 using Object = System.Object;
 using PathCreator = PathCreation.PathCreator;
 
+[CanEditMultipleObjects]
 [CustomEditor(typeof(PathNode))]
 public class PathNodeEditor : Editor {
 
@@ -20,6 +21,8 @@ public class PathNodeEditor : Editor {
     const string TextUpdateClosestPathNodesButton = "Update Closest Path Nodes";
     private const string TextUpdateAllPathNodesButton = "[!] Update All Path Nodes";
     private const string TextConnectNodesLabel = "Node to connect (as next node):";
+    const string TextConnectNodesFirstAsSrcLabel = "Connect with first as SRC";
+    const string TextConnectNodesFirstAsDstLabel = "Connect with first as DST";
     
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
@@ -65,9 +68,11 @@ public class PathNodeEditor : Editor {
 
     [SerializeField]
     public PathNode PathNodeToConnectTo = null;
+
+    private PathNode typedTarget;
     
     public override void OnInspectorGUI() {
-        var typedTarget = (PathNode)target;
+        typedTarget = (PathNode)target;
         base.OnInspectorGUI();
         var spacerSize = 40;
         GUILayout.Space(spacerSize);
@@ -96,12 +101,36 @@ public class PathNodeEditor : Editor {
 
         GUILayout.BeginVertical();
         GUILayout.Space(spacerSize);
-        PathNodeToConnectTo = (PathNode)EditorGUILayout
-            .ObjectField(TextConnectNodesLabel, PathNodeToConnectTo, typeof(PathNode), true);
         
-        if (GUILayout.Button(TextConnectNodesButton)) {
-            ConnectNodes(typedTarget, PathNodeToConnectTo);
-            PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
+        if (targets.Length > 1) {
+            var label = $"First: {targets[0].name} | Second:";
+            PathNodeToConnectTo = (PathNode)EditorGUILayout
+                .ObjectField(label, targets[1], typeof(PathNode), true);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(TextConnectNodesFirstAsSrcLabel)) {
+                ConnectNodes((PathNode)targets[0], (PathNode)PathNodeToConnectTo);
+                PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
+            }
+            if (GUILayout.Button(TextConnectNodesFirstAsDstLabel)) {
+                ConnectNodes((PathNode)PathNodeToConnectTo, (PathNode)targets[0]);
+                PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
+            }            
+            GUILayout.EndHorizontal();
+        }
+        else {
+            var label = $"First: {target.name} | Second:";
+            PathNodeToConnectTo = (PathNode)EditorGUILayout
+                .ObjectField(label, PathNodeToConnectTo, typeof(PathNode), true);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(TextConnectNodesFirstAsSrcLabel)) {
+                ConnectNodes(typedTarget, PathNodeToConnectTo);
+                PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
+            }
+            if (GUILayout.Button(TextConnectNodesFirstAsDstLabel)) {
+                ConnectNodes(PathNodeToConnectTo, typedTarget);
+                PathNodeHelper.SelectObject(PathNodeToConnectTo.gameObject);
+            }            
+            GUILayout.EndHorizontal();
         }
         
         GUILayout.EndVertical();
