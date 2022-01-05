@@ -13,7 +13,7 @@ namespace DefaultNamespace {
         public PathIntersectionPositionManger PositionManager;
         public IntersectionPositionData PositionData;
         private PathIntersection typedTarget;
-        private bool keepHandlesWhenDeselected = true;
+        
         public override void OnInspectorGUI() {            
             base.OnInspectorGUI();
             
@@ -35,23 +35,25 @@ namespace DefaultNamespace {
             PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
             if(PositionManager != null)
             {
-                Debug.Log("Prepped Position Manager Data");
-                Debug.Log($"TYPED TARGET: {typedTarget}");
-                Debug.Log($"POSITION MANAGER: {PositionManager}");
-                
                 PositionData = PositionManager.PrepData(typedTarget);
             }
+            
             SceneView.duringSceneGui += CustomOnSceneGUI;
         }
-        
+
+        private void OnValidate() {
+        }
+
         private void OnDisable() {
-            if(!keepHandlesWhenDeselected) {
-                SceneView.duringSceneGui -= CustomOnSceneGUI;
-            }
+            // if(!typedTarget.keepHandlesWhenDeselected) {
+            //     SceneView.duringSceneGui -= CustomOnSceneGUI;
+            // }
         }
         
         private void CustomOnSceneGUI(SceneView view) {
-            DrawHandles();
+            if(typedTarget.keepHandlesWhenDeselected) {
+                DrawHandles();
+            }
         }
 
         private void DrawInOutMarks(IntersectionInsOuts posVectors, float sizeOfMark) {
