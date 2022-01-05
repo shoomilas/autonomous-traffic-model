@@ -109,8 +109,13 @@ namespace PathCreator.Intersection {
 
         private void OnDrawGizmos() {
             var pos = transform.position;
-            var sizeVector = new Vector3(size, size / 2, size);
-            Gizmos.DrawWireCube(pos, sizeVector);
+            var ySize = size /2;
+            var sizeVector = new Vector3(size*2, ySize, size*2);
+            var posVector = pos + Vector3.up * (ySize/2);
+            Gizmos.DrawWireCube(posVector, sizeVector);
+            Gizmos.color = Color.gray;
+            posVector = pos - Vector3.up * (ySize/2);
+            Gizmos.DrawWireCube(posVector, sizeVector);
             // Gizmos.DrawWireSphere( pos, size*2); // TODO: These will come with the handler though
             // Gizmos.DrawWireSphere( pos, size);
         }

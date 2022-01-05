@@ -45,12 +45,13 @@ public class PathIntersectionPositionManger : MonoBehaviour {
         PrepData();
     }
 
-    public void PrepData() {
+    public PathIntersectionPositionManger PrepData() {
         Center = Intersection.transform.position;
         Size = Intersection.size;
         Sides = ComputeSides();
         Corners = ComputeCorners();
         InsOuts = ComputeInsOuts();
+        return this;
     }
 
     public IntersectionSides ComputeSides() {

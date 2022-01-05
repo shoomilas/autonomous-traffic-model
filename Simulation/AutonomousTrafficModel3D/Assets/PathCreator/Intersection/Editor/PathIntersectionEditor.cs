@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PathCreator.Intersection;
 using UnityEditor;
 using UnityEngine;
@@ -8,10 +9,11 @@ namespace DefaultNamespace {
     public class PathIntersectionEditor : Editor {
         private const string TextRegenerateIntersectionButton = "Regenerate Intersection";
         private const string TextRemoveIntersectionSplinesButton = "Remove Intersection Splines";
+        public PathIntersectionPositionManger _positionManger;
         private PathIntersection typedTarget;
         public override void OnInspectorGUI() {            
             base.OnInspectorGUI();
-            typedTarget = (PathIntersection)target;
+            typedTarget = (PathIntersection)target; 
             if (GUILayout.Button(TextRegenerateIntersectionButton)) {
                 typedTarget.RegenerateIntersection();
             }
@@ -19,45 +21,50 @@ namespace DefaultNamespace {
                 typedTarget.RemoveIntersectionSplines();
             }
         }
-
-        private void OnSceneGUI() {
+        private void OnEnable()
+        {
+            SceneView.duringSceneGui += CustomOnSceneGUI;
+        }
+        
+        private void OnDisable() {
+            SceneView.duringSceneGui -= CustomOnSceneGUI;
+        }
+        
+        private void CustomOnSceneGUI(SceneView view) {
             DrawHandles();
         }
 
+        private void DrawInOutMarks(IntersectionInsOuts posVectors, float sizeOfMark) {
+            posVectors.InsA
+                .Concat(posVectors.InsB)
+                .Concat(posVectors.InsC)
+                .Concat(posVectors.InsD)
+                .Concat(posVectors.OutsA)
+                .Concat(posVectors.OutsB)
+                .Concat(posVectors.OutsC)
+                .Concat(posVectors.OutsD)
+                .ToList().ForEach( posVector =>
+            {
+                Handles.DrawWireDisc(posVector, Vector3.up, sizeOfMark);
+            });
+        }
+
         private void DrawHandles() {
-            if (Event.current.type == EventType.Repaint) {
-                var size = 2f;
-                var center = typedTarget.transform.position;
-                var rotation = typedTarget.transform.rotation;
-
-                var vertex1 = center + Vector3.forward * (size / 2) + Vector3.right * (size / 2);
-                
-                var dir = vertex1 - center;
-                var vertexRotated = Quaternion.Euler(
-                    rotation.x,
-                    rotation.y,
-                    rotation.z
-                    ) * Vector3.up;
-                
-                
-                var finalPos = vertexRotated + Vector3.up * size / 2;
-                Handles.CylinderHandleCap(
-                    0,
-                    finalPos,
-                    typedTarget.transform.rotation * Quaternion.LookRotation(Vector3.up),
-                    size,
-                        EventType.Repaint
-                );
-                
-                // Handles.ConeHandleCap(
-                //     0, 
-                //     vertex1, 
-                //     typedTarget.transform.rotation * Quaternion.LookRotation(Vector3.up),
-                //     3f,
-                //     EventType.Repaint
-                //     );
-
-                Handles.DrawLine(vertex1 + Vector3.up, vertex1 + Vector3.down);
+            if (_positionManger == null) {
+                Debug.Log("Got a PositionManager component");
+                _positionManger = typedTarget.GetComponent<PathIntersectionPositionManger>();
+                _positionManger = _positionManger.PrepData();
+            }
+            if (Event.current.type == EventType.Repaint && _positionManger != null) {
+                var sizeOfInMark = .2f;
+                Handles.color = Color.gray;
+                Handles.DrawLine(_positionManger.Sides.A, _positionManger.Sides.C);
+                Handles.DrawLine(_positionManger.Sides.B, _positionManger.Sides.D);
+                Handles.Label(_positionManger.Sides.A, "A");
+                Handles.Label(_positionManger.Sides.B, "B");
+                Handles.Label(_positionManger.Sides.C, "C");
+                Handles.Label(_positionManger.Sides.D, "D");
+                DrawInOutMarks(_positionManger.InsOuts, sizeOfInMark);
             }
         }
     }
