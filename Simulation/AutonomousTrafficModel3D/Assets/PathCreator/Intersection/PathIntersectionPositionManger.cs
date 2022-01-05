@@ -75,4 +75,20 @@ public class PathIntersectionPositionManger : MonoBehaviour
             D = d
         };
     }
+    
+    public IntersectionCorners ComputeCorners() {
+        var (ab, bc, cd, da) = (
+            Sides.A + Vector3.back * Size,
+            Sides.B + Vector3.right * Size,
+            Sides.C + Vector3.forward * Size,
+            Sides.D + Vector3.left * Size
+        );
+        return new IntersectionCorners()
+        {
+            AB = ab,
+            BC = bc,
+            CD = cd,
+            DA = da
+        };
+    }
 }
