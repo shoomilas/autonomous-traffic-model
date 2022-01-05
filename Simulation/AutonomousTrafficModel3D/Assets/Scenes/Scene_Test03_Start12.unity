@@ -1503,7 +1503,8 @@ MonoBehaviour:
   - {fileID: 242459691}
   OutputsD:
   - {fileID: 1751066336}
-  keepHandlesWhenDeselected: 1
+  minimalHandles: 1
+  keepHandlesWhenDeselected: 0
 --- !u!114 &567868698
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -45,15 +45,13 @@ namespace DefaultNamespace {
         }
 
         private void OnDisable() {
-            // if(!typedTarget.keepHandlesWhenDeselected) {
-            //     SceneView.duringSceneGui -= CustomOnSceneGUI;
-            // }
+            if(!typedTarget.keepHandlesWhenDeselected) {
+                SceneView.duringSceneGui -= CustomOnSceneGUI;
+            }
         }
         
         private void CustomOnSceneGUI(SceneView view) {
-            if(typedTarget.keepHandlesWhenDeselected) {
                 DrawHandles();
-            }
         }
 
         private void DrawInOutMarks(IntersectionInsOuts posVectors, float sizeOfMark) {
@@ -70,8 +68,16 @@ namespace DefaultNamespace {
                 Handles.DrawWireDisc(posVector, Vector3.up, sizeOfMark);
             });
         }
-
         private void DrawHandles() {
+            if (Event.current.type == EventType.Repaint && typedTarget.minimalHandles) {
+                Handles.color = Color.gray;
+                var pos = typedTarget.transform.position;
+                var ySize = typedTarget.size /2;
+                var sizeVector = new Vector3(typedTarget.size*2, ySize, typedTarget.size*2);
+                var posVector = pos + Vector3.up * (ySize/2);
+                Handles.DrawWireCube(posVector, sizeVector);
+                return;
+            }
             if (Event.current.type == EventType.Repaint && PositionManager != null) {
                 PositionData = PositionManager.PrepData(typedTarget);
                 var sizeOfInMark = .2f;
