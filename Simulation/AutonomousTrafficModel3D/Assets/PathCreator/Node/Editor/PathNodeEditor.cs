@@ -103,8 +103,8 @@ public class PathNodeEditor : Editor {
         GUILayout.Space(spacerSize);
         
         GUILayout.BeginHorizontal();
-        float amount = 0.0f;
-        GUILayout.Label("(A) Create new connected node:");
+        float amount = 1f;
+        GUILayout.Label("(A) Create new node");
         EditorGUILayout.FloatField(amount);
         GUILayout.Button("←");
         GUILayout.Button("↑");
@@ -115,7 +115,7 @@ public class PathNodeEditor : Editor {
         GUILayout.BeginHorizontal();
         float forward = 1f;
         float right = 1f;
-        GUILayout.Label("(B) create new node at right angles:");
+        GUILayout.Label("(B) Create new node: ");
         GUILayout.Label("↑");
         EditorGUILayout.FloatField(forward);
         GUILayout.Label("→");
