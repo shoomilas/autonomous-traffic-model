@@ -12,7 +12,7 @@ namespace PathCreator.Intersection {
     public interface IIntersectionGenerator {
         void RegenerateIntersection(PathIntersection intersection);
         void RemoveIntersectionSplines(PathIntersection intersection);
-        void ReanchorPathNodesToIntersection(PathIntersectionPositionManger positionManager);
+        void AnchorPathNodesToIntersection(PathIntersection intersection, IntersectionPositionData intersectionPositionData);
     }
 
     public class DefaultIntersectionGenerator : IIntersectionGenerator {
@@ -89,9 +89,25 @@ namespace PathCreator.Intersection {
             var generatedSplineOutData = new SplineOutData(splineGenerated, direction, dstNode);
             srcNode.SplinesOut.Add(generatedSplineOutData);
         }
+
         
-        public void ReanchorPathNodesToIntersection(PathIntersectionPositionManger positionManager) {
-            return;
+        private void SetPathNodesToGivenCoords(List<PathNode> pathNodes, List<Vector3> Coords) {
+            int i = 0;            
+            foreach (var pathNode in pathNodes) {
+                pathNode.transform.position = Coords[i];
+                i += 1;
+            }
+        }
+        
+        public void AnchorPathNodesToIntersection(PathIntersection intersection, IntersectionPositionData intersectionPositionData) {
+            SetPathNodesToGivenCoords(intersection.InputsA, intersectionPositionData.InsOuts.InsA);
+            SetPathNodesToGivenCoords(intersection.InputsB, intersectionPositionData.InsOuts.InsB);
+            SetPathNodesToGivenCoords(intersection.InputsC, intersectionPositionData.InsOuts.InsC);
+            SetPathNodesToGivenCoords(intersection.InputsD, intersectionPositionData.InsOuts.InsD);
+            SetPathNodesToGivenCoords(intersection.OutputsA, intersectionPositionData.InsOuts.OutsA);
+            SetPathNodesToGivenCoords(intersection.OutputsB, intersectionPositionData.InsOuts.OutsB);
+            SetPathNodesToGivenCoords(intersection.OutputsC, intersectionPositionData.InsOuts.OutsC);
+            SetPathNodesToGivenCoords(intersection.OutputsD, intersectionPositionData.InsOuts.OutsD);
         }  
     }
 
@@ -120,8 +136,8 @@ namespace PathCreator.Intersection {
             IntersectionGenerator.RemoveIntersectionSplines(this);
         }
 
-        public void AnchorPathNodesToIntersection(PathIntersectionPositionManger positionManager) {
-            IntersectionGenerator.ReanchorPathNodesToIntersection(positionManager);
+        public void AnchorPathNodesToIntersection(IntersectionPositionData intersectionPositionData) {
+            IntersectionGenerator.AnchorPathNodesToIntersection(this, intersectionPositionData);
         }
     }
 }

@@ -24,9 +24,9 @@ namespace DefaultNamespace {
             if (GUILayout.Button(TextRemoveIntersectionSplinesButton)) {
                 typedTarget.RemoveIntersectionSplines();
             }
-            // if (GUILayout.Button(TextAnchorPathNodesButton)) {
-            //     typedTarget.AnchorPathNodesToIntersection(PositionManager);
-            // }
+            if (GUILayout.Button(TextAnchorPathNodesButton)) {
+                typedTarget.AnchorPathNodesToIntersection(PositionManager.PrepData(typedTarget));
+            }
         }
         
         private void OnEnable()

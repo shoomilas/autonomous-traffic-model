@@ -112,21 +112,32 @@ namespace PathCreator.Aggregator {
 
             var reason = "";
             if (this.nextPathNodes.Contains(dstNode)) {
-                reason += "srcNode.nextPathNodes already contains dstNode; ";}
+                reason += "srcNode.nextPathNodes already contains dstNode; ";
+            }
 
             if (this.previousPathNodes.Contains(dstNode)) {
                 reason += "srcNode.previousPathNodes already contains dstNode; ";
             }
 
+            var srcName = string.Empty;
+            var dstName = string.Empty;
             if (this == null) {
+                srcName = "-";
                 reason += "srcNode is null; ";
             }
+            else {
+                srcName = name;
+            }
             if (dstNode == null) {
+                dstName = "-";
                 reason += "dstNode is null; ";
+            }
+            else {
+                dstName = dstNode.name;
             }
                 
             if (isRequestNotValid) {
-                Debug.Log($"Can't connect nodes: {this.name} to {dstNode.name}. Reason: [{reason}]");
+                Debug.Log($"Can't connect {srcName} with {dstName}. Reason: [{reason}]");
                 return null;
             }
 
