@@ -26,9 +26,9 @@ public class PathNodeEditor : Editor {
     const string TextConnectNodesFirstAsDstLabel = "Connect with first as DST";
     private const string TextCreateNewNode = "Create new node";
     
-    public float newNodeOffset = 1f;
-    public float forwardOffset = 1f;
-    public float rightOffset = 1f;
+    public static float newNodeOffset = 1f;
+    public static float forwardOffset = 1f;
+    public static float rightOffset = 1f;
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
     }
