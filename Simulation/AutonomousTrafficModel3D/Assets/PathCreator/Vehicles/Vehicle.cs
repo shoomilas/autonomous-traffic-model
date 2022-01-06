@@ -18,11 +18,7 @@ namespace PathCreator.Vehicles {
         public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
         public VehiclePointsListFollower follower;
         public PathNode startNode;
-
-        private void Awake() {
-           
-        }
-
+        
         private void Start() {
             vehiclePathProvider ??= GetComponent<IVehiclePathProvider>();
             if (vehiclePathProvider == null) {
@@ -35,11 +31,16 @@ namespace PathCreator.Vehicles {
             }
             
             if (follower.PointsToFollow == null || follower.PointsToFollow.Count == 0) {
-                Debug.Log("Iti s happeningingifgodfgdf");
                 follower.PointsToFollow = new List<Transform>();
                 var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform ).ToList();
-                list.ForEach(_=>Debug.Log(_.name));
                 follower.PointsToFollow = list;   
+            }
+        }
+
+        private void Update() {
+            if (follower.CurrentDriveStatus == VehiclePointsListFollower.DriveStatus.Finished) {
+                follower.CurrentPoint = follower.PointsToFollow[0];
+                follower.CurrentDriveStatus = VehiclePointsListFollower.DriveStatus.Start;
             }
         }
     }

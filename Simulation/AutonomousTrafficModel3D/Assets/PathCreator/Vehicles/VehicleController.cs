@@ -7,7 +7,7 @@ public class VehicleController : MonoBehaviour {
     #region Fields
     
     //Groundcheck https://www.youtube.com/watch?v=j41UHuA1bLM
-    float distToGround = 1f;
+    float distToGround = 0.11f;
     public bool isGrounded;
     public float fallSpeed = 10;
     
@@ -35,21 +35,23 @@ public class VehicleController : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        // GroundCheckAndSetEnabled();
+        GroundCheckAndSetEnabled();
     }
 
     public void GroundCheckAndSetEnabled() {
-        if(Physics.Raycast(transform.position, Vector3.down, distToGround + 0.1f))
-        {
-            isGrounded = true;
-            this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = true;
-        }
-        else
-        {
-            isGrounded = false;
-            // this.gameObject.GetComponent<Rigidbody>().AddForce(transform.up * -1000);
-            this.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y - Time.deltaTime * fallSpeed, transform.position.z);
-            this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = false;
+        if(gameObject.GetComponent<VehiclePointsListFollower>()) {
+            if(Physics.Raycast(transform.position, Vector3.down, distToGround))
+            {
+                isGrounded = true;
+                this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = true;
+            }
+            else
+            {
+                isGrounded = false;
+                // this.gameObject.GetComponent<Rigidbody>().AddForce(transform.up * -1000);
+                this.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y - Time.deltaTime * fallSpeed, transform.position.z);
+                this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = false;
+            }
         }
     }
     
