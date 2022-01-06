@@ -342,42 +342,14 @@ namespace PathCreator.Aggregator {
         } 
         
         public PathNode CreateNewNodeWithForwardRightOffset(float forwardOffset, float rightOffset, bool createNewAsDst = false) {
-            var tr = this.transform;
-            var newPosition = tr.position + Vector3.forward * forwardOffset + Vector3.right * rightOffset;
+            var newPosition = transform.position + Vector3.forward * forwardOffset + Vector3.right * rightOffset;
             var newNode = CreateNewNodeAtPosition(newPosition, createNewAsDst);
             return newNode;
         }
         public PathNode CreateNewNodeInSpecifiedDirectionWithDefinedOffset(float offset, Vector3 direction, bool createNewAsDst = false) {
-            var tr = this.transform;
-            PathNode newNode;
-            PathCreation.PathCreator newSpline;
-            
-            newNode = !createNewAsDst ? PathNode.MakePathNode(this) : PathNode.MakePathNodeAsPrevious(this);
-
-            var transform = newNode.transform;
-            transform.parent = tr.transform.parent;
-            transform.position = tr.position + direction * offset;
-            transform.name = $"Path Node {PathNodeManager.NodeCounter}";
-            PathNodeManager.NodeCounter += 1;
-            
-            // TODO: Move adding nextPathNodes to node creating method (MakePathNode)
-            if (!createNewAsDst) {
-                this.nextPathNodes.Add(newNode);
-                Undo.RecordObject(this.transform.parent, "Add new Path Node");
-                newSpline = AddSplineBetweenPathNodes(this, newNode);
-                var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
-                this.SplinesOut.Add(splineData);
-            }
-            else {
-                newNode.nextPathNodes.Add(this);
-                Undo.RecordObject(this.transform.parent, "Add new Path Node");
-                newSpline = AddSplineBetweenPathNodes(newNode, this);
-                var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode); // TODO: Specified direction
-                newNode.SplinesOut.Add(splineData);
-            }
-            
-            PathNodeHelper.SelectObject(newNode.gameObject);
-            return newNode;
+            var newPosition = transform.position + direction * offset;
+            var newNode = CreateNewNodeAtPosition(newPosition, createNewAsDst);
+            return newNode; 
         }
         
 
