@@ -119,7 +119,11 @@ public class VehiclePointsListFollower : MonoBehaviour
         }
     }
     void Update() {
-        Drive();
+        if (PointsToFollow != null) {
+            if(PointsToFollow.Count > 0) {
+                Drive();
+            }
+        }
     }
     public void SetTargetPosition(Vector3 targetPosition) {
         this.targetPosition = targetPosition;

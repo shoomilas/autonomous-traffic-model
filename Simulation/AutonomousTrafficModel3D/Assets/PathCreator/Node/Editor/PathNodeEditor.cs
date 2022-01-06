@@ -42,7 +42,6 @@ public class PathNodeEditor : Editor {
         SceneView.duringSceneGui -= CustomOnSceneGUI;
     }
 
-
     private void DrawSelectionMarker(Transform transform, float size, Color color) {
         var tmpColor = Handles.color;
         Handles.color = color;
