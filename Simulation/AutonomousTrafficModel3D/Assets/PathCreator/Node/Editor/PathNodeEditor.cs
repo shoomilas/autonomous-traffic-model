@@ -206,7 +206,7 @@ public class PathNodeEditor : Editor {
     }
 
     public void ConnectNodes(PathNode srcNode, PathNode dstNode) {
-        srcNode.ConnectNodes(dstNode);
+        srcNode.ConnectNodes(dstNode, true);
     }
 
     public void AddSplineToPathNodeAndSelect(PathNode node) {

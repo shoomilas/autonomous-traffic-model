@@ -104,7 +104,7 @@ namespace PathCreator.Aggregator {
             });
         }
 
-        public PathCreation.PathCreator ConnectNodes(PathNode dstNode) {
+        public PathCreation.PathCreator ConnectNodes(PathNode dstNode, bool shouldAddToSplinesOut = false) {
             bool isRequestNotValid =
                 this.nextPathNodes.Contains(dstNode)
                 || this.previousPathNodes.Contains(dstNode)
@@ -145,6 +145,12 @@ namespace PathCreator.Aggregator {
             var createdSpline = AddSplineBetweenPathNodes(this, dstNode);
             this.nextPathNodes.Add(dstNode);
             dstNode.previousPathNodes.Add(this);
+
+            if (shouldAddToSplinesOut) {
+                var splinesOutData = new SplineOutData(createdSpline, Direction.Unknown, dstNode);
+                this.SplinesOut.Add(splinesOutData);
+            }
+            
             return createdSpline;
         }
 
