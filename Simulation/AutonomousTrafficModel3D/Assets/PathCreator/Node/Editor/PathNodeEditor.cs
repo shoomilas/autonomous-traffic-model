@@ -108,50 +108,7 @@ public class PathNodeEditor : Editor {
             }
         }
     }
-
-    private void CustomOnSceneGUI2(SceneView view) {
-        var typedTarget = (PathNode)target;
-        Transform transform = typedTarget.transform;
-        // arrows from
-        foreach (var spline  in typedTarget.SplinesOut.Select(x=>x.spline) ) {
-            if (spline.path.NumPoints > 1) {
-                var firstVertexPoint = spline.path.GetPoint(1); 
-                var position = transform.position;
-                DrawArrowsBetweenPoints(firstVertexPoint, position, Color.gray);
-            }
-        }
-        // arrows to
-        foreach (var node in typedTarget.previousPathNodes) {
-            foreach (var spline  in node.SplinesOut.Select(x=>x.spline) ) {
-                if (spline.path.NumPoints > 1) {
-                    var firstVertexPoint = spline.path.GetPoint(1); 
-                    var position = node.transform.position;
-                    DrawArrowsBetweenPoints(firstVertexPoint, position, Color.gray);
-                }
-            }
-        }
-    }
-
-    // private void OnSceneGUI() {
-    // var foundPathNodeObjects = FindObjectsOfType<PathNode>();
-    // foreach (var foundPathNodeObject in foundPathNodeObjects) {
-    //     
-    // }
-    //
-    // var typedTarget = (PathNode)target;
-    //
-    // float size = 1f;
-    // Transform transform = typedTarget.transform;
-    // Handles.color = Color.red;
-    // Handles.ConeHandleCap(
-    //     0,
-    //     transform.position + new Vector3(0f, size/2, 0f),
-    //     transform.rotation * Quaternion.LookRotation(Vector3.up),
-    //     size,
-    //     EventType.Repaint
-    // );
-    // }
-
+    
     [SerializeField]
     public PathNode PathNodeToConnectTo = null;
 
