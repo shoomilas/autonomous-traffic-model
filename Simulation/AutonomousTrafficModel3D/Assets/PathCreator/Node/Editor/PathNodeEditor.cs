@@ -169,7 +169,7 @@ public class PathNodeEditor : Editor {
         GUILayout.Label("→");
         rightOffset = EditorGUILayout.FloatField(rightOffset);
         if (GUILayout.Button("Create")) {
-            newNode = typedTarget.CreateNewNodeWithForwardRightOffset(forwardOffset, rightOffset);
+            newNode = typedTarget.CreateNewNodeWithForwardRightOffset(forwardOffset, rightOffset, createAsDst);
             if (newNode != null) { PathNodeHelper.SelectObject(newNode.gameObject); }
         }
         
