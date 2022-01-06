@@ -106,18 +106,12 @@ public class PathNodeEditor : Editor {
         
         if (targets.Length > 1) {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Remove Connections")) {
-                
-            }
-            if (GUILayout.Button("Remove Connection Between Selected")) {
-                
-            }
+            GUILayout.Button("Remove Connections");
+            GUILayout.Button("Remove Connection Between Selected");
             GUILayout.EndHorizontal();
         }
         else {
-            if (GUILayout.Button("Remove Connection Between Selected")) {
-                
-            }
+            GUILayout.Button("Remove Connection Between Selected");
         }
 
         GUILayout.BeginVertical();
