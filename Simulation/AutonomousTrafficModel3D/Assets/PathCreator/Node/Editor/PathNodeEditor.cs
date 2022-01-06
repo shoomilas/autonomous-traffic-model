@@ -72,10 +72,6 @@ public class PathNodeEditor : Editor {
     }
 
     private void DrawClosestHandles(PathNode node) {
-        // next
-        // previous
-        // splineout: spline, dstNode
-            
         // arrows from
         foreach (var splineOut  in node.SplinesOut ) {
             if (splineOut.spline == null || splineOut.dstNode == null) {continue;}

@@ -234,7 +234,6 @@ namespace PathCreator.Aggregator {
                 Undo.DestroyObjectImmediate(c.spline);
             }
             
-            // var d = nextPathNodes.Remove(this);
             var e = SplinesOut.FirstOrDefault(data => data.dstNode == this);
             if (e != null) {
                 SplinesOut.Remove(e);
