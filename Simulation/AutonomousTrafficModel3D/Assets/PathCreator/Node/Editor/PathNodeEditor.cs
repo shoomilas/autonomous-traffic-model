@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using PathCreation;
 using PathCreation.Examples;
 using PathCreator.Aggregator;
 using UnityEditor;
+using UnityEditor.Graphs;
 using UnityEngine;
 using Object = System.Object;
 using PathCreator = PathCreation.PathCreator;
@@ -39,18 +41,58 @@ public class PathNodeEditor : Editor {
         SceneView.duringSceneGui -= CustomOnSceneGUI;
     }
 
+
+    private void DrawSelectionMarker(Transform transform, float size, Color color) {
+        var tmpColor = Handles.color;
+        Handles.color = color;
+        Handles.ConeHandleCap(
+            0,
+            transform.position + new Vector3(0f, size / 2, 0f) + Vector3.up * .5f,
+            transform.rotation * Quaternion.LookRotation(Vector3.down),
+            size/3,
+            EventType.Repaint
+        );
+        Handles.color = tmpColor;
+    }
+    private void DrawArrowsBetweenPoints(Vector3 pointA, Vector3 pointB, Color color, float maxArrowSize = .5f) {
+        var tmpColor = Handles.color;
+        Handles.color = color;
+        Vector3 difference = pointA - pointB;
+        var quaternion =  Quaternion.LookRotation(difference, Vector3.up);
+        var halfDistance = difference.magnitude;
+        var arrowSize = halfDistance < maxArrowSize ? halfDistance : maxArrowSize; 
+        Handles.ArrowHandleCap(
+            0,
+            pointB,
+            quaternion,
+            arrowSize,
+            EventType.Repaint
+        );
+        Handles.color = tmpColor;
+    }
+    
+    
     private void CustomOnSceneGUI(SceneView view) {
-        // var typedTarget = (PathNode)target;
-        // float size = 1f;
-        // Transform transform = typedTarget.transform;
-        // Handles.color = Color.red;
-        // Handles.ConeHandleCap(
-        //     0,
-        //     transform.position + new Vector3(0f, size / 2, 0f),
-        //     transform.rotation * Quaternion.LookRotation(Vector3.up),
-        //     size,
-        //     EventType.Repaint
-        // );
+        var typedTarget = (PathNode)target;
+        Transform transform = typedTarget.transform;
+        // arrows from
+        foreach (var spline  in typedTarget.SplinesOut.Select(x=>x.spline) ) {
+            if (spline.path.NumPoints > 1) {
+                var firstVertexPoint = spline.path.GetPoint(1); 
+                var position = transform.position;
+                DrawArrowsBetweenPoints(firstVertexPoint, position, Color.gray);
+            }
+        }
+        // arrows to
+        foreach (var node in typedTarget.previousPathNodes) {
+            foreach (var spline  in node.SplinesOut.Select(x=>x.spline) ) {
+                if (spline.path.NumPoints > 1) {
+                    var firstVertexPoint = spline.path.GetPoint(1); 
+                    var position = node.transform.position;
+                    DrawArrowsBetweenPoints(firstVertexPoint, position, Color.gray);
+                }
+            }
+        }
     }
 
     // private void OnSceneGUI() {
