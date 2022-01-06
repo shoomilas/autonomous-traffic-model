@@ -104,17 +104,20 @@ public class PathNodeEditor : Editor {
             PathNode.UpdateAllNodesSplineConnections();
         }
         
-        if (targets.Length > 1) {
+        if (targets.Length == 2) {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Remove Connections")) {
+            if (GUILayout.Button("Remove ALL Connections")) {
+                foreach (var target in targets) {
+                    ((PathNode)target).RemoveAllConnectionsForPathNode();
+                }
             }
-            if (GUILayout.Button("Remove Connection Between Selected")) {
+            if (GUILayout.Button("Remove Connection Between Selected 2")) {
                 ((PathNode)targets[1]).RemoveConnectionBetweenTwoNodesCaller((PathNode)targets[0]);
             }
             GUILayout.EndHorizontal();
         }
         else {
-            if (GUILayout.Button("Remove Connections")) {
+            if (GUILayout.Button("Remove ALL Connections")) {
                 typedTarget.RemoveAllConnectionsForPathNode();
             }
         }
