@@ -70,9 +70,46 @@ public class PathNodeEditor : Editor {
         );
         Handles.color = tmpColor;
     }
-    
-    
+
+    private void DrawClosestHandles(PathNode node) {
+        // arrows from
+        foreach (var spline  in node.SplinesOut.Select(x=>x.spline) ) {
+            if (spline.path.NumPoints > 1) {
+                var firstVertexPoint = spline.path.GetPoint(1); 
+                var position = node.transform.position;
+                DrawArrowsBetweenPoints(firstVertexPoint, position, Color.gray);
+            }
+        }
+        // arrows to
+        foreach (var previousNode in node.previousPathNodes) {
+            foreach (var spline  in previousNode.SplinesOut.Select(x=>x.spline) ) {
+                if (spline.path.NumPoints > 1) {
+                    var firstVertexPoint = spline.path.GetPoint(1); 
+                    var position = previousNode.transform.position;
+                    DrawArrowsBetweenPoints(firstVertexPoint, position, Color.gray);
+                }
+            }
+        }
+    }
+
     private void CustomOnSceneGUI(SceneView view) {
+        var typedTarget = (PathNode)target;
+        if(typedTarget.nextPathNodes.Count > 0) {
+            foreach (var node in typedTarget.nextPathNodes) {
+                if(node != null) {DrawClosestHandles(node);}
+                
+            }
+        }
+        if (typedTarget.previousPathNodes.Count > 0) {
+            foreach (var node in typedTarget.previousPathNodes) {
+                if (node != null) {
+                    DrawClosestHandles(node);
+                }
+            }
+        }
+    }
+
+    private void CustomOnSceneGUI2(SceneView view) {
         var typedTarget = (PathNode)target;
         Transform transform = typedTarget.transform;
         // arrows from
