@@ -29,6 +29,8 @@ public class PathNodeEditor : Editor {
     public static float newNodeOffset = 1f;
     public static float forwardOffset = 1f;
     public static float rightOffset = 1f;
+    public static bool createAsDst = false;
+    
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
     }
@@ -124,6 +126,13 @@ public class PathNodeEditor : Editor {
 
         GUILayout.BeginVertical();
         GUILayout.Space(spacerSize);
+        
+       
+            
+        GUILayout.BeginVertical();
+        createAsDst = GUILayout.Toggle(createAsDst, "(create new node as SRC)");
+        GUILayout.EndHorizontal();
+
         
         GUILayout.BeginHorizontal();
         newNodeOffset = EditorGUILayout.FloatField("(A) Create new node: ", newNodeOffset);
