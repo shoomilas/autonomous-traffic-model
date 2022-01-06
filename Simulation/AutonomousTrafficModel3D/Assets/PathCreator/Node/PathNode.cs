@@ -159,6 +159,7 @@ namespace PathCreator.Aggregator {
         
             // Create new GameObject
             GameObject go = new GameObject("Spline");
+            Undo.RegisterCreatedObjectUndo(go, "Create spline");
             var foo = go.AddComponent<PathCreation.PathCreator>();
             foo.bezierPath = bezier;
             var name1 = node1.transform.name;
@@ -259,33 +260,38 @@ namespace PathCreator.Aggregator {
         }
         
         public PathNode CreateNewNodeWithForwardRightOffset(float forwardOffset, float rightOffset) {
-            return null;
+            var tr = this.transform;
+            var newNode = PathNode.MakePathNode(this);
+            var transform = newNode.transform;
+            transform.parent = tr.transform.parent;
+            transform.position = tr.position + Vector3.forward * forwardOffset + Vector3.right * rightOffset;
+            transform.name = $"Path Node {PathNodeManager.NodeCounter}";
+            PathNodeManager.NodeCounter += 1;
+            this.nextPathNodes.Add(newNode);
+            
+            Undo.RecordObject(this.transform.parent, "Add new Path Node");
+            var newSpline = AddSplineBetweenPathNodes(this, newNode);
+            var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
+            this.SplinesOut.Add(splineData);
+            PathNodeHelper.SelectObject(newNode.gameObject);
+            return newNode;
         }
         public PathNode CreateNewNodeInSpecifiedDirectionWithDefinedOffset(float offset, Vector3 direction) {
             var tr = this.transform;
-            var goo = PathNode.MakePathNode(this);
-            var transform = goo.transform;
+            var newNode = PathNode.MakePathNode(this);
+            var transform = newNode.transform;
             transform.parent = tr.transform.parent;
             transform.position = tr.position + direction * offset;
             transform.name = $"Path Node {PathNodeManager.NodeCounter}";
             PathNodeManager.NodeCounter += 1;
+            this.nextPathNodes.Add(newNode);
             
-            // TODO: Create spline
-            
-            this.nextPathNodes.Add(goo);
-            return goo;
-        }
-        
-        public PathNode AddPathNode() {
-            var tr = this.transform;
-            var goo = PathNode.MakePathNode(this);
-            var transform = goo.transform;
-            transform.parent = tr.transform.parent;
-            transform.position = tr.position + Vector3.right + Vector3.forward;
-            transform.name = $"Path Node {PathNodeManager.NodeCounter}";
-            PathNodeManager.NodeCounter += 1;
-            this.nextPathNodes.Add(goo);
-            return goo;
+            Undo.RecordObject(this.transform.parent, "Add new Path Node");
+            var newSpline = AddSplineBetweenPathNodes(this, newNode);
+            var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
+            this.SplinesOut.Add(splineData);
+            PathNodeHelper.SelectObject(newNode.gameObject);
+            return newNode;
         }
         
 
