@@ -107,7 +107,6 @@ public class PathNodeEditor : Editor {
         if (targets.Length > 1) {
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Remove Connections")) {
-                
             }
             if (GUILayout.Button("Remove Connection Between Selected")) {
                 ((PathNode)targets[1]).RemoveConnectionBetweenTwoNodesCaller((PathNode)targets[0]);
@@ -116,7 +115,7 @@ public class PathNodeEditor : Editor {
         }
         else {
             if (GUILayout.Button("Remove Connections")) {
-                
+                typedTarget.RemoveAllConnectionsForPathNode();
             }
         }
 

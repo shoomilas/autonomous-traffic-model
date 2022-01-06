@@ -231,9 +231,11 @@ namespace PathCreator.Aggregator {
             var d = nextPathNodes.Remove(this);
             node2.previousPathNodes.Remove(this);
             previousPathNodes.Remove(node2);
-            
         }
-        
+
+        public void RemoveAllConnectionsForPathNode() {
+            nextPathNodes.Concat(previousPathNodes).ToList().ForEach(RemoveConnectionBetweenTwoNodesCaller);
+        }
 
         public static void DeletePathNode(PathNode node) {
             var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
