@@ -24,10 +24,11 @@ public class PathNodeEditor : Editor {
     const string TextUpdateClosestPathNodesButton = "Update Closest Path Nodes";
     private const string TextUpdateAllPathNodesButton = "[!] Update All Path Nodes";
     private const string TextConnectNodesLabel = "Node to connect (as next node):";
-    const string TextConnectNodesFirstAsSrcLabel = "Connect with first as SRC";
-    const string TextConnectNodesFirstAsDstLabel = "Connect with first as DST";
+    const string TextConnectNodesFirstAsSrcLabel = "Connect with second as DST";
+    const string TextConnectNodesFirstAsDstLabel = "Connect with second as SRC";
     private const string TextCreateNewNode = "Create new node";
     
+    public static int NodeCounter = 0;
     public static float newNodeOffset = 1f;
     public static float forwardOffset = 1f;
     public static float rightOffset = 1f;
@@ -319,9 +320,6 @@ public class PathNodeEditor : Editor {
         node1.SplinesOut.Add(splineOutData);
         return foo;
     }
-
-    public static int NodeCounter = 0;
-    public static int SplineCounter = 0;
 
     private PathNode AddPathNode(PathNode node) {
         // TODO: adding existing pathnodes - do not add as children then
