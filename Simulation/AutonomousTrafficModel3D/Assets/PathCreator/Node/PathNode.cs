@@ -207,10 +207,39 @@ namespace PathCreator.Aggregator {
             return foo;
         }
 
+        
+        public void RemoveConnectionBetweenTwoNodesCaller(PathNode node2) {
+            this.RemoveConnectionBetweenTwoNodes(node2);
+            node2.RemoveConnectionBetweenTwoNodes(this);
+        }
+        
+        public void RemoveConnectionBetweenTwoNodes(PathNode node2) {
+            var c = SplinesOut.FirstOrDefault(data => data.dstNode == node2);
+            if (c != null) {
+                SplinesOut.Remove(c);
+                Undo.DestroyObjectImmediate(c.spline);
+            }
+            
+            // var d = nextPathNodes.Remove(this);
+            var e = SplinesOut.FirstOrDefault(data => data.dstNode == this);
+            if (e != null) {
+                SplinesOut.Remove(e);
+                Undo.DestroyObjectImmediate(e.spline);
+            }
+
+            var b = nextPathNodes.Remove(node2);
+            var d = nextPathNodes.Remove(this);
+            node2.previousPathNodes.Remove(this);
+            previousPathNodes.Remove(node2);
+            
+        }
+        
+
         public static void DeletePathNode(PathNode node) {
             var firstPreviousNode = node.previousPathNodes.FirstOrDefault();
             RemoveSplinesLeadingToGivenPathNode(node);
             RemoveSplinesFollowingPathNode(node);
+            Undo.DestroyObjectImmediate(node.gameObject);
             if (firstPreviousNode != null) {
                 PathNodeHelper.SelectObject(firstPreviousNode.gameObject);
             }
@@ -225,6 +254,9 @@ namespace PathCreator.Aggregator {
         }
         
         public static void RemoveDstPathNodeAndSplines(PathNode srcNode, PathNode dstNode) {
+            if (dstNode == null) {
+                // TODO:
+            }
             srcNode.SplinesOut
                 .Where(splineOutData => splineOutData.dstNode == dstNode)
                 .ToList()
@@ -234,6 +266,7 @@ namespace PathCreator.Aggregator {
         public void RemoveSplineOutDataFromPathNode(SplineOutData splineOut) {
             Undo.RecordObject(this,"Remove a splineOutData path node entry");
             Undo.DestroyObjectImmediate(splineOut.spline.gameObject);
+            
             this.SplinesOut.Remove(splineOut);
         }
         
@@ -244,7 +277,6 @@ namespace PathCreator.Aggregator {
                     next.previousPathNodes.Remove(removedPathNode);
                 }
             });
-            Undo.DestroyObjectImmediate(removedPathNode.gameObject);
         } 
         
         private static void RemovePathNodeFromPreviousAndFollowing(PathNode node) { // Obsolete

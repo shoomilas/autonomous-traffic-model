@@ -110,12 +110,12 @@ public class PathNodeEditor : Editor {
                 
             }
             if (GUILayout.Button("Remove Connection Between Selected")) {
-                
+                ((PathNode)targets[1]).RemoveConnectionBetweenTwoNodesCaller((PathNode)targets[0]);
             }
             GUILayout.EndHorizontal();
         }
         else {
-            if (GUILayout.Button("Remove Connection Between Selected")) {
+            if (GUILayout.Button("Remove Connections")) {
                 
             }
         }
