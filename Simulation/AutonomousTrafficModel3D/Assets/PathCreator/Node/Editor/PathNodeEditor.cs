@@ -139,22 +139,22 @@ public class PathNodeEditor : Editor {
         PathNode newNode = null;
         if (GUILayout.Button("←")) {
             UndoNodeAction(TextCreateNewNode, typedTarget);
-            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.left);
+            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.left, createAsDst);
         }
 
         if (GUILayout.Button("↑")) {
             UndoNodeAction(TextCreateNewNode, typedTarget);
-            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.forward);
+            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.forward, createAsDst);
         }
 
         if (GUILayout.Button("↓")) {
             UndoNodeAction(TextCreateNewNode, typedTarget);
-            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.back);
+            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.back, createAsDst);
         }
 
         if (GUILayout.Button("→")) {
             UndoNodeAction(TextCreateNewNode, typedTarget);
-            newNode = typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.right);
+            newNode = typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.right, createAsDst);
         }
         if (newNode != null) {
             PathNodeHelper.SelectObject(newNode.gameObject);

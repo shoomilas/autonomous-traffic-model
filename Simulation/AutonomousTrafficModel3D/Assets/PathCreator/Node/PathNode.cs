@@ -205,6 +205,14 @@ namespace PathCreator.Aggregator {
             Gizmos.DrawWireSphere(transform.position, size/5);
         }
 
+        public static PathNode MakePathNodeAsPrevious(PathNode nextNode) {
+            GameObject go = new GameObject($"Path Node");
+            Undo.RegisterCreatedObjectUndo(go, "Make Path Node");
+            var foo = go.AddComponent<PathNode>();
+            nextNode.previousPathNodes.Add(foo);
+            return foo;
+        }
+        
         public static PathNode MakePathNode(PathNode previousNode) {
             GameObject go = new GameObject($"Path Node");
             Undo.RegisterCreatedObjectUndo(go, "Make Path Node");
@@ -317,20 +325,35 @@ namespace PathCreator.Aggregator {
             PathNodeHelper.SelectObject(newNode.gameObject);
             return newNode;
         }
-        public PathNode CreateNewNodeInSpecifiedDirectionWithDefinedOffset(float offset, Vector3 direction) {
+        public PathNode CreateNewNodeInSpecifiedDirectionWithDefinedOffset(float offset, Vector3 direction, bool createNewAsDst = false) {
             var tr = this.transform;
-            var newNode = PathNode.MakePathNode(this);
+            PathNode newNode;
+            PathCreation.PathCreator newSpline;
+            
+            newNode = !createNewAsDst ? PathNode.MakePathNode(this) : PathNode.MakePathNodeAsPrevious(this);
+
             var transform = newNode.transform;
             transform.parent = tr.transform.parent;
             transform.position = tr.position + direction * offset;
             transform.name = $"Path Node {PathNodeManager.NodeCounter}";
             PathNodeManager.NodeCounter += 1;
-            this.nextPathNodes.Add(newNode);
             
-            Undo.RecordObject(this.transform.parent, "Add new Path Node");
-            var newSpline = AddSplineBetweenPathNodes(this, newNode);
-            var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
-            this.SplinesOut.Add(splineData);
+            // TODO: Move adding nextPathNodes to node creating method (MakePathNode)
+            if (!createNewAsDst) {
+                this.nextPathNodes.Add(newNode);
+                Undo.RecordObject(this.transform.parent, "Add new Path Node");
+                newSpline = AddSplineBetweenPathNodes(this, newNode);
+                var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode);
+                this.SplinesOut.Add(splineData);
+            }
+            else {
+                newNode.nextPathNodes.Add(this);
+                Undo.RecordObject(this.transform.parent, "Add new Path Node");
+                newSpline = AddSplineBetweenPathNodes(newNode, this);
+                var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode); // TODO: Specified direction
+                newNode.SplinesOut.Add(splineData);
+            }
+            
             PathNodeHelper.SelectObject(newNode.gameObject);
             return newNode;
         }
