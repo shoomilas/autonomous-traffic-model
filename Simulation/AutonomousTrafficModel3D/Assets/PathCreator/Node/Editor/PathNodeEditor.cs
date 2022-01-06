@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using PathCreation;
 using PathCreation.Examples;
 using PathCreator.Aggregator;
@@ -102,6 +103,22 @@ public class PathNodeEditor : Editor {
         if (GUILayout.Button(TextUpdateAllPathNodesButton)) {
             PathNode.UpdateAllNodesSplineConnections();
         }
+        
+        if (targets.Length > 1) {
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Remove Connections")) {
+                
+            }
+            if (GUILayout.Button("Remove Connection Between Selected")) {
+                
+            }
+            GUILayout.EndHorizontal();
+        }
+        else {
+            if (GUILayout.Button("Remove Connection Between Selected")) {
+                
+            }
+        }
 
         GUILayout.BeginVertical();
         GUILayout.Space(spacerSize);
@@ -165,7 +182,10 @@ public class PathNodeEditor : Editor {
             GUILayout.EndHorizontal();
         }
         else {
-            var label = $"First: {target.name} | Second:";
+            var label = "First: - | Second:";
+            if (target != null) {
+                label = $"First: {target.name} | Second:";   
+            }
             PathNodeToConnectTo = (PathNode)EditorGUILayout
                 .ObjectField(label, PathNodeToConnectTo, typeof(PathNode), true);
             GUILayout.BeginHorizontal();
@@ -179,7 +199,7 @@ public class PathNodeEditor : Editor {
             }            
             GUILayout.EndHorizontal();
         }
-        
+
         GUILayout.EndVertical();
     }
 
@@ -205,8 +225,19 @@ public class PathNodeEditor : Editor {
     }
 
     private void UndoNodeAction(string undoString, PathNode node) {
-        node.nextPathNodes.ForEach(_=>Undo.RegisterCompleteObjectUndo(_, undoString));
-        node.previousPathNodes.ForEach(_ => {
+        var toClear = false;
+        node.nextPathNodes?.ForEach(_ => {
+                if (_ == null) {
+                    toClear = true; 
+                } 
+                else
+                {
+                    Undo.RegisterCompleteObjectUndo(_, undoString);
+                }
+            }
+        );
+        if(toClear) { node.nextPathNodes.Clear(); }
+        node.previousPathNodes?.ForEach(_ => {
             Undo.RegisterCompleteObjectUndo(_, undoString);
         });
         Undo.RegisterCompleteObjectUndo(node, undoString);
