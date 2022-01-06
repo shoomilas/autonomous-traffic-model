@@ -23,7 +23,11 @@ public class PathNodeEditor : Editor {
     private const string TextConnectNodesLabel = "Node to connect (as next node):";
     const string TextConnectNodesFirstAsSrcLabel = "Connect with first as SRC";
     const string TextConnectNodesFirstAsDstLabel = "Connect with first as DST";
+    private const string TextCreateNewNode = "Create new node";
     
+    public float newNodeOffset = 1f;
+    public float forwardOffset = 1f;
+    public float rightOffset = 1f;
     private void OnEnable() {
         SceneView.duringSceneGui += CustomOnSceneGUI;
     }
@@ -103,24 +107,44 @@ public class PathNodeEditor : Editor {
         GUILayout.Space(spacerSize);
         
         GUILayout.BeginHorizontal();
-        float amount = 1f;
-        GUILayout.Label("(A) Create new node");
-        EditorGUILayout.FloatField(amount);
-        GUILayout.Button("←");
-        GUILayout.Button("↑");
-        GUILayout.Button("↓");
-        GUILayout.Button("→");
+        newNodeOffset = EditorGUILayout.FloatField("(A) Create new node: ", newNodeOffset);
+        PathNode newNode = null;
+        if (GUILayout.Button("←")) {
+            UndoNodeAction(TextCreateNewNode, typedTarget);
+            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.left);
+        }
+
+        if (GUILayout.Button("↑")) {
+            UndoNodeAction(TextCreateNewNode, typedTarget);
+            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.forward);
+        }
+
+        if (GUILayout.Button("↓")) {
+            UndoNodeAction(TextCreateNewNode, typedTarget);
+            newNode =  typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.back);
+        }
+
+        if (GUILayout.Button("→")) {
+            UndoNodeAction(TextCreateNewNode, typedTarget);
+            newNode = typedTarget.CreateNewNodeInSpecifiedDirectionWithDefinedOffset(newNodeOffset, Vector3.right);
+        }
+        if (newNode != null) {
+            PathNodeHelper.SelectObject(newNode.gameObject);
+        }
+        
         GUILayout.EndHorizontal();
         
         GUILayout.BeginHorizontal();
-        float forward = 1f;
-        float right = 1f;
         GUILayout.Label("(B) Create new node: ");
         GUILayout.Label("↑");
-        EditorGUILayout.FloatField(forward);
+        forwardOffset = EditorGUILayout.FloatField(forwardOffset);
         GUILayout.Label("→");
-        EditorGUILayout.FloatField(right);
-        GUILayout.Button("Create");
+        rightOffset = EditorGUILayout.FloatField(rightOffset);
+        if (GUILayout.Button("Create")) {
+            newNode = typedTarget.CreateNewNodeWithForwardRightOffset(forwardOffset, rightOffset);
+            if (newNode != null) { PathNodeHelper.SelectObject(newNode.gameObject); }
+        }
+        
         GUILayout.EndHorizontal();
         
         GUILayout.Space(spacerSize);

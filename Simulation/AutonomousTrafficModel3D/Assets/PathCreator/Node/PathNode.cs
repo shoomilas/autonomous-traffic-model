@@ -199,6 +199,7 @@ namespace PathCreator.Aggregator {
 
         public static PathNode MakePathNode(PathNode previousNode) {
             GameObject go = new GameObject($"Path Node");
+            Undo.RegisterCreatedObjectUndo(go, "Make Path Node");
             var foo = go.AddComponent<PathNode>();
             foo.previousPathNodes.Add(previousNode);
             return foo;
@@ -256,6 +257,37 @@ namespace PathCreator.Aggregator {
                 }
             });
         }
+        
+        public PathNode CreateNewNodeWithForwardRightOffset(float forwardOffset, float rightOffset) {
+            return null;
+        }
+        public PathNode CreateNewNodeInSpecifiedDirectionWithDefinedOffset(float offset, Vector3 direction) {
+            var tr = this.transform;
+            var goo = PathNode.MakePathNode(this);
+            var transform = goo.transform;
+            transform.parent = tr.transform.parent;
+            transform.position = tr.position + direction * offset;
+            transform.name = $"Path Node {PathNodeManager.NodeCounter}";
+            PathNodeManager.NodeCounter += 1;
+            
+            // TODO: Create spline
+            
+            this.nextPathNodes.Add(goo);
+            return goo;
+        }
+        
+        public PathNode AddPathNode() {
+            var tr = this.transform;
+            var goo = PathNode.MakePathNode(this);
+            var transform = goo.transform;
+            transform.parent = tr.transform.parent;
+            transform.position = tr.position + Vector3.right + Vector3.forward;
+            transform.name = $"Path Node {PathNodeManager.NodeCounter}";
+            PathNodeManager.NodeCounter += 1;
+            this.nextPathNodes.Add(goo);
+            return goo;
+        }
+        
 
         public Vector3 AnchorPoint
         {
