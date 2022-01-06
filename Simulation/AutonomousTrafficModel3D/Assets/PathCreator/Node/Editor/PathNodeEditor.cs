@@ -72,8 +72,14 @@ public class PathNodeEditor : Editor {
     }
 
     private void DrawClosestHandles(PathNode node) {
+        // next
+        // previous
+        // splineout: spline, dstNode
+            
         // arrows from
-        foreach (var spline  in node.SplinesOut.Select(x=>x.spline) ) {
+        foreach (var splineOut  in node.SplinesOut ) {
+            if (splineOut.spline == null || splineOut.dstNode == null) {continue;}
+            var spline = splineOut.spline;
             if (spline.path.NumPoints > 1) {
                 var firstVertexPoint = spline.path.GetPoint(1); 
                 var position = node.transform.position;
@@ -82,7 +88,10 @@ public class PathNodeEditor : Editor {
         }
         // arrows to
         foreach (var previousNode in node.previousPathNodes) {
-            foreach (var spline  in previousNode.SplinesOut.Select(x=>x.spline) ) {
+            if (previousNode.SplinesOut == null) {continue;}
+            foreach (var splineOut  in previousNode.SplinesOut ) {
+                if (splineOut.spline == null || splineOut.dstNode == null) {continue;}
+                var spline = splineOut.spline;
                 if (spline.path.NumPoints > 1) {
                     var firstVertexPoint = spline.path.GetPoint(1); 
                     var position = previousNode.transform.position;
