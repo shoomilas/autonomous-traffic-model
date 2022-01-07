@@ -24,10 +24,24 @@ namespace PathCreator.Vehicles {
         public int hardInstantiationLimit = 5;
         [Range(.1f, 10)] public float interval = 1;
         [Range(.1f, 10)] public float gizmoSize = .5f;
+        [Range(.1f, 10000)] public float speedMax = 8f;
+        [Range(.1f, 10000)] public float speedMin = 30f;
+        [Range(.1f, 10000)] public float acceleration = 30f;
+        [Range(.1f, 10000)] public float brakeSpeed = 100f;
+        [Range(.1f, 10000)] public float idleSlowdown = 10f;
+        [Range(.1f, 10000)] public float turnSpeedMax = 900f;
+        [Range(.1f, 10000)] public float turnSpeedAcceleration = 900f;
+        [Range(.1f, 10000)] public float turnIdleSlowdown = 500f;
+        
+        
+        [InspectorName("Offset (Initial Delay)")]        
+        [Range(.1f, 10)] public float offset = 0f;
 
         public GameObject vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
         public PathProviderMethod providerMethod = PathProviderMethod.AlwaysRandomRightForward;
+        
+        
         void Start() {
             StartCoroutine(InstantiatorWithPathProviderMethod());
         }
@@ -67,23 +81,31 @@ namespace PathCreator.Vehicles {
             var spawnHeight = 0.05f;
             var position = transform.position;
             var quaternion = PrepVehicleSpawnQuaternion();
-            
-            var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
-            var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
-            vehicleComponent.ProviderMethod = providerMethod;
-            vehicleComponent.startNode = gameObject.GetComponent<PathNode>();
-            vehicleComponent.follower.reachedTargetDistance = 2.5f;
-            vehicleComponent.shouldLoop = shouldLoop;
-            yield return new WaitForSeconds(interval);
-            if (recurring) {
-                for (int i = 1; i < hardInstantiationLimit; i++) {
-                    var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
-                    var anotherVehicle = anotherVehicleGO.InstantiateComponent<Vehicle>();
-                    anotherVehicle.ProviderMethod = providerMethod;
-                    anotherVehicle.startNode = GetComponent<PathNode>();
-                    anotherVehicle.shouldLoop = shouldLoop;
-                    yield return new WaitForSeconds(interval);
+
+            yield return new WaitForSeconds(0.33f);  // without this delay, the first car is always a bit behind
+            for (int i = 0; i < hardInstantiationLimit; i ++ ) {
+                var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
+                var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
+                vehicleComponent.ProviderMethod = providerMethod;
+                vehicleComponent.startNode = gameObject.GetComponent<PathNode>();
+                vehicleComponent.follower.reachedTargetDistance = 2.5f;
+                vehicleComponent.shouldLoop = shouldLoop;
+                vehicleComponent.controller.speedMax = speedMax;
+                vehicleComponent.controller.speedMax = speedMax; 
+                vehicleComponent.controller.speedMin = speedMin; 
+                vehicleComponent.controller.acceleration = acceleration; 
+                vehicleComponent.controller.brakeSpeed = brakeSpeed; 
+                vehicleComponent.controller.idleSlowdown = idleSlowdown; 
+                vehicleComponent.controller.turnSpeedMax = turnSpeedMax; 
+                vehicleComponent.controller.turnSpeedAcceleration = turnSpeedAcceleration; 
+                vehicleComponent.controller.turnIdleSlowdown = turnIdleSlowdown; 
+                
+                
+                if (!recurring) {
+                    yield break;
                 }
+
+                yield return new WaitForSeconds(interval);
             }
         }
     }
