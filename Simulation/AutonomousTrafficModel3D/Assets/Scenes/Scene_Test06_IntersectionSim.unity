@@ -464,6 +464,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: vehiclePrefab
+      value: 
+      objectReference: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: hardInstantiationLimit
       value: 20
       objectReference: {fileID: 0}
@@ -472,17 +476,29 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: vehiclePrefab
+      value: 
+      objectReference: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: hardInstantiationLimit
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3604847618837273330, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3604847618837273330, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: vehiclePrefab
+      value: 
+      objectReference: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
     - target: {fileID: 6717677925765714118, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6717677925765714118, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: vehiclePrefab
+      value: 
+      objectReference: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
     - target: {fileID: 8894630216056681348, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -530,6 +546,10 @@ PrefabInstance:
     - target: {fileID: 8894630216056681355, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: m_Name
       value: Intersection Info
+      objectReference: {fileID: 0}
+    - target: {fileID: 8894630216112153609, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: keepFullHandlesWhenDeselected
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
