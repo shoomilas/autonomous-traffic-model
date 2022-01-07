@@ -14,6 +14,9 @@ namespace PathCreator.Vehicles {
         FirstFound,
         AlwaysRight,
         AlwaysForward,
+        AlwaysLeft,
+        Random,
+        RandomRightForward,
     }
 
     public class VehiclePathProvider : MonoBehaviour, IVehiclePathProvider {
