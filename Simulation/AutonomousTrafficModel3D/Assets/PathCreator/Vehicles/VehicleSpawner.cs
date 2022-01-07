@@ -52,12 +52,13 @@ namespace PathCreator.Vehicles {
             }
         }
         
-        IEnumerator InstantiatorWithPathProviderMethod(PathProviderMethod providerMethod = PathProviderMethod.AlwaysRandomRightForward, bool shouldLoop = true) {
+        IEnumerator InstantiatorWithPathProviderMethod(bool shouldLoop = true) {
             var spawnHeight = 0.05f;
             var position = transform.position;
             var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
             var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
-            vehicleComponent.vehiclePathProvider.CurrentMethod = providerMethod;
+            // vehicleComponent.vehiclePathProvider.CurrentMethod = providerMethod;
+            vehicleComponent.follower.reachedTargetDistance = 2.5f;
             vehicleComponent.startNode = GetComponent<PathNode>();
             vehicleComponent.shouldLoop = shouldLoop;
 
@@ -65,13 +66,10 @@ namespace PathCreator.Vehicles {
             if (recurring) {
                 for (int i = 1; i < hardInstantiationLimit; i++) {
                     var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
-                    var anotherVehicle = vehicle.InstantiateComponent<Vehicle>();
-                    anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
+                    var anotherVehicle = anotherVehicleGO.InstantiateComponent<Vehicle>();
+                    // anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
                     anotherVehicle.startNode = GetComponent<PathNode>();
                     anotherVehicle.shouldLoop = shouldLoop;
-                    // var anotherVehicle = Instantiate(vehiclePrefab, position + Vector3.up * spawnHeight, Quaternion.identity);
-                    // anotherVehicle.AddComponent<Rigidbody>();
-                    // vehicle.AddComponent<Vehicle>();
                     yield return new WaitForSeconds(interval);
                 }
             }

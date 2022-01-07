@@ -666,6 +666,7 @@ GameObject:
   m_Component:
   - component: {fileID: 310631400}
   - component: {fileID: 310631399}
+  - component: {fileID: 310631401}
   m_Layer: 0
   m_Name: Path Node 6
   m_TagString: Untagged
@@ -705,6 +706,19 @@ Transform:
   m_Father: {fileID: 1855684333}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &310631401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310631398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a62f9212904d5dafa7c01bb983798b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 1.64
 --- !u!1 &313176339
 GameObject:
   m_ObjectHideFlags: 0
@@ -1726,6 +1740,7 @@ GameObject:
   m_Component:
   - component: {fileID: 819217639}
   - component: {fileID: 819217640}
+  - component: {fileID: 819217641}
   m_Layer: 0
   m_Name: Path Node 4
   m_TagString: Untagged
@@ -1764,6 +1779,19 @@ MonoBehaviour:
   nextPathNodes: []
   previousPathNodes:
   - {fileID: 109672123}
+--- !u!114 &819217641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819217638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a62f9212904d5dafa7c01bb983798b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 2.3
 --- !u!1 &877988202
 GameObject:
   m_ObjectHideFlags: 0
@@ -3071,7 +3099,7 @@ MonoBehaviour:
     splineDirection: 2
     dstNode: {fileID: 2093936968}
   - spline: {fileID: 1132179436}
-    splineDirection: 0
+    splineDirection: 3
     dstNode: {fileID: 109672123}
   nextPathNodes:
   - {fileID: 723287496}
@@ -3718,6 +3746,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1574667737}
   - component: {fileID: 1574667736}
+  - component: {fileID: 1574667738}
   m_Layer: 0
   m_Name: PathNode0
   m_TagString: Untagged
@@ -3758,6 +3787,19 @@ Transform:
   m_Father: {fileID: 1855684333}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1574667738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1574667735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a62f9212904d5dafa7c01bb983798b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 1.75
 --- !u!1 &1576872568
 GameObject:
   m_ObjectHideFlags: 0
@@ -4356,9 +4398,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83c919a5986344759abd231aba9a3173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  recurring: 0
-  hardInstantiationLimit: 5
-  interval: 1
+  recurring: 1
+  hardInstantiationLimit: 18
+  interval: 1.02
   gizmoSize: 0.5
   vehiclePrefab: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
   Vehicles: []
