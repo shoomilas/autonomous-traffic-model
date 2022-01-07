@@ -27,8 +27,9 @@ namespace PathCreator.Vehicles {
             var path = currentMethod switch
             {
                 PathProviderMethod.FirstFound => GetPathNodes(startNode),
-                PathProviderMethod.AlwaysRight => GetPathNodesAlwaysRightOnBranched(startNode),
-                PathProviderMethod.AlwaysForward => GetPathNodesAlwaysForwardOrUnknownOnBranched(startNode),
+                PathProviderMethod.AlwaysRight => GetPathNodesAlwaysInDirection(startNode, Direction.Right),
+                PathProviderMethod.AlwaysForward => GetPathNodesAlwaysInDirection(startNode, Direction.Forward),
+                PathProviderMethod.AlwaysLeft => GetPathNodesAlwaysInDirection(startNode, Direction.Left),
                 _ => GetPathNodes(startNode)
             };
             return path.ToList();
@@ -43,69 +44,12 @@ namespace PathCreator.Vehicles {
                 yield return currentNode;
             }
         }
-
-        private PathNode FindNextNodeInExpectedDirectionOrGetFirst(PathNode firstNode, Direction direction, bool shouldGetFirstIfNotFound = true) {
-            PathNode nextNode;
-            try {
-                nextNode = firstNode.SplinesOut.Find(_ => _.splineDirection == direction).dstNode;
-            }
-            catch {
-                if (shouldGetFirstIfNotFound) {
-                    nextNode = firstNode.SplinesOut.FirstOrDefault()?.dstNode;
-                }
-                else {
-                    nextNode = null;
-                }
-            }
-
-            return nextNode;
-        }
-
-        public IEnumerable<PathNode> GetPathNodesAlwaysRightOrUnknownOnBranched(PathNode firstNode) {
-            yield return firstNode;
-            var iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Right);
-            while (iteratorNode!=null) {
-                var currentNode = iteratorNode;
-                iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Right);
-                yield return currentNode;
-            }
-        }
         
-        public IEnumerable<PathNode> GetPathNodesAlwaysForwardOrUnknownOnBranched(PathNode firstNode) {
-        //     yield return firstNode;
-        //     var iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
-        //     while (iteratorNode!=null) {
-        //         var currentNode = iteratorNode;
-        //         iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
-        //         yield return currentNode;
-        //     }
-        // }
+        public IEnumerable<PathNode> GetPathNodesAlwaysInDirection(PathNode firstNode, Direction direction) {
             yield return firstNode;
             PathNode iteratorNode;
             try {
-                iteratorNode = firstNode.SplinesOut.Find(_ => _.splineDirection == Direction.Forward).dstNode;
-            }
-            catch {
-                iteratorNode = firstNode.SplinesOut.FirstOrDefault()?.dstNode;
-            }
-                
-            while (iteratorNode!=null) {
-                var currentNode = iteratorNode;
-                try {
-                    iteratorNode = currentNode.SplinesOut.Find(_ => _.splineDirection == Direction.Forward).dstNode;
-                }
-                catch {
-                    iteratorNode = currentNode.SplinesOut.FirstOrDefault()?.dstNode;
-                }
-                yield return currentNode;
-            }
-        }
-
-        public IEnumerable<PathNode> GetPathNodesAlwaysRightOnBranched(PathNode firstNode) {
-            yield return firstNode;
-            PathNode iteratorNode;
-            try {
-                iteratorNode = firstNode.SplinesOut.Find(_ => _.splineDirection == Direction.Right).dstNode;
+                iteratorNode = firstNode.SplinesOut.Find(_ => _.splineDirection == direction).dstNode;
             }
             catch {
                 iteratorNode = firstNode.SplinesOut.FirstOrDefault()?.dstNode;
@@ -114,7 +58,7 @@ namespace PathCreator.Vehicles {
             while (iteratorNode!=null) {
                 var currentNode = iteratorNode;
                 try {
-                    iteratorNode = currentNode.SplinesOut.Find(_ => _.splineDirection == Direction.Right).dstNode;
+                    iteratorNode = currentNode.SplinesOut.Find(_ => _.splineDirection == direction).dstNode;
                 }
                 catch {
                     iteratorNode = currentNode.SplinesOut.FirstOrDefault()?.dstNode;
