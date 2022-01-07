@@ -402,6 +402,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 369659078637859771, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: size
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 393522507724286205, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: size
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 561753650663482716, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -411,8 +419,24 @@ PrefabInstance:
       value: 39
       objectReference: {fileID: 0}
     - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: offset
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: interval
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: maxSpeed
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: speedMin
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: gizmoSize
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: recurring
@@ -422,6 +446,18 @@ PrefabInstance:
       propertyPath: vehiclePrefab
       value: 
       objectReference: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: providerMethod
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: reachedTargetDistance
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: turnSpeedAcceleration
+      value: 900
+      objectReference: {fileID: 0}
     - target: {fileID: 2273681782039178751, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: hardInstantiationLimit
       value: 100
@@ -431,8 +467,20 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: interval
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: maxSpeed
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: speedMin
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: gizmoSize
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: recurring
@@ -442,6 +490,18 @@ PrefabInstance:
       propertyPath: vehiclePrefab
       value: 
       objectReference: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: providerMethod
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: reachedTargetDistance
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
+      propertyPath: turnSpeedAcceleration
+      value: 900
+      objectReference: {fileID: 0}
     - target: {fileID: 2611687268267921900, guid: 66f9ecf94806fd949aa8cf2d2860c170, type: 3}
       propertyPath: hardInstantiationLimit
       value: 100

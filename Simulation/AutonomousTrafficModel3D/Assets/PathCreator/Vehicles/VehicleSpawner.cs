@@ -22,20 +22,23 @@ namespace PathCreator.Vehicles {
     public class VehicleSpawner : MonoBehaviour {
         public bool recurring = false;
         public int hardInstantiationLimit = 5;
+        [InspectorName("Offset (Initial Delay)")]        
+        [Range(.1f, 10)] public float offset = 0f;
         [Range(.1f, 10)] public float interval = 1;
-        [Range(.1f, 10)] public float gizmoSize = .5f;
+        [Range(.01f, 10f)] public float reachedTargetDistance = 3.5f;
+        [Range(.1f, 3000f)] public float stoppingSpeed = 40f;
+        [Range(.1f, 3000f)] public float onReachedTargetBreakEngageSpeed = 15f;
+        
+        [Range(.1f, 10)] public float gizmoSize = 2.5f;
         [Range(.1f, 10000)] public float speedMax = 8f;
-        [Range(.1f, 10000)] public float speedMin = 30f;
+        [Range(.1f, 10000)] public float speedMin = 0f;
         [Range(.1f, 10000)] public float acceleration = 30f;
         [Range(.1f, 10000)] public float brakeSpeed = 100f;
         [Range(.1f, 10000)] public float idleSlowdown = 10f;
         [Range(.1f, 10000)] public float turnSpeedMax = 900f;
         [Range(.1f, 10000)] public float turnSpeedAcceleration = 900f;
         [Range(.1f, 10000)] public float turnIdleSlowdown = 500f;
-        
-        
-        [InspectorName("Offset (Initial Delay)")]        
-        [Range(.1f, 10)] public float offset = 0f;
+
 
         public GameObject vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
@@ -83,9 +86,12 @@ namespace PathCreator.Vehicles {
             var quaternion = PrepVehicleSpawnQuaternion();
 
             yield return new WaitForSeconds(0.33f);  // without this delay, the first car is always a bit behind
+
+            yield return new WaitForSeconds(offset);
             for (int i = 0; i < hardInstantiationLimit; i ++ ) {
                 var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
                 var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
+                
                 vehicleComponent.ProviderMethod = providerMethod;
                 vehicleComponent.startNode = gameObject.GetComponent<PathNode>();
                 vehicleComponent.follower.reachedTargetDistance = 2.5f;
@@ -98,9 +104,11 @@ namespace PathCreator.Vehicles {
                 vehicleComponent.controller.idleSlowdown = idleSlowdown; 
                 vehicleComponent.controller.turnSpeedMax = turnSpeedMax; 
                 vehicleComponent.controller.turnSpeedAcceleration = turnSpeedAcceleration; 
-                vehicleComponent.controller.turnIdleSlowdown = turnIdleSlowdown; 
-                
-                
+                vehicleComponent.controller.turnIdleSlowdown = turnIdleSlowdown;
+                vehicleComponent.follower.reachedTargetDistance = reachedTargetDistance;
+                vehicleComponent.follower.stoppingSpeed = stoppingSpeed;
+                vehicleComponent.follower.onReachedTargetBreakEngageSpeed = onReachedTargetBreakEngageSpeed;
+
                 if (!recurring) {
                     yield break;
                 }
