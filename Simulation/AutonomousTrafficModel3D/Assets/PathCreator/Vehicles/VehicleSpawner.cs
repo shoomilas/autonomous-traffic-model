@@ -67,9 +67,9 @@ namespace PathCreator.Vehicles {
             var spawnHeight = 0.05f;
             var position = transform.position;
             var quaternion = PrepVehicleSpawnQuaternion();
+            
             var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
             var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
-            // vehicleComponent.vehiclePathProvider.CurrentMethod = providerMethod;
             vehicleComponent.ProviderMethod = providerMethod;
             vehicleComponent.startNode = gameObject.GetComponent<PathNode>();
             vehicleComponent.follower.reachedTargetDistance = 2.5f;
@@ -80,7 +80,7 @@ namespace PathCreator.Vehicles {
                 for (int i = 1; i < hardInstantiationLimit; i++) {
                     var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
                     var anotherVehicle = anotherVehicleGO.InstantiateComponent<Vehicle>();
-                    // anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
+                    anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
                     anotherVehicle.startNode = GetComponent<PathNode>();
                     anotherVehicle.shouldLoop = shouldLoop;
                     yield return new WaitForSeconds(interval);
