@@ -27,6 +27,7 @@ namespace PathCreator.Vehicles {
 
         public GameObject vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
+        public PathProviderMethod providerMethod = PathProviderMethod.AlwaysRandomRightForward;
         void Start() {
             StartCoroutine(InstantiatorWithPathProviderMethod());
         }
@@ -69,10 +70,12 @@ namespace PathCreator.Vehicles {
             var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
             var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
             // vehicleComponent.vehiclePathProvider.CurrentMethod = providerMethod;
+            vehicleComponent.ProviderMethod = providerMethod;
             vehicleComponent.startNode = gameObject.GetComponent<PathNode>();
             vehicleComponent.follower.reachedTargetDistance = 2.5f;
             vehicleComponent.shouldLoop = shouldLoop;
             yield return new WaitForSeconds(interval);
+            
             if (recurring) {
                 for (int i = 1; i < hardInstantiationLimit; i++) {
                     var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);

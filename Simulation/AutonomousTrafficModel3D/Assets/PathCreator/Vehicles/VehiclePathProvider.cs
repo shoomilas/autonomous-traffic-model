@@ -98,7 +98,6 @@ namespace PathCreator.Vehicles {
 
             var iteratorNode = firstNode;
             yield return firstNode;
-            int i = 0;
             while (iteratorNode != null) {
                 iteratorNode = GetFirstMatchingNextNode(iteratorNode, direction);
                 if(iteratorNode != null) yield return iteratorNode;

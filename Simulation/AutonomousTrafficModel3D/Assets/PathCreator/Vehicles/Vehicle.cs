@@ -27,6 +27,19 @@ namespace PathCreator.Vehicles {
         public bool shouldLoop = false;
         public bool generateNewPathOnLoopFinished = false;
         public PathNode startNode;
+        private PathProviderMethod providerMethod = PathProviderMethod.AlwaysRandomRightForward;
+
+        public PathProviderMethod ProviderMethod
+        {
+            get => providerMethod;
+            set
+            {
+                InstantiateComponents();
+                providerMethod = value;
+                vehiclePathProvider.CurrentMethod = providerMethod;
+                SetNewPointsToFollow();
+            }
+        }
         
         [HideInInspector] public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
         [HideInInspector] public VehiclePointsListFollower follower;
