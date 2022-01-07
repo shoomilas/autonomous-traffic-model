@@ -332,7 +332,7 @@ namespace PathCreator.Aggregator {
                 newNode.nextPathNodes.Add(this);
                 Undo.RecordObject(this.transform.parent, "Add new Path Node");
                 newSpline = AddSplineBetweenPathNodes(newNode, this);
-                var splineData = new SplineOutData(newSpline, Direction.Unknown, newNode); // TODO: Specified direction
+                var splineData = new SplineOutData(newSpline, Direction.Unknown, this); // TODO: Specified direction
                 newNode.SplinesOut.Add(splineData);
             }
             
