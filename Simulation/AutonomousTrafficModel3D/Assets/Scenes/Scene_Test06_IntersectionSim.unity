@@ -143,7 +143,7 @@ MonoBehaviour:
   recurring: 0
   hardInstantiationLimit: 5
   interval: 1
-  gizmoSize: 0.5
+  gizmoSize: 2
   vehiclePrefab: {fileID: 0}
   Vehicles: []
 --- !u!1 &331433495 stripped
@@ -166,7 +166,7 @@ MonoBehaviour:
   recurring: 0
   hardInstantiationLimit: 5
   interval: 1
-  gizmoSize: 0.5
+  gizmoSize: 2
   vehiclePrefab: {fileID: 0}
   Vehicles: []
 --- !u!1 &1029797176
@@ -303,7 +303,7 @@ MonoBehaviour:
   recurring: 0
   hardInstantiationLimit: 5
   interval: 1
-  gizmoSize: 0.5
+  gizmoSize: 2
   vehiclePrefab: {fileID: 0}
   Vehicles: []
 --- !u!1 &1175168212 stripped
@@ -437,7 +437,7 @@ MonoBehaviour:
   recurring: 0
   hardInstantiationLimit: 5
   interval: 1
-  gizmoSize: 0.5
+  gizmoSize: 2
   vehiclePrefab: {fileID: 0}
   Vehicles: []
 --- !u!1 &1847532272 stripped

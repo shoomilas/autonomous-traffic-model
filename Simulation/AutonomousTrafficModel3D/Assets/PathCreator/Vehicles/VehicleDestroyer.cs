@@ -5,7 +5,8 @@ namespace PathCreator.Vehicles {
         [Range(.1f, 10)] public float size = 2.5f;
 
         private void OnDrawGizmos() {
-            Gizmos.color = Color.red;
+            // Gizmos.color = Color.red;
+            Gizmos.color = new Color(1, 0, 0, 0.4f);
             var position = transform.position;
             // Gizmos.DrawCube(position, Vector3.one*size);
             Gizmos.DrawSphere(position, size);

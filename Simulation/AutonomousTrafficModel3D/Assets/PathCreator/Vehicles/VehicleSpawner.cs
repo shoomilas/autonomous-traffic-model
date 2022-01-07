@@ -32,7 +32,7 @@ namespace PathCreator.Vehicles {
         }
         
         private void OnDrawGizmos() {
-            Gizmos.color = Color.blue;
+            Gizmos.color = new Color(0,0,1,0.4f);
             var position = transform.position;
             Gizmos.DrawSphere(position, gizmoSize);
         }
