@@ -7,7 +7,7 @@ public class VehicleController : MonoBehaviour {
     #region Fields
     
     //Groundcheck https://www.youtube.com/watch?v=j41UHuA1bLM
-    float distToGround = 0.11f;
+    float distToGround = 0.05f;
     public bool isGrounded;
     public float fallSpeed = 10;
     

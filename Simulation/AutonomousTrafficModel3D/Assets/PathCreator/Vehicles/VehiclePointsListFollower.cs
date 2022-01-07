@@ -112,11 +112,13 @@ public class VehiclePointsListFollower : MonoBehaviour
         // Gets angle to the target
         float angleToDir = Vector3.SignedAngle(transform.forward, dirToMovePosition, Vector3.up);
         if (angleToDir > 0) {
-            turnAmount = 1f;
+            // turnAmount = 1f;
+            turnAmount = angleToDir / 180;
         }
         else {
-            turnAmount = -1f;
+            turnAmount = angleToDir /180;
         }
+        if(transform.name == "TestCar") { Debug.Log($"{turnAmount}->{angleToDir}"); }
     }
     void Update() {
         if (PointsToFollow != null) {
