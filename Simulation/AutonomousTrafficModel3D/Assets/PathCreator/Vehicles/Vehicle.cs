@@ -15,6 +15,7 @@ namespace PathCreator.Vehicles {
         // Vehicle should have: BoxCollider, RigidBody, 
         // VehicleController (providing driving-to-point / drviving-to-point-in-time methods)
         // PathFollower
+        public bool shouldLoop = false;
         public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
         public VehiclePointsListFollower follower;
         public PathNode startNode;
@@ -38,7 +39,17 @@ namespace PathCreator.Vehicles {
         }
 
         private void Update() {
+            OnVehiclePathFinished(OnPathFinishedNewLoopHandler);
+        }
+
+        public void OnVehiclePathFinished(Action toDo) {
             if (follower.CurrentDriveStatus == VehiclePointsListFollower.DriveStatus.Finished) {
+                toDo(); 
+            }
+        }
+
+        public void OnPathFinishedNewLoopHandler() {
+            if (shouldLoop) {
                 follower.CurrentPoint = follower.PointsToFollow[0];
                 follower.CurrentDriveStatus = VehiclePointsListFollower.DriveStatus.Start;
             }

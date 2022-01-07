@@ -69,7 +69,7 @@ public class VehiclePointsListFollower : MonoBehaviour
     }
 
     void Drive() {
-        // IterationPrep();
+        IterationPrep();
         SetCurrentPointToFollow();
         if (CurrentDriveStatus == DriveStatus.Finished) return;
         float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
@@ -82,10 +82,10 @@ public class VehiclePointsListFollower : MonoBehaviour
         carDriver.SetInputs(forwardAmount, turnAmount);
     }
 
-    // void IterationPrep() {
-    //     forwardAmount = 0f;
-    //     turnAmount = 0f;
-    // }
+    void IterationPrep() {
+        forwardAmount = 0f;
+        turnAmount = 0f;
+    }
     
     void OnTargetReached() {
         CurrentDriveStatus = DriveStatus.WayPointReached;
