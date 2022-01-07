@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using PathCreator.Aggregator;
 using UnityEngine;
@@ -51,11 +52,21 @@ namespace PathCreator.Vehicles {
                 }
             }
         }
+
+        Quaternion PrepVehicleSpawnQuaternion() {
+            var spawnNode = gameObject.InstantiateComponent<PathNode>();
+            var spawnPoint = transform.position;
+            var nextPoint = spawnNode.nextPathNodes.First().transform.position;
+            Vector3 difference = nextPoint - spawnPoint;
+            var quaternion =  Quaternion.LookRotation(difference, Vector3.up);
+            return quaternion;
+        }
         
         IEnumerator InstantiatorWithPathProviderMethod(bool shouldLoop = true) {
             var spawnHeight = 0.05f;
             var position = transform.position;
-            var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
+            var quaternion = PrepVehicleSpawnQuaternion();
+            var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
             var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
             // vehicleComponent.vehiclePathProvider.CurrentMethod = providerMethod;
             vehicleComponent.follower.reachedTargetDistance = 2.5f;
@@ -65,7 +76,7 @@ namespace PathCreator.Vehicles {
             yield return new WaitForSeconds(interval);
             if (recurring) {
                 for (int i = 1; i < hardInstantiationLimit; i++) {
-                    var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
+                    var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
                     var anotherVehicle = anotherVehicleGO.InstantiateComponent<Vehicle>();
                     // anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
                     anotherVehicle.startNode = GetComponent<PathNode>();

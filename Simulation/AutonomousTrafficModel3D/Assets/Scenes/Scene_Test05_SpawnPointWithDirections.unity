@@ -4399,7 +4399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recurring: 1
-  hardInstantiationLimit: 18
+  hardInstantiationLimit: 14
   interval: 1.02
   gizmoSize: 0.5
   vehiclePrefab: {fileID: 218554973726051776, guid: 409f8b46bef04df4a8184e400d86c21f, type: 3}
