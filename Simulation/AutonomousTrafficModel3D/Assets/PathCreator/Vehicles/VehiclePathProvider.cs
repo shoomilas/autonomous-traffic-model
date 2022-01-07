@@ -84,16 +84,10 @@ namespace PathCreator.Vehicles {
             if (firstNode.SplinesOut == null || !firstNode.SplinesOut.Any()) {
                 return null;
             }
-            foreach (var splineOut in firstNode.SplinesOut) {
-                if (splineOut.splineDirection == direction) {
-                    return splineOut.dstNode;
-                }
+            foreach (var splineOut in firstNode.SplinesOut.Where(splineOut => splineOut.splineDirection == direction)) {
+                return splineOut.dstNode;
             }
-            if (returnAnyFirstIfDirNotFound) {
-                return firstNode.SplinesOut.FirstOrDefault().dstNode;
-            }
-
-            return null;
+            return returnAnyFirstIfDirNotFound ? firstNode.SplinesOut.FirstOrDefault().dstNode : null;
         }
 
         public IEnumerable<PathNode> GetPathNodesAlwaysInDirection(PathNode firstNode, Direction direction) {
