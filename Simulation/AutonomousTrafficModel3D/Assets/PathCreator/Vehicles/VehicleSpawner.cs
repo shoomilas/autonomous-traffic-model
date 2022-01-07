@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using PathCreator.Aggregator;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace PathCreator.Vehicles {
         public GameObject vehiclePrefab; // public Vehicle vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
         void Start() {
-            StartCoroutine(Instantiator());
+            StartCoroutine(InstantiatorWithDirection());
         }
         
         private void OnDrawGizmos() {
@@ -46,6 +47,26 @@ namespace PathCreator.Vehicles {
                     // position += Vector3.one * i;
                     var anotherVehicle = Instantiate(vehiclePrefab, position + Vector3.up, Quaternion.identity);
                     anotherVehicle.AddComponent<Rigidbody>();
+                    yield return new WaitForSeconds(interval);
+                }
+            }
+        }
+        
+        IEnumerator InstantiatorWithDirection() {
+            var spawnHeight = 10f;
+            var position = transform.position;
+            var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
+            // var vehicleComponent = vehicle.AddComponent<Vehicle>();
+            var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
+            vehicleComponent.startNode = GetComponent<PathNode>();
+            vehicleComponent.shouldLoop = true;
+
+            yield return new WaitForSeconds(interval);
+            if (recurring) {
+                for (int i = 1; i < hardInstantiationLimit; i++) {
+                    var anotherVehicle = Instantiate(vehiclePrefab, position + Vector3.up * spawnHeight, Quaternion.identity);
+                    anotherVehicle.AddComponent<Rigidbody>();
+                    vehicle.AddComponent<Vehicle>();
                     yield return new WaitForSeconds(interval);
                 }
             }
