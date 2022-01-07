@@ -17,6 +17,7 @@ namespace PathCreator.Vehicles {
         // VehicleController (providing driving-to-point / drviving-to-point-in-time methods)
         // PathFollower
         public bool shouldLoop = false;
+        public bool generateNewPathOnLoopFinished = false;
         public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
         public VehiclePointsListFollower follower;
         public PathNode startNode;
@@ -60,6 +61,9 @@ namespace PathCreator.Vehicles {
 
         public void OnPathFinishedNewLoopHandler() {
             if (shouldLoop) {
+                if (generateNewPathOnLoopFinished) {
+                    SetNewPointsToFollow();
+                }
                 follower.CurrentPoint = follower.PointsToFollow[0];
                 follower.CurrentDriveStatus = VehiclePointsListFollower.DriveStatus.Start;
             }
