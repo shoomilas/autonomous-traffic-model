@@ -23,7 +23,7 @@ namespace PathCreator.Vehicles {
         public bool recurring = false;
         public int hardInstantiationLimit = 5;
         [InspectorName("Offset (Initial Delay)")]        
-        [Range(.1f, 10)] public float offset = 0f;
+        [Range(0f, 10)] public float offset = 0f;
         [Range(.1f, 10)] public float interval = 1;
         [Range(.01f, 10f)] public float reachedTargetDistance = 3.5f;
         [Range(.1f, 3000f)] public float stoppingSpeed = 40f;
