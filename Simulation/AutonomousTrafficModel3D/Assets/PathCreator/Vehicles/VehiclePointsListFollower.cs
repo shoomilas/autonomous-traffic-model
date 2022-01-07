@@ -69,7 +69,7 @@ public class VehiclePointsListFollower : MonoBehaviour
     }
 
     void Drive() {
-        IterationPrep();
+        // IterationPrep();
         SetCurrentPointToFollow();
         if (CurrentDriveStatus == DriveStatus.Finished) return;
         float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
@@ -82,10 +82,10 @@ public class VehiclePointsListFollower : MonoBehaviour
         carDriver.SetInputs(forwardAmount, turnAmount);
     }
 
-    void IterationPrep() {
-        forwardAmount = 0f;
-        turnAmount = 0f;
-    }
+    // void IterationPrep() {
+    //     forwardAmount = 0f;
+    //     turnAmount = 0f;
+    // }
     
     void OnTargetReached() {
         CurrentDriveStatus = DriveStatus.WayPointReached;
@@ -104,10 +104,13 @@ public class VehiclePointsListFollower : MonoBehaviour
         
         if (dot > 0) {
             forwardAmount = 1f;
+            // forwardAmount = 0.9f + dot/10;
         }
         else {
             forwardAmount = -1f;
+            // forwardAmount = -0.9f - dot/10;
         }
+        if(transform.name == "TestCar") { Debug.Log($"{forwardAmount}->{dot}"); }
 
         // Gets angle to the target
         float angleToDir = Vector3.SignedAngle(transform.forward, dirToMovePosition, Vector3.up);
@@ -118,7 +121,6 @@ public class VehiclePointsListFollower : MonoBehaviour
         else {
             turnAmount = angleToDir /180;
         }
-        if(transform.name == "TestCar") { Debug.Log($"{turnAmount}->{angleToDir}"); }
     }
     void Update() {
         if (PointsToFollow != null) {
