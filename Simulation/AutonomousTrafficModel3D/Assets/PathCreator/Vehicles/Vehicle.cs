@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using PathCreator.Aggregator;
 using UnityEngine;
@@ -30,12 +31,21 @@ namespace PathCreator.Vehicles {
             if (follower == null) {
                 follower = gameObject.AddComponent<VehiclePointsListFollower>();
             }
+
+            SetNewPointsToFollow();
             
-            if (follower.PointsToFollow == null || follower.PointsToFollow.Count == 0) {
-                follower.PointsToFollow = new List<Transform>();
-                var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform ).ToList();
-                follower.PointsToFollow = list;   
-            }
+            // var pointsToFollowIsNullOrEmpty =
+            //     follower.PointsToFollow == null || follower.PointsToFollow.Count == 0; 
+            //
+            // if (pointsToFollowIsNullOrEmpty) {
+            //     SetNewPointsToFollow();
+            // }
+        }
+
+        private void SetNewPointsToFollow() {
+            follower.PointsToFollow = new List<Transform>();
+            var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform ).ToList();
+            follower.PointsToFollow = list;  
         }
 
         private void Update() {

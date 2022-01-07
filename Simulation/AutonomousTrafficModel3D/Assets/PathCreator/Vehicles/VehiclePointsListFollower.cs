@@ -110,7 +110,6 @@ public class VehiclePointsListFollower : MonoBehaviour
             forwardAmount = -1f;
             // forwardAmount = -0.9f - dot/10;
         }
-        if(transform.name == "TestCar") { Debug.Log($"{forwardAmount}->{dot}"); }
 
         // Gets angle to the target
         float angleToDir = Vector3.SignedAngle(transform.forward, dirToMovePosition, Vector3.up);
