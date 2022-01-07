@@ -13,6 +13,7 @@ namespace PathCreator.Vehicles {
     public enum PathProviderMethod{
         FirstFound,
         AlwaysRight,
+        AlwaysForward,
     }
 
     public class VehiclePathProvider : MonoBehaviour, IVehiclePathProvider {
@@ -24,6 +25,7 @@ namespace PathCreator.Vehicles {
             {
                 PathProviderMethod.FirstFound => GetPathNodes(startNode),
                 PathProviderMethod.AlwaysRight => GetPathNodesAlwaysRightOnBranched(startNode),
+                // PathProviderMethod.AlwaysForward => GetPathNodesAlwaysForwardOrUnknownOnBranched(startNode),
                 _ => GetPathNodes(startNode)
             };
             return path.ToList();
@@ -38,7 +40,44 @@ namespace PathCreator.Vehicles {
                 yield return currentNode;
             }
         }
+
+        private PathNode FindNextNodeInExpectedDirectionOrGetFirst(PathNode firstNode, Direction direction, bool shouldGetFirstIfNotFound = true) {
+            PathNode nextNode;
+            try {
+                nextNode = firstNode.SplinesOut.Find(_ => _.splineDirection == direction).dstNode;
+            }
+            catch {
+                if (shouldGetFirstIfNotFound) {
+                    nextNode = firstNode.SplinesOut.FirstOrDefault()?.dstNode;
+                }
+                else {
+                    nextNode = null;
+                }
+            }
+
+            return nextNode;
+        }
+
+        public IEnumerable<PathNode> GetPathNodesAlwaysRightOrUnknownOnBranched(PathNode firstNode) {
+            yield return firstNode;
+            var iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Right);
+            while (iteratorNode!=null) {
+                var currentNode = iteratorNode;
+                iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Right);
+                yield return currentNode;
+            }
+        }
         
+        public IEnumerable<PathNode> GetPathNodesAlwaysForwardOrUnknownOnBranched(PathNode firstNode) {
+            yield return firstNode;
+            var iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
+            while (iteratorNode!=null) {
+                var currentNode = iteratorNode;
+                iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
+                yield return currentNode;
+            }
+        }
+
         public IEnumerable<PathNode> GetPathNodesAlwaysRightOnBranched(PathNode firstNode) {
             yield return firstNode;
             PathNode iteratorNode;
