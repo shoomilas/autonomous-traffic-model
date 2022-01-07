@@ -11,16 +11,15 @@ namespace PathCreator.Vehicles {
         }
 
         private void Start() {
-            var boxCollider = gameObject.AddComponent<BoxCollider>();
+            var boxCollider = gameObject.InstantiateComponent<BoxCollider>();
             boxCollider.size = Vector3.one * size;
             boxCollider.isTrigger = true;
         }
         private void OnTriggerEnter(Collider other) {
+            if (other.GetComponent<Vehicle>() == null) {
+                return;
+            }
             Destroy(other.gameObject);
-            // Debug.Log("Entered");
-            // var boo = GetComponent(other.name) as PathFollower;
-            // var obj = new GameObject(other.name, typeof(PathFollower));
-            // var rb = obj.GetComponent<PathFollower>();
         }
         // private void OnTriggerStay(Collider other) {
         //     Debug.Log("Object in trigger zone");
