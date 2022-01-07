@@ -53,10 +53,9 @@ namespace PathCreator.Vehicles {
         }
         
         IEnumerator InstantiatorWithDirection() {
-            var spawnHeight = 10f;
+            var spawnHeight = 0.05f;
             var position = transform.position;
             var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
-            // var vehicleComponent = vehicle.AddComponent<Vehicle>();
             var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
             vehicleComponent.startNode = GetComponent<PathNode>();
             vehicleComponent.shouldLoop = true;

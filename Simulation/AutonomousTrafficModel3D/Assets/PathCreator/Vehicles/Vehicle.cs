@@ -5,7 +5,6 @@ using PathCreator.Aggregator;
 using UnityEngine;
 
 namespace PathCreator.Vehicles {
-    // [ExecuteInEditMode]
     public static class Extensions {
         public static T InstantiateComponent<T>(this GameObject gameObject) where T: Component {
             var component = gameObject.GetComponent<T>();
