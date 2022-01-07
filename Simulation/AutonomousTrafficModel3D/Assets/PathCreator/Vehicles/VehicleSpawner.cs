@@ -27,7 +27,7 @@ namespace PathCreator.Vehicles {
         public GameObject vehiclePrefab; // public Vehicle vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
         void Start() {
-            StartCoroutine(InstantiatorWithDirection());
+            StartCoroutine(InstantiatorWithPathProviderMethod());
         }
         
         private void OnDrawGizmos() {
@@ -52,13 +52,14 @@ namespace PathCreator.Vehicles {
             }
         }
         
-        IEnumerator InstantiatorWithDirection() {
+        IEnumerator InstantiatorWithPathProviderMethod(PathProviderMethod providerMethod = PathProviderMethod.AlwaysRandomRightForward, bool shouldLoop = true) {
             var spawnHeight = 0.05f;
             var position = transform.position;
             var vehicle = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
             var vehicleComponent = vehicle.InstantiateComponent<Vehicle>();
+            vehicleComponent.vehiclePathProvider.CurrentMethod = providerMethod;
             vehicleComponent.startNode = GetComponent<PathNode>();
-            vehicleComponent.shouldLoop = true;
+            vehicleComponent.shouldLoop = shouldLoop;
 
             yield return new WaitForSeconds(interval);
             if (recurring) {
@@ -72,16 +73,3 @@ namespace PathCreator.Vehicles {
         }
     }
 }
-
-// public PathCreator pathPrefab;
-// public PathFollower followerPrefab;
-// public Transform[] spawnPoints;
-//
-// void Start () {
-//     foreach (Transform t in spawnPoints) {
-//         var path = Instantiate (pathPrefab, t.position, t.rotation);
-//         var follower = Instantiate (followerPrefab);
-//         follower.pathCreator = path;
-//         path.transform.parent = t;
-//     }
-// }

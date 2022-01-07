@@ -7,6 +7,7 @@ using UnityEngine;
 namespace PathCreator.Vehicles {
     public interface IVehiclePathProvider {
         List<PathNode> Provide(PathNode startNode);
+        public PathProviderMethod CurrentMethod {get;set;}
     }
     
     public enum PathProviderMethod{
@@ -22,8 +23,14 @@ namespace PathCreator.Vehicles {
     
     public class VehiclePathProvider : MonoBehaviour, IVehiclePathProvider {
         private List<PathNode> finalPath = new List<PathNode>();
-        public PathProviderMethod currentMethod = PathProviderMethod.FirstFound; 
+        public PathProviderMethod currentMethod = PathProviderMethod.FirstFound;
 
+        public PathProviderMethod CurrentMethod
+        {
+            get => currentMethod;
+            set => currentMethod = value;
+        }
+        
         public static T EnumGetRandomValue<T>() where T : Enum => 
             Enum.GetValues(typeof(T))
                 .OfType<T>()
