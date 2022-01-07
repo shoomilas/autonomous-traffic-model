@@ -24,7 +24,7 @@ namespace PathCreator.Vehicles {
         [Range(.1f, 10)] public float interval = 1;
         [Range(.1f, 10)] public float gizmoSize = .5f;
 
-        public GameObject vehiclePrefab; // public Vehicle vehiclePrefab;
+        public GameObject vehiclePrefab;
         public List<Vehicle> Vehicles = new List<Vehicle>(); // TODO: Extract to "VehicleManager"?
         void Start() {
             StartCoroutine(InstantiatorWithPathProviderMethod());
@@ -64,9 +64,14 @@ namespace PathCreator.Vehicles {
             yield return new WaitForSeconds(interval);
             if (recurring) {
                 for (int i = 1; i < hardInstantiationLimit; i++) {
-                    var anotherVehicle = Instantiate(vehiclePrefab, position + Vector3.up * spawnHeight, Quaternion.identity);
-                    anotherVehicle.AddComponent<Rigidbody>();
-                    vehicle.AddComponent<Vehicle>();
+                    var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, Quaternion.identity);
+                    var anotherVehicle = vehicle.InstantiateComponent<Vehicle>();
+                    anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
+                    anotherVehicle.startNode = GetComponent<PathNode>();
+                    anotherVehicle.shouldLoop = shouldLoop;
+                    // var anotherVehicle = Instantiate(vehiclePrefab, position + Vector3.up * spawnHeight, Quaternion.identity);
+                    // anotherVehicle.AddComponent<Rigidbody>();
+                    // vehicle.AddComponent<Vehicle>();
                     yield return new WaitForSeconds(interval);
                 }
             }
