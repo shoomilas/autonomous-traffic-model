@@ -75,12 +75,11 @@ namespace PathCreator.Vehicles {
             vehicleComponent.follower.reachedTargetDistance = 2.5f;
             vehicleComponent.shouldLoop = shouldLoop;
             yield return new WaitForSeconds(interval);
-            
             if (recurring) {
                 for (int i = 1; i < hardInstantiationLimit; i++) {
                     var anotherVehicleGO = Instantiate(vehiclePrefab, position + Vector3.one * spawnHeight, quaternion);
                     var anotherVehicle = anotherVehicleGO.InstantiateComponent<Vehicle>();
-                    anotherVehicle.vehiclePathProvider.CurrentMethod = providerMethod;
+                    anotherVehicle.ProviderMethod = providerMethod;
                     anotherVehicle.startNode = GetComponent<PathNode>();
                     anotherVehicle.shouldLoop = shouldLoop;
                     yield return new WaitForSeconds(interval);
