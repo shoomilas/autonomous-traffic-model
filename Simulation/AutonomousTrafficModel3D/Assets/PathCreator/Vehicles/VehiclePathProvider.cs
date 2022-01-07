@@ -25,7 +25,7 @@ namespace PathCreator.Vehicles {
             {
                 PathProviderMethod.FirstFound => GetPathNodes(startNode),
                 PathProviderMethod.AlwaysRight => GetPathNodesAlwaysRightOnBranched(startNode),
-                // PathProviderMethod.AlwaysForward => GetPathNodesAlwaysForwardOrUnknownOnBranched(startNode),
+                PathProviderMethod.AlwaysForward => GetPathNodesAlwaysForwardOrUnknownOnBranched(startNode),
                 _ => GetPathNodes(startNode)
             };
             return path.ToList();
@@ -69,11 +69,31 @@ namespace PathCreator.Vehicles {
         }
         
         public IEnumerable<PathNode> GetPathNodesAlwaysForwardOrUnknownOnBranched(PathNode firstNode) {
+        //     yield return firstNode;
+        //     var iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
+        //     while (iteratorNode!=null) {
+        //         var currentNode = iteratorNode;
+        //         iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
+        //         yield return currentNode;
+        //     }
+        // }
             yield return firstNode;
-            var iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
+            PathNode iteratorNode;
+            try {
+                iteratorNode = firstNode.SplinesOut.Find(_ => _.splineDirection == Direction.Forward).dstNode;
+            }
+            catch {
+                iteratorNode = firstNode.SplinesOut.FirstOrDefault()?.dstNode;
+            }
+                
             while (iteratorNode!=null) {
                 var currentNode = iteratorNode;
-                iteratorNode = FindNextNodeInExpectedDirectionOrGetFirst(firstNode, Direction.Forward);
+                try {
+                    iteratorNode = currentNode.SplinesOut.Find(_ => _.splineDirection == Direction.Forward).dstNode;
+                }
+                catch {
+                    iteratorNode = currentNode.SplinesOut.FirstOrDefault()?.dstNode;
+                }
                 yield return currentNode;
             }
         }
