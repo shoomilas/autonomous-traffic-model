@@ -10,13 +10,22 @@ namespace PathCreator.Vehicles {
     
     // public class VehiclePathRandomProvider : IVehiclePathProvider { }
     // public class VehiclePathNeverLeftProvider : IVehiclePathProvider { }
+    public enum PathProviderMethod{
+        FirstFound,
+        AlwaysRight,
+    }
 
     public class VehiclePathProvider : MonoBehaviour, IVehiclePathProvider {
         private List<PathNode> finalPath = new List<PathNode>();
+        public PathProviderMethod currentMethod = PathProviderMethod.FirstFound; 
 
         public List<PathNode> Provide(PathNode startNode) {
-            var path = GetPathNodes(startNode);
-            // var path = GetPathNodesAlwaysRightOnBranched(startNode);
+            var path = currentMethod switch
+            {
+                PathProviderMethod.FirstFound => GetPathNodes(startNode),
+                PathProviderMethod.AlwaysRight => GetPathNodesAlwaysRightOnBranched(startNode),
+                _ => GetPathNodes(startNode)
+            };
             return path.ToList();
         }
         
@@ -37,20 +46,17 @@ namespace PathCreator.Vehicles {
                 iteratorNode = firstNode.SplinesOut.Find(_ => _.splineDirection == Direction.Right).dstNode;
             }
             catch {
-                iteratorNode = firstNode.SplinesOut.FirstOrDefault().dstNode;
+                iteratorNode = firstNode.SplinesOut.FirstOrDefault()?.dstNode;
             }
-
+            
             while (iteratorNode!=null) {
                 var currentNode = iteratorNode;
                 try {
                     iteratorNode = currentNode.SplinesOut.Find(_ => _.splineDirection == Direction.Right).dstNode;
                 }
                 catch {
-                    iteratorNode = currentNode.SplinesOut.FirstOrDefault().dstNode;
+                    iteratorNode = currentNode.SplinesOut.FirstOrDefault()?.dstNode;
                 }
-                
-                    // currentNode.nextPathNodes.Find( nextPathNode => nextPathNode.sp )
-                    // FirstOrDefault(_ => _.SplinesOut.Any(_=>_.splineDirection==Direction.Right));
                 yield return currentNode;
             }
         }
