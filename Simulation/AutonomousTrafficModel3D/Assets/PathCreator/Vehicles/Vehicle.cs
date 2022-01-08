@@ -15,6 +15,7 @@ namespace PathCreator.Vehicles {
             return component;
         }
     }
+
     
     public class Vehicle : MonoBehaviour {
         // TODO: Different implementations, one with PathFollower

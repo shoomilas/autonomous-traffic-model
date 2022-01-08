@@ -17,6 +17,7 @@ public static class LinqExtension {
     }
 }
 
+
 public class VehicleTimeBasedFollower : MonoBehaviour
 {
     // Start is called before the first frame update

@@ -5,7 +5,11 @@ using PathCreator.Aggregator;
 using PathCreator.Vehicles;
 using UnityEngine;
 
-public class VehicleTimeBased : MonoBehaviour
+public interface IVehicle {
+    Direction ClosestTurnDirection { get; set; }
+}
+
+public class VehicleTimeBased : MonoBehaviour, IVehicle
 {
     [HideInInspector] public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
     [HideInInspector] public VehicleTimeBasedFollower follower;
@@ -50,4 +54,6 @@ public class VehicleTimeBased : MonoBehaviour
         var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform ).ToList();
         follower.PointsToFollow = list;  
     }
+
+    public Direction ClosestTurnDirection { get => closestTurnDirection; set => closestTurnDirection=value; }
 }
