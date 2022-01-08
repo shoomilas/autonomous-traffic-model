@@ -85,7 +85,7 @@ namespace PathCreator.Vehicles {
             var position = transform.position;
             var quaternion = PrepVehicleSpawnQuaternion();
 
-            yield return new WaitForSeconds(0.33f);  // without this delay, the first car is always a bit behind
+            yield return new WaitForSeconds(0.33f);  // Without this delay, the first car is always a bit behind
 
             yield return new WaitForSeconds(offset);
             for (int i = 0; i < hardInstantiationLimit; i ++ ) {

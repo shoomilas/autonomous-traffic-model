@@ -21,6 +21,21 @@ namespace PathCreator.Vehicles {
         AlwaysRandomLeftRight,
         AlwaysRandomLeftForward
     }
+
+    public static class EnumExtensions {
+        public static T EnumGetRandomValue<T>() where T : Enum => 
+            Enum.GetValues(typeof(T))
+                .OfType<T>()
+                .OrderBy(_ =>Guid.NewGuid())
+                .FirstOrDefault();
+        
+        public static T EnumGetRandomValue<T>(params T[] allowedValues) where T : Enum => 
+            Enum.GetValues(typeof(T))
+                .OfType<T>()
+                .Where(allowedValues.Contains)
+                .OrderBy(_ =>Guid.NewGuid())
+                .FirstOrDefault();
+    } 
     
     public class VehiclePathProvider : MonoBehaviour, IVehiclePathProvider {
         private List<PathNode> finalPath = new List<PathNode>();
@@ -32,18 +47,7 @@ namespace PathCreator.Vehicles {
             set => currentMethod = value;
         }
         
-        public static T EnumGetRandomValue<T>() where T : Enum => 
-            Enum.GetValues(typeof(T))
-                .OfType<T>()
-                .OrderBy(_ =>Guid.NewGuid())
-                .FirstOrDefault();
         
-        public static T EnumGetRandomValue<T>(params T[] allowedValues) where T : Enum => 
-                Enum.GetValues(typeof(T))
-                    .OfType<T>()
-                    .Where(allowedValues.Contains)
-                    .OrderBy(_ =>Guid.NewGuid())
-                    .FirstOrDefault();
         
         public List<PathNode> Provide(PathNode startNode) {
             var path = currentMethod switch
@@ -53,13 +57,13 @@ namespace PathCreator.Vehicles {
                 PathProviderMethod.AlwaysForward => GetPathNodesAlwaysInDirection(startNode, Direction.Forward),
                 PathProviderMethod.AlwaysLeft => GetPathNodesAlwaysInDirection(startNode, Direction.Left),
                 PathProviderMethod.AlwaysRandom => GetPathNodesAlwaysInDirection(startNode,
-                    EnumGetRandomValue(Direction.Left, Direction.Right, Direction.Forward)),
+                    EnumExtensions.EnumGetRandomValue(Direction.Left, Direction.Right, Direction.Forward)),
                 PathProviderMethod.AlwaysRandomRightForward => GetPathNodesAlwaysInDirection(startNode,
-                    EnumGetRandomValue(Direction.Right, Direction.Forward)),
+                    EnumExtensions.EnumGetRandomValue(Direction.Right, Direction.Forward)),
                 PathProviderMethod.AlwaysRandomLeftRight => GetPathNodesAlwaysInDirection(startNode,
-                    EnumGetRandomValue(Direction.Left, Direction.Right)),
+                    EnumExtensions.EnumGetRandomValue(Direction.Left, Direction.Right)),
                 PathProviderMethod.AlwaysRandomLeftForward => GetPathNodesAlwaysInDirection(startNode,
-                    EnumGetRandomValue(Direction.Left, Direction.Forward)),
+                    EnumExtensions.EnumGetRandomValue(Direction.Left, Direction.Forward)),
                 _ => new List<PathNode>()
             };
             return path.ToList();
