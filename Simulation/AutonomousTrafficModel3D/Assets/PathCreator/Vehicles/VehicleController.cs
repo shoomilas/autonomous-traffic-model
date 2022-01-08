@@ -101,10 +101,10 @@ public class VehicleController : MonoBehaviour {
         } else {
             // Not turning
             if (turnSpeed > 0) {
-                turnSpeed -= Time.deltaTime;
+                turnSpeed -= turnIdleSlowdown * Time.deltaTime;
             }
             if (turnSpeed < 0) {
-                turnSpeed += Time.deltaTime;
+                turnSpeed += turnIdleSlowdown * Time.deltaTime;
             }
             if (turnSpeed > -1f && turnSpeed < +1f) {
                 // Stop rotating
