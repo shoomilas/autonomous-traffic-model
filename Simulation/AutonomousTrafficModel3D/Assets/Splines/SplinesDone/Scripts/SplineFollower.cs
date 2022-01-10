@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SplineFollower : MonoBehaviour {
 
@@ -12,9 +10,9 @@ public class SplineFollower : MonoBehaviour {
     [SerializeField] private SplineDone spline;
     [SerializeField] private float speed = 1f;
     [SerializeField] private MovementType movementType;
+    private float maxMoveAmount;
 
     private float moveAmount;
-    private float maxMoveAmount;
 
     private void Start() {
         switch (movementType) {
@@ -29,7 +27,7 @@ public class SplineFollower : MonoBehaviour {
     }
 
     private void Update() {
-        moveAmount = (moveAmount + (Time.deltaTime * speed)) % maxMoveAmount;
+        moveAmount = (moveAmount + Time.deltaTime * speed) % maxMoveAmount;
 
         switch (movementType) {
             default:
@@ -43,5 +41,4 @@ public class SplineFollower : MonoBehaviour {
                 break;
         }
     }
-
 }

@@ -1,27 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
 
-public class VehiclePointsFollower : MonoBehaviour
-{
-    [SerializeField] public Transform targetPositionTranform;
-
-    private VehicleController carDriver;
-    public  Vector3 targetPosition;
-    
-    public float forwardAmount = 0f;
-    public float turnAmount = 0f;
-    public float reachedTargetDistance = 3.5f; // Should be around half of length of the prefab
-    public float stoppingDistance = 30f; 
-    public float stoppingSpeed = 40f;
-    public float onReachedTargetBreakEngageSpeed = 15f;
-
-    public List<Transform> PointsToFollow;
-    public Transform CurrentPoint;
-    public DriveStatus CurrentDriveStatus;
+public class VehiclePointsFollower : MonoBehaviour {
 
     [Serializable]
     public enum DriveStatus {
@@ -30,14 +12,35 @@ public class VehiclePointsFollower : MonoBehaviour
         WayPointReached,
         Finished
     }
-    
-    void Awake()
-    {
+
+    [SerializeField] public Transform targetPositionTranform;
+    public Vector3 targetPosition;
+
+    public float forwardAmount;
+    public float turnAmount;
+    public float reachedTargetDistance = 3.5f; // Should be around half of length of the prefab
+    public float stoppingDistance = 30f;
+    public float stoppingSpeed = 40f;
+    public float onReachedTargetBreakEngageSpeed = 15f;
+
+    public List<Transform> PointsToFollow;
+    public Transform CurrentPoint;
+    public DriveStatus CurrentDriveStatus;
+
+    private VehicleController carDriver;
+
+    private void Awake() {
         carDriver = GetComponent<VehicleController>();
         CurrentDriveStatus = DriveStatus.Start;
     }
 
-    void SetCurrentPointToFollow() {
+    private void Update() {
+        if (PointsToFollow != null)
+            if (PointsToFollow.Count > 0)
+                Drive();
+    }
+
+    private void SetCurrentPointToFollow() {
         Transform GetFirstWayPoint() {
             return PointsToFollow.First();
         }
@@ -57,7 +60,7 @@ public class VehiclePointsFollower : MonoBehaviour
                 CurrentPoint = null;
                 return;
         }
-        
+
         if (CurrentPoint is null) {
             CurrentDriveStatus = DriveStatus.Finished;
             carDriver.StopCompletely();
@@ -68,26 +71,24 @@ public class VehiclePointsFollower : MonoBehaviour
         SetTargetPosition(CurrentPoint.position);
     }
 
-    void Drive() {
+    private void Drive() {
         IterationPrep();
         SetCurrentPointToFollow();
         if (CurrentDriveStatus == DriveStatus.Finished) return;
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
-        if (distanceToTarget > reachedTargetDistance) {
+        var distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+        if (distanceToTarget > reachedTargetDistance)
             OnTargetNotReachedYet();
-        }
-        else {
+        else
             OnTargetReached();
-        }
         carDriver.SetInputs(forwardAmount, turnAmount);
     }
 
-    void IterationPrep() {
+    private void IterationPrep() {
         forwardAmount = 0f;
         turnAmount = 0f;
     }
-    
-    void OnTargetReached() {
+
+    private void OnTargetReached() {
         CurrentDriveStatus = DriveStatus.WayPointReached;
         // if (carDriver.GetSpeed() > onReachedTargetBreakEngageSpeed) {
         //     forwardAmount = -1f;
@@ -98,36 +99,24 @@ public class VehiclePointsFollower : MonoBehaviour
         // }
     }
 
-    void OnTargetNotReachedYet() {
+    private void OnTargetNotReachedYet() {
         var dirToMovePosition = (targetPosition - transform.position).normalized;
-        var dot = Vector3.Dot(transform.forward, dirToMovePosition); // dot: if >0, target's behind, if < 0: target's behind.
-        
-        if (dot > 0) {
-            forwardAmount = 1f;
-            // forwardAmount = 0.9f + dot/10;
-        }
-        else {
-            forwardAmount = -1f;
-            // forwardAmount = -0.9f - dot/10;
-        }
+        var dot = Vector3.Dot(transform.forward,
+            dirToMovePosition); // dot: if >0, target's behind, if < 0: target's behind.
+
+        if (dot > 0) forwardAmount = 1f;
+        // forwardAmount = 0.9f + dot/10;
+        else forwardAmount = -1f;
+        // forwardAmount = -0.9f - dot/10;
 
         // Gets angle to the target
-        float angleToDir = Vector3.SignedAngle(transform.forward, dirToMovePosition, Vector3.up);
-        if (angleToDir > 0) {
-            // turnAmount = 1f;
+        var angleToDir = Vector3.SignedAngle(transform.forward, dirToMovePosition, Vector3.up);
+        if (angleToDir > 0) // turnAmount = 1f;
             turnAmount = angleToDir / 180;
-        }
-        else {
-            turnAmount = angleToDir /180;
-        }
+        else
+            turnAmount = angleToDir / 180;
     }
-    void Update() {
-        if (PointsToFollow != null) {
-            if(PointsToFollow.Count > 0) {
-                Drive();
-            }
-        }
-    }
+
     public void SetTargetPosition(Vector3 targetPosition) {
         this.targetPosition = targetPosition;
     }

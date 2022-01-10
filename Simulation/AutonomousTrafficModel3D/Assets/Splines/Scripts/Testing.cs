@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Testing : MonoBehaviour {
 
@@ -29,21 +27,21 @@ public class Testing : MonoBehaviour {
 
         pointABCD.position = Vector3.Lerp(pointAB_BC.position, pointBC_CD.position, interpolateAmount);
         */
-        pointABCD.position = CubicLerp(pointA.position, pointB.position, pointC.position, pointD.position, interpolateAmount);
+        pointABCD.position = CubicLerp(pointA.position, pointB.position, pointC.position, pointD.position,
+            interpolateAmount);
     }
 
     private Vector3 QuadraticLerp(Vector3 a, Vector3 b, Vector3 c, float t) {
-        Vector3 ab = Vector3.Lerp(a, b, t);
-        Vector3 bc = Vector3.Lerp(b, c, t);
+        var ab = Vector3.Lerp(a, b, t);
+        var bc = Vector3.Lerp(b, c, t);
 
         return Vector3.Lerp(ab, bc, interpolateAmount);
     }
 
     private Vector3 CubicLerp(Vector3 a, Vector3 b, Vector3 c, Vector3 d, float t) {
-        Vector3 ab_bc = QuadraticLerp(a, b, c, t);
-        Vector3 bc_cd = QuadraticLerp(b, c, d, t);
+        var ab_bc = QuadraticLerp(a, b, c, t);
+        var bc_cd = QuadraticLerp(b, c, d, t);
 
         return Vector3.Lerp(ab_bc, bc_cd, interpolateAmount);
     }
-
 }

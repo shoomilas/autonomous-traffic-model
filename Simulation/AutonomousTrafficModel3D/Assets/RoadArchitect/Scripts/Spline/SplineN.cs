@@ -1,157 +1,215 @@
 #region "Imports"
-using UnityEngine;
+
 using System.Collections.Generic;
-using RoadArchitect.Splination;
 using RoadArchitect.EdgeObjects;
+using RoadArchitect.Splination;
+using UnityEngine;
+using UnityEngine.Serialization;
+
 #endregion
 
 
-namespace RoadArchitect
-{
-    public class SplineN : MonoBehaviour
-    {
+namespace RoadArchitect {
+    public class SplineN : MonoBehaviour {
+
+
+        public void LoadWizardObjectsFromLibrary(string _fileName, bool _isDefault, bool _isBridge) {
+            if (_isBridge) {
+                RemoveAllSplinatedObjects(true);
+                RemoveAllEdgeObjects(true);
+            }
+
+            RoadUtility.LoadNodeObjects(_fileName, this, _isDefault, _isBridge);
+        }
+
+
+        public void Setup(Vector3 _pos, Quaternion _rot, Vector2 _io, float _time, string _name) {
+            pos = _pos;
+            rot = _rot;
+            easeIO = _io;
+            time = _time;
+            name = _name;
+            if (EdgeObjects == null) EdgeObjects = new List<EdgeObjectMaker>();
+        }
+
+
+        /// <summary> Hide or unhide this node in hierarchy </summary>
+        public void ToggleHideFlags(bool _isHidden) {
+            if (_isHidden) {
+                hideFlags = HideFlags.HideInHierarchy;
+                transform.hideFlags = HideFlags.HideInHierarchy;
+            }
+            else {
+                hideFlags = HideFlags.None;
+                transform.hideFlags = HideFlags.None;
+            }
+        }
+
         #region "Vars"
+
         /// <summary> Stores the position data </summary>
         public Vector3 pos;
+
         public Quaternion rot;
         public Vector3 tangent;
-        [UnityEngine.Serialization.FormerlySerializedAs("EaseIO")]
-        public Vector2 easeIO;
-        [UnityEngine.Serialization.FormerlySerializedAs("tDist")]
-        public float dist = 0f;
-        [UnityEngine.Serialization.FormerlySerializedAs("tTime")]
-        public float time = 0f;
-        [UnityEngine.Serialization.FormerlySerializedAs("NextTime")]
-        public float nextTime = 1f;
-        [UnityEngine.Serialization.FormerlySerializedAs("NextTan")]
-        public Vector3 nextTan = default(Vector3);
-        [UnityEngine.Serialization.FormerlySerializedAs("OldTime")]
-        public float oldTime = 0f;
-        [UnityEngine.Serialization.FormerlySerializedAs("EditorDisplayString")]
+
+        [FormerlySerializedAs("EaseIO")] public Vector2 easeIO;
+
+        [FormerlySerializedAs("tDist")] public float dist;
+
+        [FormerlySerializedAs("tTime")] public float time;
+
+        [FormerlySerializedAs("NextTime")] public float nextTime = 1f;
+
+        [FormerlySerializedAs("NextTan")] public Vector3 nextTan;
+
+        [FormerlySerializedAs("OldTime")] public float oldTime;
+
+        [FormerlySerializedAs("EditorDisplayString")]
         public string editorDisplayString = "";
 
-        public float tempSegmentTime = 0f;
-        [UnityEngine.Serialization.FormerlySerializedAs("bSpecialEndNode")]
-        public bool isSpecialEndNode = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("SpecialNodeCounterpart")]
-        public SplineN specialNodeCounterpart = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("SpecialNodeCounterpart_Master")]
-        public SplineN specialNodeCounterpartMaster = null;
-        /// <summary> Connected nodes array </summary>
-        [UnityEngine.Serialization.FormerlySerializedAs("OriginalConnectionNodes")]
-        public SplineN[] originalConnectionNodes = null;
+        public float tempSegmentTime;
 
-        [UnityEngine.Serialization.FormerlySerializedAs("bSpecialEndNode_IsStart")]
-        public bool isSpecialEndNodeIsStart = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bSpecialEndNode_IsEnd")]
-        public bool isSpecialEndNodeIsEnd = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bSpecialIntersection")]
-        public bool isSpecialIntersection = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bSpecialRoadConnPrimary")]
-        public bool isSpecialRoadConnPrimary = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bRoadCut")]
-        public bool isRoadCut = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("MinSplination")]
-        public float minSplination = 0f;
-        [UnityEngine.Serialization.FormerlySerializedAs("MaxSplination")]
+        [FormerlySerializedAs("bSpecialEndNode")]
+        public bool isSpecialEndNode;
+
+        [FormerlySerializedAs("SpecialNodeCounterpart")]
+        public SplineN specialNodeCounterpart;
+
+        [FormerlySerializedAs("SpecialNodeCounterpart_Master")]
+        public SplineN specialNodeCounterpartMaster;
+
+        /// <summary> Connected nodes array </summary>
+        [FormerlySerializedAs("OriginalConnectionNodes")]
+        public SplineN[] originalConnectionNodes;
+
+        [FormerlySerializedAs("bSpecialEndNode_IsStart")]
+        public bool isSpecialEndNodeIsStart;
+
+        [FormerlySerializedAs("bSpecialEndNode_IsEnd")]
+        public bool isSpecialEndNodeIsEnd;
+
+        [FormerlySerializedAs("bSpecialIntersection")]
+        public bool isSpecialIntersection;
+
+        [FormerlySerializedAs("bSpecialRoadConnPrimary")]
+        public bool isSpecialRoadConnPrimary;
+
+        [FormerlySerializedAs("bRoadCut")] public bool isRoadCut;
+
+        [FormerlySerializedAs("MinSplination")]
+        public float minSplination;
+
+        [FormerlySerializedAs("MaxSplination")]
         public float maxSplination = 1f;
-        [UnityEngine.Serialization.FormerlySerializedAs("bQuitGUI")]
-        public bool isQuitGUI = false;
+
+        [FormerlySerializedAs("bQuitGUI")] public bool isQuitGUI;
 
         public int idOnSpline = -1;
-        [UnityEngine.Serialization.FormerlySerializedAs("GSDSpline")]
-        public SplineC spline;
+
+        [FormerlySerializedAs("GSDSpline")] public SplineC spline;
+
         //Unique ID
-        [UnityEngine.Serialization.FormerlySerializedAs("UID")]
-        public string uID;
-        [UnityEngine.Serialization.FormerlySerializedAs("Intersection_OtherNode")]
+        [FormerlySerializedAs("UID")] public string uID;
+
+        [FormerlySerializedAs("Intersection_OtherNode")]
         public SplineN intersectionOtherNode;
-        #if UNITY_EDITOR
-        [UnityEngine.Serialization.FormerlySerializedAs("bEditorSelected")]
-        public bool isEditorSelected = false;
-        #endif
-        [UnityEngine.Serialization.FormerlySerializedAs("GradeToNext")]
-        public string gradeToNext;
-        [UnityEngine.Serialization.FormerlySerializedAs("GradeToPrev")]
-        public string gradeToPrev;
-        [UnityEngine.Serialization.FormerlySerializedAs("GradeToNextValue")]
+#if UNITY_EDITOR
+        [FormerlySerializedAs("bEditorSelected")]
+        public bool isEditorSelected;
+#endif
+        [FormerlySerializedAs("GradeToNext")] public string gradeToNext;
+
+        [FormerlySerializedAs("GradeToPrev")] public string gradeToPrev;
+
+        [FormerlySerializedAs("GradeToNextValue")]
         public float gradeToNextValue;
-        [UnityEngine.Serialization.FormerlySerializedAs("GradeToPrevValue")]
+
+        [FormerlySerializedAs("GradeToPrevValue")]
         public float gradeToPrevValue;
-        [UnityEngine.Serialization.FormerlySerializedAs("bInitialRoadHeight")]
+
+        [FormerlySerializedAs("bInitialRoadHeight")]
         public float initialRoadHeight = -1f;
+
         //Navigation:
-        [UnityEngine.Serialization.FormerlySerializedAs("bNeverIntersect")]
-        public bool isNeverIntersect = false;
+        [FormerlySerializedAs("bNeverIntersect")]
+        public bool isNeverIntersect;
+
         /// <summary> Is this node used by an intersection </summary>
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsIntersection")]
-        public bool isIntersection = false;
+        [FormerlySerializedAs("bIsIntersection")]
+        public bool isIntersection;
+
         /// <summary> Defines end of road, if special end or start it is the second node/second last node </summary>
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsEndPoint")]
-        public bool isEndPoint = false;
-        public int id = 0;
-        [UnityEngine.Serialization.FormerlySerializedAs("id_intersection_othernode")]
-        public int intersectionOtherNodeID = 0;
+        [FormerlySerializedAs("bIsEndPoint")] public bool isEndPoint;
+
+        public int id;
+
+        [FormerlySerializedAs("id_intersection_othernode")]
+        public int intersectionOtherNodeID;
+
         /// <summary> Contains previous and next node ids </summary>
-        [UnityEngine.Serialization.FormerlySerializedAs("id_connected")]
-        public List<int> connectedID;
+        [FormerlySerializedAs("id_connected")] public List<int> connectedID;
+
         /// <summary> Contains previous and next node </summary>
-        [UnityEngine.Serialization.FormerlySerializedAs("node_connected")]
+        [FormerlySerializedAs("node_connected")]
         public List<SplineN> connectedNode;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIgnore")]
-        public bool isIgnore = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("opt_GizmosEnabled")]
+
+        [FormerlySerializedAs("bIgnore")] public bool isIgnore;
+
+        [FormerlySerializedAs("opt_GizmosEnabled")]
         public bool isGizmosEnabled = true;
 
 
         #region "Tunnels"
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsTunnel")]
-        public bool isTunnel = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsTunnelStart")]
-        public bool isTunnelStart = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsTunnelEnd")]
-        public bool isTunnelEnd = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsTunnelMatched")]
-        public bool isTunnelMatched = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("TunnelCounterpartNode")]
-        public SplineN tunnelCounterpartNode = null;
+
+        [FormerlySerializedAs("bIsTunnel")] public bool isTunnel;
+
+        [FormerlySerializedAs("bIsTunnelStart")]
+        public bool isTunnelStart;
+
+        [FormerlySerializedAs("bIsTunnelEnd")] public bool isTunnelEnd;
+
+        [FormerlySerializedAs("bIsTunnelMatched")]
+        public bool isTunnelMatched;
+
+        [FormerlySerializedAs("TunnelCounterpartNode")]
+        public SplineN tunnelCounterpartNode;
+
         #endregion
 
 
         //Bridges:
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsBridge")]
-        public bool isBridge = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsBridgeStart")]
-        public bool isBridgeStart = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsBridgeEnd")]
-        public bool isBridgeEnd = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsBridgeMatched")]
-        public bool isBridgeMatched = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("BridgeCounterpartNode")]
-        public SplineN bridgeCounterpartNode = null;
+        [FormerlySerializedAs("bIsBridge")] public bool isBridge;
 
-        [UnityEngine.Serialization.FormerlySerializedAs("GSDRI")]
-        public RoadIntersection intersection = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("iConstruction")]
+        [FormerlySerializedAs("bIsBridgeStart")]
+        public bool isBridgeStart;
+
+        [FormerlySerializedAs("bIsBridgeEnd")] public bool isBridgeEnd;
+
+        [FormerlySerializedAs("bIsBridgeMatched")]
+        public bool isBridgeMatched;
+
+        [FormerlySerializedAs("BridgeCounterpartNode")]
+        public SplineN bridgeCounterpartNode;
+
+        [FormerlySerializedAs("GSDRI")] public RoadIntersection intersection;
+
+        [FormerlySerializedAs("iConstruction")]
         public iConstructionMaker intersectionConstruction;
+
         #endregion
 
 
-
         #region "Edge Objects"
+
         public List<EdgeObjectMaker> EdgeObjects;
 
 
-        public void SetupEdgeObjects(bool _isCollecting = true)
-        {
-            if (EdgeObjects == null)
-            {
-                EdgeObjects = new List<EdgeObjectMaker>();
-            }
-            int eCount = EdgeObjects.Count;
+        public void SetupEdgeObjects(bool _isCollecting = true) {
+            if (EdgeObjects == null) EdgeObjects = new List<EdgeObjectMaker>();
+            var eCount = EdgeObjects.Count;
             EdgeObjectMaker EOM = null;
-            for (int index = 0; index < eCount; index++)
-            {
+            for (var index = 0; index < eCount; index++) {
                 EOM = EdgeObjects[index];
                 EOM.node = this;
                 EOM.Setup(_isCollecting);
@@ -159,9 +217,8 @@ namespace RoadArchitect
         }
 
 
-        public EdgeObjectMaker AddEdgeObject()
-        {
-            EdgeObjectMaker EOM = new EdgeObjectMaker();
+        public EdgeObjectMaker AddEdgeObject() {
+            var EOM = new EdgeObjectMaker();
             EOM.node = this;
             EOM.SetDefaultTimes(isEndPoint, time, nextTime, idOnSpline, spline.distance);
             EOM.startPos = spline.GetSplineValue(EOM.startTime);
@@ -171,28 +228,21 @@ namespace RoadArchitect
         }
 
 
-        public void CheckRenameEdgeObject(EdgeObjectMaker _eom)
-        {
+        public void CheckRenameEdgeObject(EdgeObjectMaker _eom) {
             // We have _eom already in EdgeObjects
-            List<string> names = new List<string>(EdgeObjects.Count - 1);
-            for (int i = 0; i < EdgeObjects.Count; i++)
-            {
-                if (ReferenceEquals(_eom, EdgeObjects[i]))
-                {
-                    continue;
-                }
+            var names = new List<string>(EdgeObjects.Count - 1);
+            for (var i = 0; i < EdgeObjects.Count; i++) {
+                if (ReferenceEquals(_eom, EdgeObjects[i])) continue;
 
                 names.Add(EdgeObjects[i].objectName);
             }
 
-            bool isNotUnique = true;
-            string name = _eom.objectName;
-            int counter = 1;
-            while (isNotUnique)
-            {
-                if (names.Contains(_eom.objectName))
-                {
-                    _eom.objectName = name + counter.ToString();
+            var isNotUnique = true;
+            var name = _eom.objectName;
+            var counter = 1;
+            while (isNotUnique) {
+                if (names.Contains(_eom.objectName)) {
+                    _eom.objectName = name + counter;
                     counter++;
                     continue;
                 }
@@ -202,9 +252,8 @@ namespace RoadArchitect
         }
 
 
-        public void EdgeObjectQuickAdd(string _name)
-        {
-            EdgeObjectMaker EOM = AddEdgeObject();
+        public void EdgeObjectQuickAdd(string _name) {
+            var EOM = AddEdgeObject();
             EOM.LoadFromLibrary(_name, true);
             EOM.SetDefaultTimes(isEndPoint, time, nextTime, idOnSpline, spline.distance);
             EOM.node = this;
@@ -212,69 +261,48 @@ namespace RoadArchitect
         }
 
 
-        public void RemoveEdgeObject(int _index = -1, bool _isSkippingUpdate = false)
-        {
-            if (EdgeObjects == null)
-            {
-                return;
-            }
-            if (EdgeObjects.Count == 0)
-            {
-                return;
-            }
-            if (_index < 0)
-            {
-                if (EdgeObjects.Count > 0)
-                {
+        public void RemoveEdgeObject(int _index = -1, bool _isSkippingUpdate = false) {
+            if (EdgeObjects == null) return;
+            if (EdgeObjects.Count == 0) return;
+            if (_index < 0) {
+                if (EdgeObjects.Count > 0) {
                     EdgeObjects[EdgeObjects.Count - 1].ClearEOM();
                     EdgeObjects.RemoveAt(EdgeObjects.Count - 1);
                 }
             }
-            else
-            {
-                if (EdgeObjects.Count > _index)
-                {
+            else {
+                if (EdgeObjects.Count > _index) {
                     EdgeObjects[_index].ClearEOM();
                     EdgeObjects.RemoveAt(_index);
                 }
             }
-            if (!_isSkippingUpdate)
-            {
-                SetupEdgeObjects();
-            }
+
+            if (!_isSkippingUpdate) SetupEdgeObjects();
         }
 
 
-        public void RemoveAllEdgeObjects(bool _isSkippingUpdate = false)
-        {
-            int SpamCheck = 0;
-            while (EdgeObjects.Count > 0 && SpamCheck < 1000)
-            {
+        public void RemoveAllEdgeObjects(bool _isSkippingUpdate = false) {
+            var SpamCheck = 0;
+            while (EdgeObjects.Count > 0 && SpamCheck < 1000) {
                 RemoveEdgeObject(-1, _isSkippingUpdate);
                 SpamCheck += 1;
             }
         }
 
 
-        public void CopyEdgeObject(int _index)
-        {
-            EdgeObjectMaker EOM = EdgeObjects[_index].Copy();
+        public void CopyEdgeObject(int _index) {
+            var EOM = EdgeObjects[_index].Copy();
             EdgeObjects.Add(EOM);
             CheckRenameEdgeObject(EOM);
             SetupEdgeObjects();
         }
 
 
-        public void EdgeObjectLoadFromLibrary(int _i, string _name)
-        {
-            if (EdgeObjects == null)
-            {
-                EdgeObjects = new List<EdgeObjectMaker>();
-            }
-            int eCount = EdgeObjects.Count;
-            if (_i > -1 && _i < eCount)
-            {
-                EdgeObjectMaker EOM = EdgeObjects[_i];
+        public void EdgeObjectLoadFromLibrary(int _i, string _name) {
+            if (EdgeObjects == null) EdgeObjects = new List<EdgeObjectMaker>();
+            var eCount = EdgeObjects.Count;
+            if (_i > -1 && _i < eCount) {
+                var EOM = EdgeObjects[_i];
                 EOM.LoadFromLibrary(_name);
                 EOM.SetDefaultTimes(isEndPoint, time, nextTime, idOnSpline, spline.distance);
                 EOM.node = this;
@@ -283,91 +311,64 @@ namespace RoadArchitect
         }
 
 
-        public void DetectInvalidEdgeObjects()
-        {
-            int mCount = EdgeObjects.Count;
-            List<int> InvalidList = new List<int>();
+        public void DetectInvalidEdgeObjects() {
+            var mCount = EdgeObjects.Count;
+            var InvalidList = new List<int>();
 
-            for (int index = 0; index < mCount; index++)
-            {
+            for (var index = 0; index < mCount; index++)
                 if (EdgeObjects[index].edgeObject == null)
-                {
                     InvalidList.Add(index);
-                }
-            }
 
-            for (int index = (InvalidList.Count - 1); index >= 0; index--)
-            {
-                RemoveEdgeObject(InvalidList[index], true);
-            }
+            for (var index = InvalidList.Count - 1; index >= 0; index--) RemoveEdgeObject(InvalidList[index], true);
 
             SetupEdgeObjects();
         }
+
         #endregion
 
 
         #region "Extruded objects"
+
         public List<SplinatedMeshMaker> SplinatedObjects;
 
 
-        public void SetupSplinatedMeshes(bool _isCollecting = true)
-        {
-            if (SplinatedObjects == null)
-            {
-                SplinatedObjects = new List<SplinatedMeshMaker>();
-            }
-            int eCount = SplinatedObjects.Count;
+        public void SetupSplinatedMeshes(bool _isCollecting = true) {
+            if (SplinatedObjects == null) SplinatedObjects = new List<SplinatedMeshMaker>();
+            var eCount = SplinatedObjects.Count;
             SplinatedMeshMaker SMM = null;
-            for (int index = 0; index < eCount; index++)
-            {
+            for (var index = 0; index < eCount; index++) {
                 SMM = SplinatedObjects[index];
                 SMM.Setup(true, _isCollecting);
             }
         }
 
 
-        public int SplinatedMeshGetIndex(ref string _uID)
-        {
-            if (SplinatedObjects == null)
-            {
-                SplinatedObjects = new List<SplinatedMeshMaker>();
-            }
-            int eCount = SplinatedObjects.Count;
+        public int SplinatedMeshGetIndex(ref string _uID) {
+            if (SplinatedObjects == null) SplinatedObjects = new List<SplinatedMeshMaker>();
+            var eCount = SplinatedObjects.Count;
             SplinatedMeshMaker SMM = null;
-            for (int index = 0; index < eCount; index++)
-            {
+            for (var index = 0; index < eCount; index++) {
                 SMM = SplinatedObjects[index];
-                if (string.CompareOrdinal(SMM.uID, _uID) == 0)
-                {
-                    return index;
-                }
+                if (string.CompareOrdinal(SMM.uID, _uID) == 0) return index;
             }
+
             return -1;
         }
 
 
-        public void SetupSplinatedMesh(int _i, bool _isGettingStrings = false)
-        {
-            if (SplinatedObjects == null)
-            {
-                SplinatedObjects = new List<SplinatedMeshMaker>();
-            }
-            int eCount = SplinatedObjects.Count;
-            if (_i > -1 && _i < eCount)
-            {
-                SplinatedMeshMaker SMM = SplinatedObjects[_i];
+        public void SetupSplinatedMesh(int _i, bool _isGettingStrings = false) {
+            if (SplinatedObjects == null) SplinatedObjects = new List<SplinatedMeshMaker>();
+            var eCount = SplinatedObjects.Count;
+            if (_i > -1 && _i < eCount) {
+                var SMM = SplinatedObjects[_i];
                 SMM.Setup(_isGettingStrings);
             }
         }
 
 
-        public SplinatedMeshMaker AddSplinatedObject()
-        {
-            if (SplinatedObjects == null)
-            {
-                SplinatedObjects = new List<SplinatedMeshMaker>();
-            }
-            SplinatedMeshMaker SMM = new SplinatedMeshMaker();
+        public SplinatedMeshMaker AddSplinatedObject() {
+            if (SplinatedObjects == null) SplinatedObjects = new List<SplinatedMeshMaker>();
+            var SMM = new SplinatedMeshMaker();
             SMM.Init(spline, this, transform);
             SplinatedObjects.Add(SMM);
             SMM.SetDefaultTimes(isEndPoint, time, nextTime, idOnSpline, spline.distance);
@@ -377,28 +378,21 @@ namespace RoadArchitect
         }
 
 
-        public void CheckRenameSplinatedObject(SplinatedMeshMaker _smm)
-        {
+        public void CheckRenameSplinatedObject(SplinatedMeshMaker _smm) {
             // We have _smm already in SplinatedObjects
-            List<string> names = new List<string>(SplinatedObjects.Count - 1);
-            for(int i = 0; i < SplinatedObjects.Count; i++)
-            {
-                if (ReferenceEquals(_smm, SplinatedObjects[i]))
-                {
-                    continue;
-                }
-                
+            var names = new List<string>(SplinatedObjects.Count - 1);
+            for (var i = 0; i < SplinatedObjects.Count; i++) {
+                if (ReferenceEquals(_smm, SplinatedObjects[i])) continue;
+
                 names.Add(SplinatedObjects[i].objectName);
             }
 
-            bool isNotUnique = true;
-            string name = _smm.objectName;
-            int counter = 1;
-            while(isNotUnique)
-            {
-                if (names.Contains(_smm.objectName))
-                {
-                    _smm.objectName = name + counter.ToString();
+            var isNotUnique = true;
+            var name = _smm.objectName;
+            var counter = 1;
+            while (isNotUnique) {
+                if (names.Contains(_smm.objectName)) {
+                    _smm.objectName = name + counter;
                     counter++;
                     continue;
                 }
@@ -408,25 +402,19 @@ namespace RoadArchitect
         }
 
 
-        public void SplinatedObjectQuickAdd(string _name)
-        {
-            SplinatedMeshMaker SMM = AddSplinatedObject();
+        public void SplinatedObjectQuickAdd(string _name) {
+            var SMM = AddSplinatedObject();
             SMM.LoadFromLibrary(_name, true);
             SMM.SetDefaultTimes(isEndPoint, time, nextTime, idOnSpline, spline.distance);
             SMM.Setup(true);
         }
 
 
-        public void SplinatedObjectLoadFromLibrary(int _i, string _name)
-        {
-            if (SplinatedObjects == null)
-            {
-                SplinatedObjects = new List<SplinatedMeshMaker>();
-            }
-            int eCount = SplinatedObjects.Count;
-            if (_i > -1 && _i < eCount)
-            {
-                SplinatedMeshMaker SMM = SplinatedObjects[_i];
+        public void SplinatedObjectLoadFromLibrary(int _i, string _name) {
+            if (SplinatedObjects == null) SplinatedObjects = new List<SplinatedMeshMaker>();
+            var eCount = SplinatedObjects.Count;
+            if (_i > -1 && _i < eCount) {
+                var SMM = SplinatedObjects[_i];
                 SMM.SetDefaultTimes(isEndPoint, time, nextTime, idOnSpline, spline.distance);
                 SMM.LoadFromLibrary(_name);
                 SMM.Setup(true);
@@ -434,116 +422,68 @@ namespace RoadArchitect
         }
 
 
-        public void CopySplinatedObject(ref SplinatedMeshMaker _SMM)
-        {
-            SplinatedMeshMaker SMM = _SMM.Copy();
+        public void CopySplinatedObject(ref SplinatedMeshMaker _SMM) {
+            var SMM = _SMM.Copy();
             SplinatedObjects.Add(SMM);
             CheckRenameSplinatedObject(SMM);
             SetupSplinatedMeshes();
         }
 
 
-        public void RemoveSplinatedObject(int _index = -1, bool _isSkippingUpdate = false)
-        {
-            if (SplinatedObjects == null)
-            {
-                return;
-            }
-            if (SplinatedObjects.Count == 0)
-            {
-                return;
-            }
+        public void RemoveSplinatedObject(int _index = -1, bool _isSkippingUpdate = false) {
+            if (SplinatedObjects == null) return;
+            if (SplinatedObjects.Count == 0) return;
             SplinatedMeshMaker SMM = null;
-            if (_index < 0)
-            {
-                if (SplinatedObjects.Count > 0)
-                {
+            if (_index < 0) {
+                if (SplinatedObjects.Count > 0) {
                     SMM = SplinatedObjects[SplinatedObjects.Count - 1];
                     SMM.Kill();
                     SplinatedObjects.RemoveAt(SplinatedObjects.Count - 1);
                     SMM = null;
                 }
             }
-            else
-            {
-                if (SplinatedObjects.Count > _index)
-                {
+            else {
+                if (SplinatedObjects.Count > _index) {
                     SMM = SplinatedObjects[_index];
                     SMM.Kill();
                     SplinatedObjects.RemoveAt(_index);
                     SMM = null;
                 }
             }
-            if (!_isSkippingUpdate)
-            {
-                SetupSplinatedMeshes();
-            }
+
+            if (!_isSkippingUpdate) SetupSplinatedMeshes();
         }
 
 
-        public void RemoveAllSplinatedObjects(bool _isSkippingUpdate = false)
-        {
-            int SpamCheck = 0;
+        public void RemoveAllSplinatedObjects(bool _isSkippingUpdate = false) {
+            var SpamCheck = 0;
             if (SplinatedObjects != null)
-            {
-                while (SplinatedObjects.Count > 0 && SpamCheck < 1000)
-                {
+                while (SplinatedObjects.Count > 0 && SpamCheck < 1000) {
                     RemoveSplinatedObject(-1, _isSkippingUpdate);
                     SpamCheck += 1;
                 }
-            }
         }
 
 
-        public void DetectInvalidSplinatedObjects()
-        {
-            int mCount = SplinatedObjects.Count;
-            List<int> InvalidList = new List<int>();
+        public void DetectInvalidSplinatedObjects() {
+            var mCount = SplinatedObjects.Count;
+            var InvalidList = new List<int>();
 
-            for (int index = 0; index < mCount; index++)
-            {
+            for (var index = 0; index < mCount; index++)
                 if (SplinatedObjects[index].Output == null)
-                {
                     InvalidList.Add(index);
-                }
-            }
 
-            for (int index = (InvalidList.Count - 1); index >= 0; index--)
-            {
+            for (var index = InvalidList.Count - 1; index >= 0; index--)
                 RemoveSplinatedObject(InvalidList[index], true);
-            }
 
             SetupSplinatedMeshes();
         }
+
         #endregion
 
 
-        public void LoadWizardObjectsFromLibrary(string _fileName, bool _isDefault, bool _isBridge)
-        {
-            if (_isBridge)
-            {
-                RemoveAllSplinatedObjects(true);
-                RemoveAllEdgeObjects(true);
-            }
-            RoadUtility.LoadNodeObjects(_fileName, this, _isDefault, _isBridge);
-        }
-
-
-        public void Setup(Vector3 _pos, Quaternion _rot, Vector2 _io, float _time, string _name)
-        {
-            pos = _pos;
-            rot = _rot;
-            easeIO = _io;
-            time = _time;
-            name = _name;
-            if (EdgeObjects == null)
-            {
-                EdgeObjects = new List<EdgeObjectMaker>();
-            }
-        }
-
-
         #region "Gizmos"
+
         //	private void TerrainDebugging(){
         //			Construction3DTri tTri = null;
         //			Vector3 tHeightVec = new Vector3(0f,10f,0f);
@@ -683,285 +623,206 @@ namespace RoadArchitect
 
         public List<Construction3DTri> tTriList;
         public List<Vector3> tHMList;
-        [UnityEngine.Serialization.FormerlySerializedAs("bGizmoDrawIntersectionHighlight")]
-        public bool isDrawingIntersectionHighlightGizmos = false;
+
+        [FormerlySerializedAs("bGizmoDrawIntersectionHighlight")]
+        public bool isDrawingIntersectionHighlightGizmos;
 
 
-        private void OnDrawGizmos()
-        {
+        private void OnDrawGizmos() {
             DrawGizmos(false);
         }
 
 
-        private void OnDrawGizmosSelected()
-        {
+        private void OnDrawGizmosSelected() {
             DrawGizmos(true);
         }
 
 
-        private void DrawGizmos(bool _isSelected)
-        {
-            if (spline == null)
-            {
-                return;
-            }
-            if (spline.road == null)
-            {
-                return;
-            }
-            if (!spline.road.isGizmosEnabled)
-            {
-                return;
-            }
-            if (isIgnore)
-            {
-                return;
-            }
-            if (isIntersection)
-            {
-                return;
-            }
-            if (isSpecialEndNode)
-            {
-                return;
-            }
-            if (isSpecialEndNodeIsEnd || isSpecialEndNodeIsStart)
-            {
-                return;
-            }
+        private void DrawGizmos(bool _isSelected) {
+            if (spline == null) return;
+            if (spline.road == null) return;
+            if (!spline.road.isGizmosEnabled) return;
+            if (isIgnore) return;
+            if (isIntersection) return;
+            if (isSpecialEndNode) return;
+            if (isSpecialEndNodeIsEnd || isSpecialEndNodeIsStart) return;
 
 
-            if (_isSelected)
-            {
-                if (isDrawingIntersectionHighlightGizmos && !isSpecialEndNode && isIntersection)
-                {
+            if (_isSelected) {
+                if (isDrawingIntersectionHighlightGizmos && !isSpecialEndNode && isIntersection) {
                     Gizmos.color = new Color(0f, 1f, 0f, 0.6f);
                     Gizmos.DrawCube(transform.position + new Vector3(0f, 2f, 0f), new Vector3(32f, 4f, 32f));
                 }
+
                 Gizmos.color = spline.road.selectedColor;
                 Gizmos.DrawCube(transform.position + new Vector3(0f, 6.25f, 0f), new Vector3(3.5f, 12.5f, 3.5f));
                 return;
             }
 
             // Not Selected
-            if (isDrawingIntersectionHighlightGizmos && !isSpecialEndNode && isIntersection)
-            {
+            if (isDrawingIntersectionHighlightGizmos && !isSpecialEndNode && isIntersection) {
                 Gizmos.color = spline.road.Color_NodeInter;
                 Gizmos.DrawCube(transform.position + new Vector3(0f, 2f, 0f), new Vector3(32f, 4f, 32f));
                 return;
             }
-            if (isSpecialRoadConnPrimary)
-            {
+
+            if (isSpecialRoadConnPrimary) {
                 Gizmos.color = spline.road.Color_NodeConnColor;
                 Gizmos.DrawCube(transform.position + new Vector3(0f, 7.5f, 0f), new Vector3(5f, 15f, 5f));
             }
-            else
-            {
+            else {
                 Gizmos.color = spline.road.defaultNodeColor;
                 Gizmos.DrawCube(transform.position + new Vector3(0f, 6f, 0f), new Vector3(2f, 11f, 2f));
             }
         }
+
         #endregion
 
 
         #region "Grade"
-        public void SetGradePercent(int _nodeCount)
-        {
-            Vector3 P1 = default(Vector3);
-            Vector3 P2 = default(Vector3);
+
+        public void SetGradePercent(int _nodeCount) {
+            var P1 = default(Vector3);
+            var P2 = default(Vector3);
             float dist;
             float grade;
-            bool isNone = false;
+            var isNone = false;
 
-            if (_nodeCount < 2)
-            {
+            if (_nodeCount < 2) {
                 gradeToPrev = "NA";
                 gradeToNext = "NA";
                 gradeToNextValue = 0f;
                 gradeToPrevValue = 0f;
             }
 
-            if (!isEndPoint && !isSpecialEndNode && _nodeCount > 1 && ((idOnSpline + 1) < spline.nodes.Count))
-            {
+            if (!isEndPoint && !isSpecialEndNode && _nodeCount > 1 && idOnSpline + 1 < spline.nodes.Count) {
                 P1 = pos;
                 P2 = spline.nodes[idOnSpline + 1].pos;
 
-                if (isNone)
-                {
+                if (isNone) {
                     grade = 0f;
                 }
-                else
-                {
+                else {
                     dist = Vector2.Distance(new Vector2(P1.x, P1.z), new Vector2(P2.x, P2.z));
-                    grade = ((P2.y - P1.y) / dist) * 100;
+                    grade = (P2.y - P1.y) / dist * 100;
                 }
+
                 gradeToNextValue = grade;
                 gradeToNext = grade.ToString("0.##\\%");
             }
-            else
-            {
+            else {
                 gradeToNext = "NA";
                 gradeToNextValue = 0f;
             }
 
-            if (idOnSpline > 0 && !isSpecialEndNode && _nodeCount > 1 && ((idOnSpline - 1) >= 0))
-            {
+            if (idOnSpline > 0 && !isSpecialEndNode && _nodeCount > 1 && idOnSpline - 1 >= 0) {
                 P1 = pos;
                 P2 = spline.nodes[idOnSpline - 1].pos;
 
-                if (isNone)
-                {
+                if (isNone) {
                     grade = 0f;
                 }
-                else
-                {
+                else {
                     dist = Vector2.Distance(new Vector2(P1.x, P1.z), new Vector2(P2.x, P2.z));
-                    grade = ((P2.y - P1.y) / dist) * 100;
+                    grade = (P2.y - P1.y) / dist * 100;
                 }
+
                 gradeToPrevValue = grade;
                 gradeToPrev = grade.ToString("0.##\\%");
             }
-            else
-            {
+            else {
                 gradeToPrev = "NA";
                 gradeToPrevValue = 0f;
             }
         }
 
 
-        public Vector3 FilterMaxGradeHeight(Vector3 _pos, out float _minY, out float _maxY)
-        {
-            Vector3 tVect = _pos;
+        public Vector3 FilterMaxGradeHeight(Vector3 _pos, out float _minY, out float _maxY) {
+            var tVect = _pos;
             tVect.y = pos.y;
-            float CurrentDistance = Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(_pos.x, _pos.z));
+            var CurrentDistance = Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(_pos.x, _pos.z));
             //		float CurrentDistance2 = Vector3.Distance(pos,tVect);
             //		float CurrentYDiff = tPos.y - pos.y;
             //		float CurrentGrade = CurrentYDiff/CurrentDistance;
             //Get max/min grade height position for this currrent tDist distance:
-            _maxY = (spline.road.maxGrade * CurrentDistance) + pos.y;
-            _minY = pos.y - (spline.road.maxGrade * CurrentDistance);
+            _maxY = spline.road.maxGrade * CurrentDistance + pos.y;
+            _minY = pos.y - spline.road.maxGrade * CurrentDistance;
 
             //(tPos.y-pos.y)/CurrentDistance
 
 
             //		float DifferenceFromMax = -1;
             if (_pos.y > _maxY)
-            {
                 //			DifferenceFromMax = tPos.y - MaximumY;
                 _pos.y = _maxY;
-            }
             if (_pos.y < _minY)
-            {
                 //			DifferenceFromMax = MinimumY - tPos.y;
                 _pos.y = _minY;
-            }
 
             return _pos;
         }
 
 
-        public void EnsureGradeValidity(int _iStart = -1, bool _isAddToEnd = false)
-        {
-            if (spline == null)
-            {
-                return;
-            }
+        public void EnsureGradeValidity(int _iStart = -1, bool _isAddToEnd = false) {
+            if (spline == null) return;
             SplineN PrevNode = null;
             SplineN NextNode = null;
 
-            if (_isAddToEnd && spline.GetNodeCount() > 0)
-            {
+            if (_isAddToEnd && spline.GetNodeCount() > 0) {
                 PrevNode = spline.nodes[spline.GetNodeCount() - 1];
             }
-            else
-            {
+            else {
                 if (_iStart == -1)
-                {
                     PrevNode = spline.GetPrevLegitimateNode(idOnSpline);
-                }
                 else
-                {
                     PrevNode = spline.GetPrevLegitimateNode(_iStart);
-                }
-            }
-            if (PrevNode == null)
-            {
-                return;
-            }
-            Vector3 tVect = transform.position;
-
-            float tMinY1 = 0f;
-            float tMinY2 = 0f;
-            float tMaxY1 = 0f;
-            float tMaxY2 = 0f;
-            if (PrevNode != null)
-            {
-                PrevNode.FilterMaxGradeHeight(tVect, out tMinY1, out tMaxY1);
-            }
-            if (NextNode != null)
-            {
-                NextNode.FilterMaxGradeHeight(tVect, out tMinY2, out tMaxY2);
             }
 
-            bool bPrevNodeGood = false;
-            bool bNextNodeGood = false;
+            if (PrevNode == null) return;
+            var tVect = transform.position;
 
-            if (tVect.y > tMinY1 && tVect.y < tMaxY1)
-            {
-                bPrevNodeGood = true;
-            }
-            if (tVect.y > tMinY2 && tVect.y < tMaxY2)
-            {
-                bNextNodeGood = true;
-            }
+            var tMinY1 = 0f;
+            var tMinY2 = 0f;
+            var tMaxY1 = 0f;
+            var tMaxY2 = 0f;
+            if (PrevNode != null) PrevNode.FilterMaxGradeHeight(tVect, out tMinY1, out tMaxY1);
+            if (NextNode != null) NextNode.FilterMaxGradeHeight(tVect, out tMinY2, out tMaxY2);
 
-            if (!bPrevNodeGood && !bNextNodeGood && PrevNode != null && NextNode != null)
-            {
-                float tMaxY3 = Mathf.Min(tMaxY1, tMaxY2);
-                float tMinY3 = Mathf.Max(tMinY1, tMinY2);
+            var bPrevNodeGood = false;
+            var bNextNodeGood = false;
+
+            if (tVect.y > tMinY1 && tVect.y < tMaxY1) bPrevNodeGood = true;
+            if (tVect.y > tMinY2 && tVect.y < tMaxY2) bNextNodeGood = true;
+
+            if (!bPrevNodeGood && !bNextNodeGood && PrevNode != null && NextNode != null) {
+                var tMaxY3 = Mathf.Min(tMaxY1, tMaxY2);
+                var tMinY3 = Mathf.Max(tMinY1, tMinY2);
                 if (tVect.y < tMinY3)
-                {
                     tVect.y = tMinY3;
-                }
-                else if (tVect.y > tMaxY3)
-                {
-                    tVect.y = tMaxY3;
-                }
+                else if (tVect.y > tMaxY3) tVect.y = tMaxY3;
             }
-            else
-            {
-                if (!bPrevNodeGood && PrevNode != null)
-                {
+            else {
+                if (!bPrevNodeGood && PrevNode != null) {
                     if (tVect.y < tMinY1)
-                    {
                         tVect.y = tMinY1;
-                    }
-                    else if (tVect.y > tMaxY1)
-                    {
-                        tVect.y = tMaxY1;
-                    }
+                    else if (tVect.y > tMaxY1) tVect.y = tMaxY1;
                 }
-                else if (!bNextNodeGood && NextNode != null)
-                {
+                else if (!bNextNodeGood && NextNode != null) {
                     if (tVect.y < tMinY2)
-                    {
                         tVect.y = tMinY2;
-                    }
-                    else if (tVect.y > tMaxY2)
-                    {
-                        tVect.y = tMaxY2;
-                    }
+                    else if (tVect.y > tMaxY2) tVect.y = tMaxY2;
                 }
             }
 
             transform.position = tVect;
         }
+
         #endregion
 
 
         #region "Util"
-        public void ResetNavigationData()
-        {
+
+        public void ResetNavigationData() {
             connectedID = null;
             connectedID = new List<int>();
             connectedNode = null;
@@ -969,27 +830,23 @@ namespace RoadArchitect
         }
 
 
-        public void BreakConnection()
-        {
-            SplineN tNode2 = specialNodeCounterpart;
+        public void BreakConnection() {
+            var tNode2 = specialNodeCounterpart;
 
-            if (isSpecialEndNodeIsStart)
-            {
+            if (isSpecialEndNodeIsStart) {
                 spline.isSpecialStartControlNode = false;
                 spline.isSpecialEndNodeIsStartDelay = false;
             }
-            else if (isSpecialEndNodeIsEnd)
-            {
+            else if (isSpecialEndNodeIsEnd) {
                 spline.isSpecialEndControlNode = false;
                 spline.isSpecialEndNodeIsEndDelay = false;
             }
-            if (tNode2.isSpecialEndNodeIsStart)
-            {
+
+            if (tNode2.isSpecialEndNodeIsStart) {
                 tNode2.spline.isSpecialStartControlNode = false;
                 tNode2.spline.isSpecialEndNodeIsStartDelay = false;
             }
-            else if (tNode2.isSpecialEndNodeIsEnd)
-            {
+            else if (tNode2.isSpecialEndNodeIsEnd) {
                 tNode2.spline.isSpecialEndControlNode = false;
                 tNode2.spline.isSpecialEndNodeIsEndDelay = false;
             }
@@ -1007,23 +864,17 @@ namespace RoadArchitect
 
             tNode2.specialNodeCounterpartMaster.isSpecialRoadConnPrimary = false;
             specialNodeCounterpartMaster.isSpecialRoadConnPrimary = false;
-            try
-            {
-                Object.DestroyImmediate(tNode2.transform.gameObject);
-                Object.DestroyImmediate(transform.gameObject);
+            try {
+                DestroyImmediate(tNode2.transform.gameObject);
+                DestroyImmediate(transform.gameObject);
             }
-            catch (MissingReferenceException)
-            {
-
-            }
+            catch (MissingReferenceException) { }
         }
 
 
-        public void SetupSplinationLimits()
-        {
+        public void SetupSplinationLimits() {
             //Disallowed nodes:
-            if (!CanSplinate())
-            {
+            if (!CanSplinate()) {
                 minSplination = time;
                 maxSplination = time;
                 return;
@@ -1032,311 +883,250 @@ namespace RoadArchitect
             //Figure out min splination:
             SplineN node = null;
             minSplination = time;
-            for (int index = idOnSpline; index >= 0; index--)
-            {
+            for (var index = idOnSpline; index >= 0; index--) {
                 node = spline.nodes[index];
                 if (node.CanSplinate())
-                {
                     minSplination = node.time;
-                }
                 else
-                {
                     break;
-                }
             }
 
             //Figure out max splination:
             maxSplination = time;
-            int nodeCount = spline.GetNodeCount();
-            for (int index = idOnSpline; index < nodeCount; index++)
-            {
+            var nodeCount = spline.GetNodeCount();
+            for (var index = idOnSpline; index < nodeCount; index++) {
                 node = spline.nodes[index];
                 if (node.CanSplinate())
-                {
                     maxSplination = node.time;
-                }
                 else
-                {
                     break;
-                }
             }
         }
+
         #endregion
 
 
         #region "Cut materials storage and setting"
-        [UnityEngine.Serialization.FormerlySerializedAs("RoadCut_world")]
-        public GameObject roadCutWorld = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutR_world")]
-        public GameObject shoulderCutRWorld = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutL_world")]
-        public GameObject shoulderCutLWorld = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("RoadCut_world_Mats")]
+
+        [FormerlySerializedAs("RoadCut_world")]
+        public GameObject roadCutWorld;
+
+        [FormerlySerializedAs("ShoulderCutR_world")]
+        public GameObject shoulderCutRWorld;
+
+        [FormerlySerializedAs("ShoulderCutL_world")]
+        public GameObject shoulderCutLWorld;
+
+        [FormerlySerializedAs("RoadCut_world_Mats")]
         public Material[] roadCutWorldMats;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutR_world_Mats")]
+
+        [FormerlySerializedAs("ShoulderCutR_world_Mats")]
         public Material[] shoulderCutRWorldMats;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutL_world_Mats")]
+
+        [FormerlySerializedAs("ShoulderCutL_world_Mats")]
         public Material[] shoulderCutLWorldMats;
 
-        [UnityEngine.Serialization.FormerlySerializedAs("RoadCut_marker")]
-        public GameObject roadCutMarker = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutR_marker")]
-        public GameObject shoulderCutRMarker = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutL_marker")]
-        public GameObject shoulderCutLMarker = null;
-        [UnityEngine.Serialization.FormerlySerializedAs("RoadCut_marker_Mats")]
+        [FormerlySerializedAs("RoadCut_marker")]
+        public GameObject roadCutMarker;
+
+        [FormerlySerializedAs("ShoulderCutR_marker")]
+        public GameObject shoulderCutRMarker;
+
+        [FormerlySerializedAs("ShoulderCutL_marker")]
+        public GameObject shoulderCutLMarker;
+
+        [FormerlySerializedAs("RoadCut_marker_Mats")]
         public Material[] roadCutMarkerMats;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutR_marker_Mats")]
+
+        [FormerlySerializedAs("ShoulderCutR_marker_Mats")]
         public Material[] shoulderCutRMarkerMats;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutL_marker_Mats")]
+
+        [FormerlySerializedAs("ShoulderCutL_marker_Mats")]
         public Material[] shoulderCutLMarkerMats;
 
-        [UnityEngine.Serialization.FormerlySerializedAs("RoadCut_PhysicMat")]
+        [FormerlySerializedAs("RoadCut_PhysicMat")]
         public PhysicMaterial roadCutPhysicMat;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutR_PhysicMat")]
+
+        [FormerlySerializedAs("ShoulderCutR_PhysicMat")]
         public PhysicMaterial shoulderCutRPhysicMat;
-        [UnityEngine.Serialization.FormerlySerializedAs("ShoulderCutL_PhysicMat")]
+
+        [FormerlySerializedAs("ShoulderCutL_PhysicMat")]
         public PhysicMaterial shoulderCutLPhysicMat;
 
 
-        /// <summary> Stores the cut materials. For use in UpdateCuts(). See UpdateCuts() in this code file for further description of this system. </summary>
-        public void StoreCuts()
-        {
+        /// <summary>
+        ///     Stores the cut materials. For use in UpdateCuts(). See UpdateCuts() in this code file for further description
+        ///     of this system.
+        /// </summary>
+        public void StoreCuts() {
             //Buffers:
             MeshRenderer MR = null;
             MeshCollider MC = null;
 
             //World cuts first:
-            if (roadCutWorld != null)
-            {
+            if (roadCutWorld != null) {
                 MR = roadCutWorld.GetComponent<MeshRenderer>();
                 MC = roadCutWorld.GetComponent<MeshCollider>();
-                if (MR != null)
-                {
-                    roadCutWorldMats = MR.sharedMaterials;
-                }
-                if (MC != null)
-                {
+                if (MR != null) roadCutWorldMats = MR.sharedMaterials;
+                if (MC != null) {
                     roadCutPhysicMat = MC.material;
                     roadCutPhysicMat.name = roadCutPhysicMat.name.Replace(" (Instance)", "");
                 }
+
                 //Nullify reference only
                 roadCutWorld = null;
             }
-            if (shoulderCutRWorld != null)
-            {
+
+            if (shoulderCutRWorld != null) {
                 MR = shoulderCutRWorld.GetComponent<MeshRenderer>();
                 MC = shoulderCutRWorld.GetComponent<MeshCollider>();
-                if (MR != null)
-                {
-                    shoulderCutRWorldMats = MR.sharedMaterials;
-                }
-                if (MC != null)
-                {
+                if (MR != null) shoulderCutRWorldMats = MR.sharedMaterials;
+                if (MC != null) {
                     shoulderCutRPhysicMat = MC.material;
                     shoulderCutRPhysicMat.name = shoulderCutRPhysicMat.name.Replace(" (Instance)", "");
                 }
+
                 shoulderCutRWorld = null;
             }
-            if (shoulderCutLWorld != null)
-            {
+
+            if (shoulderCutLWorld != null) {
                 MR = shoulderCutLWorld.GetComponent<MeshRenderer>();
                 MC = shoulderCutLWorld.GetComponent<MeshCollider>();
-                if (MR != null)
-                {
-                    shoulderCutLWorldMats = MR.sharedMaterials;
-                }
-                if (MC != null)
-                {
+                if (MR != null) shoulderCutLWorldMats = MR.sharedMaterials;
+                if (MC != null) {
                     shoulderCutLPhysicMat = MC.material;
                     shoulderCutLPhysicMat.name = shoulderCutLPhysicMat.name.Replace(" (Instance)", "");
                 }
+
                 shoulderCutLWorld = null;
             }
+
             //Markers:
-            if (roadCutMarker != null)
-            {
+            if (roadCutMarker != null) {
                 MR = roadCutMarker.GetComponent<MeshRenderer>();
-                if (MR != null)
-                {
-                    roadCutMarkerMats = MR.sharedMaterials;
-                }
+                if (MR != null) roadCutMarkerMats = MR.sharedMaterials;
                 roadCutMarker = null;
             }
-            if (shoulderCutRMarker != null)
-            {
+
+            if (shoulderCutRMarker != null) {
                 MR = shoulderCutRMarker.GetComponent<MeshRenderer>();
-                if (MR != null)
-                {
-                    shoulderCutRMarkerMats = MR.sharedMaterials;
-                }
+                if (MR != null) shoulderCutRMarkerMats = MR.sharedMaterials;
                 shoulderCutRMarker = null;
             }
-            if (shoulderCutLMarker != null)
-            {
+
+            if (shoulderCutLMarker != null) {
                 MR = shoulderCutLMarker.GetComponent<MeshRenderer>();
-                if (MR != null)
-                {
-                    shoulderCutLMarkerMats = MR.sharedMaterials;
-                }
+                if (MR != null) shoulderCutLMarkerMats = MR.sharedMaterials;
                 shoulderCutLMarker = null;
             }
         }
 
 
         /// <summary>
-        /// Updates the cut materials. Called upon creation of the cuts to set the newly cut materials to previously set materials.
-        /// For instance, if the user set a material on a road cut, and then regenerated the road, this function will apply the mats that the user applied.
+        ///     Updates the cut materials. Called upon creation of the cuts to set the newly cut materials to previously set
+        ///     materials.
+        ///     For instance, if the user set a material on a road cut, and then regenerated the road, this function will apply the
+        ///     mats that the user applied.
         /// </summary>
-        public void UpdateCuts()
-        {
+        public void UpdateCuts() {
             //Buffers:
             MeshRenderer MR = null;
             MeshCollider MC = null;
 
             #region "Physic Materials"
+
             //World:
-            if (roadCutPhysicMat != null && roadCutWorld)
-            {
+            if (roadCutPhysicMat != null && roadCutWorld) {
                 MC = roadCutWorld.GetComponent<MeshCollider>();
-                if (MC != null)
-                {
+                if (MC != null) {
                     MC.material = roadCutPhysicMat;
                     MC.material.name = MC.material.name.Replace(" (Instance)", "");
                 }
             }
 
-            if (shoulderCutRPhysicMat != null && shoulderCutRWorld)
-            {
+            if (shoulderCutRPhysicMat != null && shoulderCutRWorld) {
                 MC = shoulderCutRWorld.GetComponent<MeshCollider>();
-                if (MC != null)
-                {
+                if (MC != null) {
                     MC.material = shoulderCutRPhysicMat;
                     MC.material.name = MC.material.name.Replace(" (Instance)", "");
                 }
             }
 
-            if (shoulderCutLPhysicMat != null && shoulderCutLWorld)
-            {
+            if (shoulderCutLPhysicMat != null && shoulderCutLWorld) {
                 MC = shoulderCutLWorld.GetComponent<MeshCollider>();
-                if (MC != null)
-                {
+                if (MC != null) {
                     MC.material = shoulderCutLPhysicMat;
                     MC.material.name = MC.material.name.Replace(" (Instance)", "");
                 }
             }
+
             #endregion
 
             #region "Get or Add MeshRenderer"
-            if (roadCutWorldMats != null && roadCutWorldMats.Length > 0 && roadCutWorld)
-            {
+
+            if (roadCutWorldMats != null && roadCutWorldMats.Length > 0 && roadCutWorld) {
                 MR = roadCutWorld.GetComponent<MeshRenderer>();
-                if (!MR)
-                {
-                    roadCutWorld.AddComponent<MeshRenderer>();
-                }
-                if (MR != null)
-                {
-                    MR.materials = roadCutWorldMats;
-                }
+                if (!MR) roadCutWorld.AddComponent<MeshRenderer>();
+                if (MR != null) MR.materials = roadCutWorldMats;
             }
-            if (shoulderCutRWorldMats != null && shoulderCutRWorldMats.Length > 0 && shoulderCutRWorld)
-            {
+
+            if (shoulderCutRWorldMats != null && shoulderCutRWorldMats.Length > 0 && shoulderCutRWorld) {
                 MR = shoulderCutRWorld.GetComponent<MeshRenderer>();
-                if (!MR)
-                {
-                    shoulderCutRWorld.AddComponent<MeshRenderer>();
-                }
-                if (MR != null)
-                {
-                    MR.materials = shoulderCutRWorldMats;
-                }
+                if (!MR) shoulderCutRWorld.AddComponent<MeshRenderer>();
+                if (MR != null) MR.materials = shoulderCutRWorldMats;
             }
-            if (shoulderCutLWorldMats != null && shoulderCutLWorldMats.Length > 0 && shoulderCutLWorld)
-            {
+
+            if (shoulderCutLWorldMats != null && shoulderCutLWorldMats.Length > 0 && shoulderCutLWorld) {
                 MR = shoulderCutLWorld.GetComponent<MeshRenderer>();
-                if (!MR)
-                {
-                    shoulderCutLWorld.AddComponent<MeshRenderer>();
-                }
-                if (MR != null)
-                {
-                    MR.materials = shoulderCutLWorldMats;
-                }
+                if (!MR) shoulderCutLWorld.AddComponent<MeshRenderer>();
+                if (MR != null) MR.materials = shoulderCutLWorldMats;
             }
 
 
             //Markers:
-            if (roadCutMarkerMats != null && roadCutMarkerMats.Length > 0 && roadCutMarker)
-            {
+            if (roadCutMarkerMats != null && roadCutMarkerMats.Length > 0 && roadCutMarker) {
                 MR = roadCutMarker.GetComponent<MeshRenderer>();
-                if (!MR)
-                {
-                    roadCutMarker.AddComponent<MeshRenderer>();
-                }
-                if (MR != null)
-                {
-                    MR.materials = roadCutMarkerMats;
-                }
+                if (!MR) roadCutMarker.AddComponent<MeshRenderer>();
+                if (MR != null) MR.materials = roadCutMarkerMats;
             }
-            if (shoulderCutRMarkerMats != null && shoulderCutRMarkerMats.Length > 0 && shoulderCutRMarker)
-            {
+
+            if (shoulderCutRMarkerMats != null && shoulderCutRMarkerMats.Length > 0 && shoulderCutRMarker) {
                 MR = shoulderCutRMarker.GetComponent<MeshRenderer>();
-                if (!MR)
-                {
-                    shoulderCutRMarker.AddComponent<MeshRenderer>();
-                }
-                if (MR != null)
-                {
-                    MR.materials = shoulderCutRMarkerMats;
-                }
+                if (!MR) shoulderCutRMarker.AddComponent<MeshRenderer>();
+                if (MR != null) MR.materials = shoulderCutRMarkerMats;
             }
-            if (shoulderCutLMarkerMats != null && shoulderCutLMarkerMats.Length > 0 && shoulderCutLMarker)
-            {
+
+            if (shoulderCutLMarkerMats != null && shoulderCutLMarkerMats.Length > 0 && shoulderCutLMarker) {
                 MR = shoulderCutLMarker.GetComponent<MeshRenderer>();
-                if (!MR)
-                {
-                    shoulderCutLMarker.AddComponent<MeshRenderer>();
-                }
-                if (MR != null)
-                {
-                    MR.materials = shoulderCutLMarkerMats;
-                }
+                if (!MR) shoulderCutLMarker.AddComponent<MeshRenderer>();
+                if (MR != null) MR.materials = shoulderCutLMarkerMats;
             }
+
             #endregion
 
             #region "Destroy if empty"
-            if (roadCutMarker != null)
-            {
+
+            if (roadCutMarker != null) {
                 MR = roadCutMarker.GetComponent<MeshRenderer>();
-                if (MR == null || MR.sharedMaterial == null)
-                {
-                    Object.DestroyImmediate(roadCutMarker);
-                }
+                if (MR == null || MR.sharedMaterial == null) DestroyImmediate(roadCutMarker);
             }
-            if (shoulderCutRMarker != null)
-            {
+
+            if (shoulderCutRMarker != null) {
                 MR = shoulderCutRMarker.GetComponent<MeshRenderer>();
-                if (MR == null || MR.sharedMaterial == null)
-                {
-                    Object.DestroyImmediate(shoulderCutRMarker);
-                }
+                if (MR == null || MR.sharedMaterial == null) DestroyImmediate(shoulderCutRMarker);
             }
-            if (shoulderCutLMarker != null)
-            {
+
+            if (shoulderCutLMarker != null) {
                 MR = shoulderCutLMarker.GetComponent<MeshRenderer>();
-                if (MR == null || MR.sharedMaterial == null)
-                {
-                    Object.DestroyImmediate(shoulderCutLMarker);
-                }
+                if (MR == null || MR.sharedMaterial == null) DestroyImmediate(shoulderCutLMarker);
             }
+
             #endregion
         }
 
 
         /// <summary> Clears the cut materials </summary>
-        public void ClearCuts()
-        {
+        public void ClearCuts() {
             roadCutWorldMats = null;
             shoulderCutRWorldMats = null;
             shoulderCutLWorldMats = null;
@@ -1347,70 +1137,57 @@ namespace RoadArchitect
             shoulderCutRPhysicMat = null;
             shoulderCutLPhysicMat = null;
         }
+
         #endregion
 
 
         #region "Bridges"
-        public void BridgeToggleStart()
-        {
+
+        public void BridgeToggleStart() {
             //If switching to end, find associated bridge 
             if (isBridgeStart)
-            {
                 BridgeStart();
-            }
             else
-            {
                 BridgeDestroy();
-            }
         }
 
 
-        public void BridgeToggleEnd()
-        {
+        public void BridgeToggleEnd() {
             //If switching to end, find associated bridge 
-            if (isBridgeEnd)
-            {
-                int nodeCount = spline.GetNodeCount();
+            if (isBridgeEnd) {
+                var nodeCount = spline.GetNodeCount();
                 SplineN node = null;
-                for (int i = 1; i < (nodeCount - 1); i++)
-                {
+                for (var i = 1; i < nodeCount - 1; i++) {
                     node = spline.nodes[i];
-                    if (node.isBridgeStart && !node.isBridgeMatched)
-                    {
+                    if (node.isBridgeStart && !node.isBridgeMatched) {
                         node.BridgeToggleStart();
-                        if (node.isBridgeMatched && node.bridgeCounterpartNode == this)
-                        {
-                            return;
-                        }
+                        if (node.isBridgeMatched && node.bridgeCounterpartNode == this) return;
                     }
                 }
             }
-            else
-            {
+            else {
                 BridgeDestroy();
             }
         }
 
 
-        private void BridgeStart()
-        {
+        private void BridgeStart() {
             //Cycle through nodes until you find another end or another start (in this case, no creation, encountered another bridge):
-            int EndID = idOnSpline + 1;
-            int nodeCount = spline.GetNodeCount();
-            if (isEndPoint)
-            {
+            var EndID = idOnSpline + 1;
+            var nodeCount = spline.GetNodeCount();
+            if (isEndPoint) {
                 //Attempted to make end point node a bridge node:
                 isBridgeStart = false;
                 return;
             }
-            if (EndID >= nodeCount)
-            {
+
+            if (EndID >= nodeCount) {
                 //Attempted to make last node a bridge node:
                 isBridgeStart = false;
                 return;
             }
-            else if (idOnSpline == 0)
-            {
+
+            if (idOnSpline == 0) {
                 //Attempted to make first node a bridge node:
                 isBridgeStart = false;
                 return;
@@ -1418,27 +1195,18 @@ namespace RoadArchitect
 
             isBridgeMatched = false;
             bridgeCounterpartNode = null;
-            int StartI = idOnSpline + 1;
+            var StartI = idOnSpline + 1;
             SplineN tNode = null;
-            for (int i = StartI; i < nodeCount; i++)
-            {
+            for (var i = StartI; i < nodeCount; i++) {
                 tNode = spline.nodes[i];
                 if (tNode.isIntersection)
-                {
                     //Encountered intersection. End search.
                     return;
-                }
                 if (tNode.isBridgeStart)
-                {
                     //Encountered another bridge. Return:
                     return;
-                }
-                if (tNode.isIgnore)
-                {
-                    continue;
-                }
-                if (tNode.isBridgeEnd)
-                {
+                if (tNode.isIgnore) continue;
+                if (tNode.isBridgeEnd) {
                     isBridgeMatched = true;
                     tNode.isBridgeMatched = true;
                     bridgeCounterpartNode = tNode;
@@ -1450,19 +1218,14 @@ namespace RoadArchitect
         }
 
 
-        private void BridgeDestroy()
-        {
-            if (bridgeCounterpartNode != null)
-            {
-                bridgeCounterpartNode.BridgeResetValues();
-            }
+        private void BridgeDestroy() {
+            if (bridgeCounterpartNode != null) bridgeCounterpartNode.BridgeResetValues();
             BridgeResetValues();
             spline.TriggerSetup();
         }
 
 
-        public void BridgeResetValues()
-        {
+        public void BridgeResetValues() {
             isBridge = false;
             isBridgeStart = false;
             isBridgeEnd = false;
@@ -1471,179 +1234,110 @@ namespace RoadArchitect
         }
 
 
-        public bool CanBridgeStart()
-        {
-            if (isBridgeStart)
-            {
-                return true;
-            }
-            if (isBridgeEnd)
-            {
-                return false;
-            }
-            if (isEndPoint)
-            {
-                return false;
-            }
+        public bool CanBridgeStart() {
+            if (isBridgeStart) return true;
+            if (isBridgeEnd) return false;
+            if (isEndPoint) return false;
 
-            int mCount = spline.GetNodeCount();
+            var mCount = spline.GetNodeCount();
 
             if (idOnSpline > 0)
-            {
                 if (spline.nodes[idOnSpline - 1].isBridgeStart)
-                {
                     return false;
+
+            if (idOnSpline < mCount - 1) {
+                if (spline.nodes[idOnSpline + 1].isBridgeStart) return false;
+
+                if (spline.isSpecialEndControlNode) {
+                    if (mCount - 3 > 0 && idOnSpline == mCount - 3) return false;
+                }
+                else {
+                    if (mCount - 2 > 0 && idOnSpline == mCount - 2) return false;
                 }
             }
 
-            if (idOnSpline < (mCount - 1))
-            {
-                if (spline.nodes[idOnSpline + 1].isBridgeStart)
-                {
-                    return false;
-                }
-
-                if (spline.isSpecialEndControlNode)
-                {
-                    if ((mCount - 3 > 0) && idOnSpline == mCount - 3)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if ((mCount - 2 > 0) && idOnSpline == mCount - 2)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (spline.IsInBridge(time))
-            {
-                return false;
-            }
+            if (spline.IsInBridge(time)) return false;
 
             return true;
         }
 
 
-        public bool CanBridgeEnd()
-        {
-            if (isBridgeEnd)
-            {
-                return true;
-            }
-            if (isBridgeStart)
-            {
-                return false;
-            }
-            if (isEndPoint)
-            {
-                return false;
-            }
+        public bool CanBridgeEnd() {
+            if (isBridgeEnd) return true;
+            if (isBridgeStart) return false;
+            if (isEndPoint) return false;
 
-            int mCount = spline.GetNodeCount();
+            var mCount = spline.GetNodeCount();
 
-            if (idOnSpline < (mCount - 1))
-            {
-                if (spline.isSpecialStartControlNode)
-                {
-                    if (idOnSpline == 2)
-                    {
-                        return false;
-                    }
+            if (idOnSpline < mCount - 1) {
+                if (spline.isSpecialStartControlNode) {
+                    if (idOnSpline == 2) return false;
                 }
-                else
-                {
-                    if (idOnSpline == 1)
-                    {
-                        return false;
-                    }
+                else {
+                    if (idOnSpline == 1) return false;
                 }
             }
 
-            for (int i = idOnSpline; i >= 0; i--)
-            {
-                if (spline.nodes[i].isBridgeStart)
-                {
+            for (var i = idOnSpline; i >= 0; i--)
+                if (spline.nodes[i].isBridgeStart) {
                     if (!spline.nodes[i].isBridgeMatched)
-                    {
                         return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-            }
 
             return false;
         }
+
         #endregion
 
 
         #region "Tunnels"
-        public void TunnelToggleStart()
-        {
+
+        public void TunnelToggleStart() {
             //If switching to end, find associated Tunnel 
             if (isTunnelStart)
-            {
                 TunnelStart();
-            }
             else
-            {
                 TunnelDestroy();
-            }
         }
 
 
-        public void TunnelToggleEnd()
-        {
+        public void TunnelToggleEnd() {
             //If switching to end, find associated Tunnel 
-            if (isTunnelEnd)
-            {
-                int nodeCount = spline.GetNodeCount();
+            if (isTunnelEnd) {
+                var nodeCount = spline.GetNodeCount();
                 SplineN node = null;
-                for (int index = 1; index < (nodeCount - 1); index++)
-                {
+                for (var index = 1; index < nodeCount - 1; index++) {
                     node = spline.nodes[index];
-                    if (node.isTunnelStart && !node.isTunnelMatched)
-                    {
+                    if (node.isTunnelStart && !node.isTunnelMatched) {
                         node.TunnelToggleStart();
-                        if (node.isTunnelMatched && node.tunnelCounterpartNode == this)
-                        {
-                            return;
-                        }
+                        if (node.isTunnelMatched && node.tunnelCounterpartNode == this) return;
                     }
                 }
             }
-            else
-            {
+            else {
                 TunnelDestroy();
             }
         }
 
 
-        private void TunnelStart()
-        {
+        private void TunnelStart() {
             //Cycle through nodes until you find another end or another start (in this case, no creation, encountered another Tunnel):
-            int EndID = idOnSpline + 1;
-            int mCount = spline.GetNodeCount();
-            if (isEndPoint)
-            {
+            var EndID = idOnSpline + 1;
+            var mCount = spline.GetNodeCount();
+            if (isEndPoint) {
                 //Attempted to make end point node a Tunnel node:
                 isTunnelStart = false;
                 return;
             }
-            if (EndID >= mCount)
-            {
+
+            if (EndID >= mCount) {
                 //Attempted to make last node a Tunnel node:
                 isTunnelStart = false;
                 return;
             }
-            else if (idOnSpline == 0)
-            {
+
+            if (idOnSpline == 0) {
                 //Attempted to make first node a Tunnel node:
                 isTunnelStart = false;
                 return;
@@ -1651,27 +1345,18 @@ namespace RoadArchitect
 
             isTunnelMatched = false;
             tunnelCounterpartNode = null;
-            int StartI = idOnSpline + 1;
+            var StartI = idOnSpline + 1;
             SplineN node = null;
-            for (int i = StartI; i < mCount; i++)
-            {
+            for (var i = StartI; i < mCount; i++) {
                 node = spline.nodes[i];
                 if (node.isIntersection)
-                {
                     //Encountered intersection. End search.
                     return;
-                }
                 if (node.isTunnelStart)
-                {
                     //Encountered another Tunnel. Return:
                     return;
-                }
-                if (node.isIgnore)
-                {
-                    continue;
-                }
-                if (node.isTunnelEnd)
-                {
+                if (node.isIgnore) continue;
+                if (node.isTunnelEnd) {
                     isTunnelMatched = true;
                     node.isTunnelMatched = true;
                     tunnelCounterpartNode = node;
@@ -1683,19 +1368,14 @@ namespace RoadArchitect
         }
 
 
-        private void TunnelDestroy()
-        {
-            if (tunnelCounterpartNode != null)
-            {
-                tunnelCounterpartNode.TunnelResetValues();
-            }
+        private void TunnelDestroy() {
+            if (tunnelCounterpartNode != null) tunnelCounterpartNode.TunnelResetValues();
             TunnelResetValues();
             spline.TriggerSetup();
         }
 
 
-        public void TunnelResetValues()
-        {
+        public void TunnelResetValues() {
             isTunnel = false;
             isTunnelStart = false;
             isTunnelEnd = false;
@@ -1704,244 +1384,132 @@ namespace RoadArchitect
         }
 
 
-        public bool CanTunnelStart()
-        {
-            if (isTunnelStart)
-            {
-                return true;
-            }
-            if (isTunnelEnd)
-            {
-                return false;
-            }
-            if (isEndPoint)
-            {
-                return false;
-            }
+        public bool CanTunnelStart() {
+            if (isTunnelStart) return true;
+            if (isTunnelEnd) return false;
+            if (isEndPoint) return false;
 
-            int mCount = spline.GetNodeCount();
+            var mCount = spline.GetNodeCount();
 
             if (idOnSpline > 0)
-            {
                 if (spline.nodes[idOnSpline - 1].isTunnelStart)
-                {
                     return false;
+
+            if (idOnSpline < mCount - 1) {
+                if (spline.nodes[idOnSpline + 1].isTunnelStart) return false;
+
+                if (spline.isSpecialEndControlNode) {
+                    if (mCount - 3 > 0 && idOnSpline == mCount - 3) return false;
+                }
+                else {
+                    if (mCount - 2 > 0 && idOnSpline == mCount - 2) return false;
                 }
             }
 
-            if (idOnSpline < (mCount - 1))
-            {
-                if (spline.nodes[idOnSpline + 1].isTunnelStart)
-                {
-                    return false;
-                }
-
-                if (spline.isSpecialEndControlNode)
-                {
-                    if ((mCount - 3 > 0) && idOnSpline == mCount - 3)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if ((mCount - 2 > 0) && idOnSpline == mCount - 2)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (spline.IsInTunnel(time))
-            {
-                return false;
-            }
+            if (spline.IsInTunnel(time)) return false;
 
             return true;
         }
 
 
-        public bool CanTunnelEnd()
-        {
-            if (isTunnelEnd)
-            {
-                return true;
-            }
-            if (isTunnelStart)
-            {
-                return false;
-            }
-            if (isEndPoint)
-            {
-                return false;
-            }
+        public bool CanTunnelEnd() {
+            if (isTunnelEnd) return true;
+            if (isTunnelStart) return false;
+            if (isEndPoint) return false;
 
-            int nodeCount = spline.GetNodeCount();
+            var nodeCount = spline.GetNodeCount();
 
-            if (idOnSpline < (nodeCount - 1))
-            {
-                if (spline.isSpecialStartControlNode)
-                {
-                    if (idOnSpline == 2)
-                    {
-                        return false;
-                    }
+            if (idOnSpline < nodeCount - 1) {
+                if (spline.isSpecialStartControlNode) {
+                    if (idOnSpline == 2) return false;
                 }
-                else
-                {
-                    if (idOnSpline == 1)
-                    {
-                        return false;
-                    }
+                else {
+                    if (idOnSpline == 1) return false;
                 }
             }
 
-            for (int i = idOnSpline; i >= 0; i--)
-            {
-                if (spline.nodes[i].isTunnelStart)
-                {
+            for (var i = idOnSpline; i >= 0; i--)
+                if (spline.nodes[i].isTunnelStart) {
                     if (!spline.nodes[i].isTunnelMatched)
-                    {
                         return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-            }
 
             return false;
         }
+
         #endregion
 
 
         #region "Is straight line to next node"
+
         /// <summary> Returns true if two of 3 pos Vectors to previous and next 2 nodes approx. match </summary>
-        public bool IsStraight()
-        {
-            int id1 = idOnSpline - 1;
-            int id2 = idOnSpline + 1;
-            int id3 = idOnSpline + 2;
-            int nodeCount = spline.GetNodeCount();
+        public bool IsStraight() {
+            var id1 = idOnSpline - 1;
+            var id2 = idOnSpline + 1;
+            var id3 = idOnSpline + 2;
+            var nodeCount = spline.GetNodeCount();
 
             if (id1 > -1 && id1 < nodeCount)
-            {
                 if (!IsApproxTwoThirds(ref pos, spline.nodes[id1].pos))
-                {
                     return false;
-                }
-            }
 
             if (id2 > -1 && id2 < nodeCount)
-            {
                 if (!IsApproxTwoThirds(ref pos, spline.nodes[id2].pos))
-                {
                     return false;
-                }
-            }
 
             if (id3 > -1 && id3 < nodeCount)
-            {
                 if (!IsApproxTwoThirds(ref pos, spline.nodes[id3].pos))
-                {
                     return false;
-                }
-            }
 
             return true;
         }
 
 
-        /// <summary> Returns <see langword="true"/> if exactly 2 values are approximately the same </summary>
-        private static bool IsApproxTwoThirds(ref Vector3 _v1, Vector3 _v2)
-        {
-            int cCount = 0;
-            if (RootUtils.IsApproximately(_v1.x, _v2.x, 0.02f))
-            {
-                cCount += 1;
-            }
-            if (RootUtils.IsApproximately(_v1.y, _v2.y, 0.02f))
-            {
-                cCount += 1;
-            }
-            if (RootUtils.IsApproximately(_v1.z, _v2.z, 0.02f))
-            {
-                cCount += 1;
-            }
+        /// <summary> Returns <see langword="true" /> if exactly 2 values are approximately the same </summary>
+        private static bool IsApproxTwoThirds(ref Vector3 _v1, Vector3 _v2) {
+            var cCount = 0;
+            if (RootUtils.IsApproximately(_v1.x, _v2.x, 0.02f)) cCount += 1;
+            if (RootUtils.IsApproximately(_v1.y, _v2.y, 0.02f)) cCount += 1;
+            if (RootUtils.IsApproximately(_v1.z, _v2.z, 0.02f)) cCount += 1;
 
             if (cCount == 2)
-            {
                 return true;
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
+
         #endregion
 
 
         #region "Non-editor util"
+
         /// <summary> Returns false when isSpecialEndNode </summary>
-        public bool CanSplinate()
-        {
+        public bool CanSplinate() {
             if (isSpecialEndNode)
-            {
                 // || bIsBridge_PreNode || bIsBridge_PostNode){
                 return false;
-            }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
 
         /// <summary> Returns false when isIntersection or isSpecialEndNode </summary>
-        public bool IsLegitimate()
-        {
+        public bool IsLegitimate() {
             if (isIntersection || isSpecialEndNode)
-            {
                 // || bIsBridge_PreNode || bIsBridge_PostNode){
                 return false;
-            }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
 
         /// <summary> Returns false when isSpecialEndNode </summary>
-        public bool IsLegitimateGrade()
-        {
+        public bool IsLegitimateGrade() {
             if (isSpecialEndNode)
-            {
                 // || bIsBridge_PreNode || bIsBridge_PostNode){
                 return false;
-            }
-            else
-            {
-                return true;
-            }
+            return true;
         }
+
         #endregion
 
-
-        /// <summary> Hide or unhide this node in hierarchy </summary>
-        public void ToggleHideFlags(bool _isHidden)
-        {
-            if (_isHidden)
-            {
-                this.hideFlags = HideFlags.HideInHierarchy;
-                transform.hideFlags = HideFlags.HideInHierarchy;
-            }
-            else
-            {
-                this.hideFlags = HideFlags.None;
-                transform.hideFlags = HideFlags.None;
-            }
-        }
     }
 }

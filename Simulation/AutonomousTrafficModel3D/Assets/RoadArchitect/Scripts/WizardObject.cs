@@ -1,39 +1,37 @@
-﻿using UnityEngine;
+﻿using System;
+using System.IO;
+using UnityEngine;
+using UnityEngine.Serialization;
 
+namespace RoadArchitect {
+    public class WizardObject {
+        [FormerlySerializedAs("Desc")] public string desc;
 
-namespace RoadArchitect
-{
-    public class WizardObject
-    {
-        [UnityEngine.Serialization.FormerlySerializedAs("Thumb")]
-        public Texture2D thumb;
-        [UnityEngine.Serialization.FormerlySerializedAs("ThumbString")]
-        public string thumbString;
-        [UnityEngine.Serialization.FormerlySerializedAs("DisplayName")]
-        public string displayName;
-        [UnityEngine.Serialization.FormerlySerializedAs("Desc")]
-        public string desc;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsDefault")]
-        public bool isDefault;
-        [UnityEngine.Serialization.FormerlySerializedAs("bIsBridge")]
-        public bool isBridge;
-        [UnityEngine.Serialization.FormerlySerializedAs("FileName")]
-        public string fileName;
-        [UnityEngine.Serialization.FormerlySerializedAs("FullPath")]
-        public string FullPath;
+        [FormerlySerializedAs("DisplayName")] public string displayName;
+
+        [FormerlySerializedAs("FileName")] public string fileName;
+
+        [FormerlySerializedAs("FullPath")] public string FullPath;
+
+        [FormerlySerializedAs("bIsBridge")] public bool isBridge;
+
+        [FormerlySerializedAs("bIsDefault")] public bool isDefault;
+
         public int sortID = 0;
 
+        [FormerlySerializedAs("Thumb")] public Texture2D thumb;
 
-        public string ConvertToString()
-        {
-            WizardObjectLibrary WOL = new WizardObjectLibrary();
+        [FormerlySerializedAs("ThumbString")] public string thumbString;
+
+
+        public string ConvertToString() {
+            var WOL = new WizardObjectLibrary();
             WOL.LoadFrom(this);
             return RootUtils.GetString<WizardObjectLibrary>(WOL);
         }
 
 
-        public void LoadDataFromWOL(WizardObjectLibrary _wizardObjLib)
-        {
+        public void LoadDataFromWOL(WizardObjectLibrary _wizardObjLib) {
             thumbString = _wizardObjLib.thumbString;
             displayName = _wizardObjLib.displayName;
             desc = _wizardObjLib.desc;
@@ -43,48 +41,43 @@ namespace RoadArchitect
         }
 
 
-        public static WizardObject LoadFromLibrary(string _path)
-        {
-            string tData = System.IO.File.ReadAllText(_path);
-            string[] tSep = new string[2];
+        public static WizardObject LoadFromLibrary(string _path) {
+            var tData = File.ReadAllText(_path);
+            var tSep = new string[2];
             tSep[0] = RoadUtility.FileSepString;
             tSep[1] = RoadUtility.FileSepStringCRLF;
-            string[] tSplit = tData.Split(tSep, System.StringSplitOptions.RemoveEmptyEntries);
-            int tSplitCount = tSplit.Length;
+            var tSplit = tData.Split(tSep, StringSplitOptions.RemoveEmptyEntries);
+            var tSplitCount = tSplit.Length;
             WizardObjectLibrary WOL = null;
-            for (int i = 0; i < tSplitCount; i++)
-            {
-                WOL = WizardObject.WizardObjectLibrary.WOLFromData(tSplit[i]);
-                if (WOL != null)
-                {
-                    WizardObject WO = new WizardObject();
+            for (var i = 0; i < tSplitCount; i++) {
+                WOL = WizardObjectLibrary.WOLFromData(tSplit[i]);
+                if (WOL != null) {
+                    var WO = new WizardObject();
                     WO.LoadDataFromWOL(WOL);
                     return WO;
                 }
             }
+
             return null;
         }
 
 
-        [System.Serializable]
-        public class WizardObjectLibrary
-        {
-            [UnityEngine.Serialization.FormerlySerializedAs("ThumbString")]
-            public string thumbString;
-            [UnityEngine.Serialization.FormerlySerializedAs("DisplayName")]
-            public string displayName;
-            [UnityEngine.Serialization.FormerlySerializedAs("Desc")]
-            public string desc;
-            [UnityEngine.Serialization.FormerlySerializedAs("bIsDefault")]
-            public bool isDefault;
-            [UnityEngine.Serialization.FormerlySerializedAs("bIsBridge")]
-            public bool isBridge;
-            [UnityEngine.Serialization.FormerlySerializedAs("FileName")]
-            public string fileName;
+        [Serializable]
+        public class WizardObjectLibrary {
+            [FormerlySerializedAs("ThumbString")] public string thumbString;
+
+            [FormerlySerializedAs("DisplayName")] public string displayName;
+
+            [FormerlySerializedAs("Desc")] public string desc;
+
+            [FormerlySerializedAs("bIsDefault")] public bool isDefault;
+
+            [FormerlySerializedAs("bIsBridge")] public bool isBridge;
+
+            [FormerlySerializedAs("FileName")] public string fileName;
 
 
-            public void LoadFrom(WizardObject _wizardObj)
-            {
+            public void LoadFrom(WizardObject _wizardObj) {
                 thumbString = _wizardObj.thumbString;
                 displayName = _wizardObj.displayName;
                 desc = _wizardObj.desc;
@@ -94,15 +87,12 @@ namespace RoadArchitect
             }
 
 
-            public static WizardObjectLibrary WOLFromData(string _data)
-            {
-                try
-                {
-                    WizardObjectLibrary WOL = RootUtils.LoadData<WizardObjectLibrary>(ref _data);
+            public static WizardObjectLibrary WOLFromData(string _data) {
+                try {
+                    var WOL = RootUtils.LoadData<WizardObjectLibrary>(ref _data);
                     return WOL;
                 }
-                catch
-                {
+                catch {
                     return null;
                 }
             }

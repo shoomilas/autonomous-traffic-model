@@ -1,13 +1,13 @@
-namespace RoadArchitect.Threading
-{
-    public class ThreadedJob
-    {
-        [UnityEngine.Serialization.FormerlySerializedAs("m_IsDone")]
-        private bool isDone = false;
-        [UnityEngine.Serialization.FormerlySerializedAs("m_Handle")]
-        private object handle = new object();
-        [UnityEngine.Serialization.FormerlySerializedAs("m_Thread")]
-        private System.Threading.Thread thread = null;
+using System.Threading;
+using UnityEngine.Serialization;
+
+namespace RoadArchitect.Threading {
+    public class ThreadedJob {
+        [FormerlySerializedAs("m_Handle")] private readonly object handle = new object();
+
+        [FormerlySerializedAs("m_IsDone")] private bool isDone;
+
+        [FormerlySerializedAs("m_Thread")] private Thread thread;
 
 
         public bool IsDone
@@ -15,31 +15,28 @@ namespace RoadArchitect.Threading
             get
             {
                 bool tmp;
-                lock (handle)
-                {
+                lock (handle) {
                     tmp = isDone;
                 }
+
                 return tmp;
             }
             set
             {
-                lock (handle)
-                {
+                lock (handle) {
                     isDone = value;
                 }
             }
         }
 
 
-        public virtual void Start()
-        {
-            thread = new System.Threading.Thread(Run);
+        public virtual void Start() {
+            thread = new Thread(Run);
             thread.Start();
         }
 
 
-        public virtual void Abort()
-        {
+        public virtual void Abort() {
             thread.Abort();
         }
 
@@ -50,19 +47,17 @@ namespace RoadArchitect.Threading
         protected virtual void OnFinished() { }
 
 
-        public virtual bool Update()
-        {
-            if (IsDone)
-            {
+        public virtual bool Update() {
+            if (IsDone) {
                 OnFinished();
                 return true;
             }
+
             return false;
         }
 
 
-        private void Run()
-        {
+        private void Run() {
             ThreadFunction();
             IsDone = true;
         }

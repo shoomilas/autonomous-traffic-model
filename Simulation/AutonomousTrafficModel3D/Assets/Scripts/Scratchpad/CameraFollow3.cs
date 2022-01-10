@@ -1,26 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraFollow3 : MonoBehaviour
-{
+public class CameraFollow3 : MonoBehaviour {
     public Transform car;
     public float smoothing = 5f;
-    Vector3 offSet;
     public float z;
+    private Vector3 offSet;
 
     // Use this for initialization
-    void Awake()
-    {
+    private void Awake() {
         offSet = transform.position - car.position;
     }
 
     // Update is called once per frame
-    void FixedUpdate()
-    {
-        Vector3 camPos = car.position + offSet;
+    private void FixedUpdate() {
+        var camPos = car.position + offSet;
         camPos.z = camPos.z - z;
         transform.position = Vector3.Lerp(transform.position, camPos, smoothing * Time.deltaTime);
-
     }
 }

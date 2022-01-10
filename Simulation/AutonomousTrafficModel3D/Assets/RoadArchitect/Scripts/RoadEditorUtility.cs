@@ -1,17 +1,17 @@
 #region "Imports"
-using UnityEngine;
-using System.IO;
+
 using System;
+using System.IO;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
 #endregion
 
 
-namespace RoadArchitect
-{
-    public static class RoadEditorUtility
-    {
+namespace RoadArchitect {
+    public static class RoadEditorUtility {
         private static string basePath = "";
 
         private static readonly string[] validFolders =
@@ -24,84 +24,66 @@ namespace RoadArchitect
 
 
         /// <summary> Returns the relative base of the RoadArchitect folder </summary>
-        public static string GetBasePath()
-        {
-            if (basePath != "")
-            {
-                return basePath;
-            }
+        public static string GetBasePath() {
+            if (basePath != "") return basePath;
 
-            #if UNITY_EDITOR
-            string path = AssetDatabase.GUIDToAssetPath("e9c7aa1199abeb64c82a4831b3c7286f");
-            if (path != "" && path.Contains("RoadArchitect.asmdef"))
-            {
+#if UNITY_EDITOR
+            var path = AssetDatabase.GUIDToAssetPath("e9c7aa1199abeb64c82a4831b3c7286f");
+            if (path != "" && path.Contains("RoadArchitect.asmdef")) {
                 basePath = Path.GetDirectoryName(path);
                 return basePath;
             }
 
-            if ('/' != Path.DirectorySeparatorChar && '/' != Path.AltDirectorySeparatorChar)
-            {
-                foreach (string folder in validFolders)
-                {
-                    if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, folder.Replace('/', Path.DirectorySeparatorChar))))
-                    {
+            if ('/' != Path.DirectorySeparatorChar && '/' != Path.AltDirectorySeparatorChar) {
+                foreach (var folder in validFolders)
+                    if (Directory.Exists(Path.Combine(Environment.CurrentDirectory,
+                        folder.Replace('/', Path.DirectorySeparatorChar)))) {
                         basePath = folder;
                         return folder;
                     }
-                }
             }
-            else
-            {
-                foreach (string folder in validFolders)
-                {
-                    if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, folder)))
-                    {
+            else {
+                foreach (var folder in validFolders)
+                    if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, folder))) {
                         basePath = folder;
                         return folder;
                     }
-                }
             }
 
 
             throw new Exception("GUID of RoadArchitect.asmdef was changed. " +
-                "Alternatively RoadArchitect can be placed in one of the valid folders. " +
-                "You can change these suppoted folders by modifiying validFolders on top of this script");
-            #else
+                                "Alternatively RoadArchitect can be placed in one of the valid folders. " +
+                                "You can change these suppoted folders by modifiying validFolders on top of this script");
+#else
             return "";
-            #endif
+#endif
         }
 
 
         /// <summary> Returns the relative base of the RoadArchitect folder with OS compatible directory separator </summary>
-        public static string GetBasePathForIO()
-        {
-            string basePath = GetBasePath();
-            if('/' != Path.DirectorySeparatorChar && '/' != Path.AltDirectorySeparatorChar)
-            {
+        public static string GetBasePathForIO() {
+            var basePath = GetBasePath();
+            if ('/' != Path.DirectorySeparatorChar && '/' != Path.AltDirectorySeparatorChar)
                 return basePath.Replace('/', Path.DirectorySeparatorChar);
-            }
             return basePath;
         }
 
 
         /// <summary> Loads _assetPath materials and applies them to _MR.sharedMaterials </summary>
-        public static void SetRoadMaterial(string _assetPath, MeshRenderer _MR, string _assetPath2 = "")
-        {
+        public static void SetRoadMaterial(string _assetPath, MeshRenderer _MR, string _assetPath2 = "") {
             Material material;
             Material material2;
             Material[] tMats;
 
             material = LoadMaterial(_assetPath);
-            
-            if (_assetPath2.Length > 0)
-            {
+
+            if (_assetPath2.Length > 0) {
                 material2 = LoadMaterial(_assetPath2);
 
                 tMats = new Material[2];
                 tMats[1] = material2;
             }
-            else
-            {
+            else {
                 tMats = new Material[1];
             }
 
@@ -112,26 +94,24 @@ namespace RoadArchitect
 
 
         /// <summary> Returns the Material from _assetPath </summary>
-        public static Material LoadMaterial(string _assetPath)
-        {
-            #if UNITY_EDITOR
+        public static Material LoadMaterial(string _assetPath) {
+#if UNITY_EDITOR
             return AssetDatabase.LoadAssetAtPath<Material>(_assetPath);
-            #else
+#else
             // Here you can return your material loaded at runtime
             return null;
-            #endif
+#endif
         }
 
 
         /// <summary> Returns the PhysicsMaterial from _assetPath </summary>
-        public static PhysicMaterial LoadPhysicsMaterial(string _assetPath)
-        {
-            #if UNITY_EDITOR
+        public static PhysicMaterial LoadPhysicsMaterial(string _assetPath) {
+#if UNITY_EDITOR
             return AssetDatabase.LoadAssetAtPath<PhysicMaterial>(_assetPath);
-            #else
+#else
             // Here you can return your physics material loaded at runtime
             return null;
-            #endif
+#endif
         }
     }
 }

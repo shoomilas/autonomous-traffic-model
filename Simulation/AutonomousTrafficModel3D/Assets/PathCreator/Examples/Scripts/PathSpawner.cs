@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using PathCreation;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PathCreation.Examples {
 
@@ -11,13 +8,12 @@ namespace PathCreation.Examples {
         public PathFollower followerPrefab;
         public Transform[] spawnPoints;
 
-        void Start () {
-            foreach (Transform t in spawnPoints) {
-                var path = Instantiate (pathPrefab, t.position, t.rotation);
-                var follower = Instantiate (followerPrefab);
+        private void Start() {
+            foreach (var t in spawnPoints) {
+                var path = Instantiate(pathPrefab, t.position, t.rotation);
+                var follower = Instantiate(followerPrefab);
                 follower.pathCreator = path;
                 path.transform.parent = t;
-                
             }
         }
     }

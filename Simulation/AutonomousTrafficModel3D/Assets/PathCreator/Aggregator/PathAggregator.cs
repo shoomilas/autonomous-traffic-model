@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PathCreator.Aggregator
-{
+namespace PathCreator.Aggregator {
     public class PathAggregator : MonoBehaviour {
         public List<PathCreation.PathCreator> Paths => GetComponentsInChildren<PathCreation.PathCreator>().ToList();
 
-        private void Start()
-        {
+        private void Start() {
             Debug.Log("Started");
             var childrenCreators = GetComponentsInChildren<PathCreation.PathCreator>().ToList();
         }

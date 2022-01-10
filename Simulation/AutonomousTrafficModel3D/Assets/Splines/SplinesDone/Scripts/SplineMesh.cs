@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SplineMesh : MonoBehaviour {
@@ -36,19 +34,20 @@ public class SplineMesh : MonoBehaviour {
             mesh = null;
         }
 
-        List<SplineDone.Point> pointList = spline.GetPointList();
+        var pointList = spline.GetPointList();
         if (pointList.Count > 2) {
-            SplineDone.Point point = pointList[0];
-            SplineDone.Point secondPoint = pointList[1];
-            mesh = MeshUtils.CreateLineMesh(point.position - transform.position, secondPoint.position - transform.position, point.normal, meshWidth);
+            var point = pointList[0];
+            var secondPoint = pointList[1];
+            mesh = MeshUtils.CreateLineMesh(point.position - transform.position,
+                secondPoint.position - transform.position, point.normal, meshWidth);
 
-            for (int i = 2; i < pointList.Count; i++) {
-                SplineDone.Point thisPoint = pointList[i];
-                MeshUtils.AddLinePoint(mesh, thisPoint.position - transform.position, thisPoint.forward, point.normal, meshWidth);
+            for (var i = 2; i < pointList.Count; i++) {
+                var thisPoint = pointList[i];
+                MeshUtils.AddLinePoint(mesh, thisPoint.position - transform.position, thisPoint.forward, point.normal,
+                    meshWidth);
             }
 
             meshFilter.mesh = mesh;
         }
     }
-
 }

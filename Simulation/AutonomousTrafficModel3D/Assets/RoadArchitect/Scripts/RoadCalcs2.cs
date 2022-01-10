@@ -1,30 +1,22 @@
-using UnityEngine;
+using System;
 
-
-namespace RoadArchitect.Threading
-{
-    public class RoadCalcs2 : ThreadedJob
-    {
-        private object handle = new object();
+namespace RoadArchitect.Threading {
+    public class RoadCalcs2 : ThreadedJob {
+        private readonly object handle = new object();
         private RoadConstructorBufferMaker RCS;
 
 
-        public void Setup(ref RoadConstructorBufferMaker _RCS)
-        {
+        public void Setup(ref RoadConstructorBufferMaker _RCS) {
             RCS = _RCS;
         }
 
 
-        protected override void ThreadFunction()
-        {
-            try
-            {
+        protected override void ThreadFunction() {
+            try {
                 RoadCreationT.RoadJob2(ref RCS);
             }
-            catch (System.Exception exception)
-            {
-                lock (handle)
-                {
+            catch (Exception exception) {
+                lock (handle) {
                     RCS.road.isEditorError = true;
                     RCS.road.exceptionError = exception;
                 }
@@ -32,13 +24,12 @@ namespace RoadArchitect.Threading
         }
 
 
-        public RoadConstructorBufferMaker GetRCS()
-        {
+        public RoadConstructorBufferMaker GetRCS() {
             RoadConstructorBufferMaker tRCS;
-            lock (handle)
-            {
+            lock (handle) {
                 tRCS = RCS;
             }
+
             return tRCS;
         }
     }

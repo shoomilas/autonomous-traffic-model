@@ -1,5 +1,4 @@
-﻿namespace RoadArchitect
-{
+﻿namespace RoadArchitect {
     // RenderQueue provides ID's for Unity render queues. These can be applied to sub-shader tags,
     // but it's easier to just set material.renderQueue. Static class instead of enum because these
     // are int's, so this way client code doesn't need to use typecasting.
@@ -11,8 +10,7 @@
     //
     // NOTE: Keep these in numerical order for ease of understanding. Use plurals for start of
     // a group of layers.
-    public static class RenderQueue
-    {
+    public static class RenderQueue {
         public const int Background = 1000;
 
         // Mid-ground.

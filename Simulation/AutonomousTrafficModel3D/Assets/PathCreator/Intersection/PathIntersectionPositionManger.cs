@@ -62,7 +62,7 @@ public class PathIntersectionPositionManger : MonoBehaviour {
         Sides = ComputeSides();
         Corners = ComputeCorners();
         InsOuts = ComputeInsOuts();
-        return new IntersectionPositionData()
+        return new IntersectionPositionData
         {
             Center = Center,
             Size = Size,
@@ -123,13 +123,11 @@ public class PathIntersectionPositionManger : MonoBehaviour {
         };
 
         var pointsCount = 0;
-        if (insAndOuts.SelectMany(_ => _).ToList().Count != 0) {
+        if (insAndOuts.SelectMany(_ => _).ToList().Count != 0)
             pointsCount = (insAndOuts
                 .OrderByDescending
                     (oneSideInsOrOuts => oneSideInsOrOuts.Count)
                 .FirstOrDefault() ?? new List<PathNode>()).Count();
-            
-        }
         var distance = Size / (pointsCount + 1);
 
         return new IntersectionInsOuts

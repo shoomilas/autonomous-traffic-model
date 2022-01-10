@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class PathNodeHelper {
     public static void SelectObject(GameObject obj) {
-        if (obj != null) {
-            Selection.objects = new UnityEngine.Object[] { obj.gameObject };
-        }
+        if (obj != null) Selection.objects = new Object[] { obj.gameObject };
     }
 }

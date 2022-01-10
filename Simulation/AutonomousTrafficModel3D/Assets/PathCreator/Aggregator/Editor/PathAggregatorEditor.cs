@@ -1,6 +1,5 @@
-﻿using System.IO;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEditor;
 
 namespace PathCreator.Aggregator.Editor {
     [CustomEditor(typeof(PathAggregator))]
@@ -11,10 +10,6 @@ namespace PathCreator.Aggregator.Editor {
 
             GUILayout.BeginHorizontal();
             EditorGUILayout.IntField(5);
-            if (GUILayout.Button("Yo")) {
-                Debug.Log("Pressed");
-            }
-            
             GUILayout.EndHorizontal();
         }
     }

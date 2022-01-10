@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using PathCreator.Aggregator;
@@ -9,12 +8,13 @@ public interface IVehicle {
     Direction ClosestTurnDirection { get; set; }
 }
 
-public class VehicleTimeBased : MonoBehaviour, IVehicle
-{
-    [HideInInspector] public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
+public class VehicleTimeBased : MonoBehaviour, IVehicle {
     [HideInInspector] public VehicleTimeBasedFollower follower;
-    public Direction closestTurnDirection = Direction.Unknown; 
+    public Direction closestTurnDirection = Direction.Unknown;
+    public PathNode startNode;
     private PathProviderMethod providerMethod;
+    [HideInInspector] public IVehiclePathProvider vehiclePathProvider; // TODO: Change to interface
+
     public PathProviderMethod ProviderMethod
     {
         get => providerMethod;
@@ -26,22 +26,26 @@ public class VehicleTimeBased : MonoBehaviour, IVehicle
             SetNewPointsToFollow();
         }
     }
-    public PathNode startNode;
 
-    
 
     // Start is called before the first frame update
-    void Reset() {
-        Start();
-    }
-
-    private void OnValidate() {
+    private void Reset() {
         Start();
     }
 
     private void Start() {
         InstantiateComponents();
         SetNewPointsToFollow();
+    }
+
+    private void OnValidate() {
+        Start();
+    }
+
+    public Direction ClosestTurnDirection
+    {
+        get => closestTurnDirection;
+        set => closestTurnDirection = value;
     }
 
     private void InstantiateComponents() {
@@ -51,9 +55,7 @@ public class VehicleTimeBased : MonoBehaviour, IVehicle
 
     private void SetNewPointsToFollow() {
         follower.PointsToFollow = new List<Transform>();
-        var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform ).ToList();
-        follower.PointsToFollow = list;  
+        var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform).ToList();
+        follower.PointsToFollow = list;
     }
-
-    public Direction ClosestTurnDirection { get => closestTurnDirection; set => closestTurnDirection=value; }
 }

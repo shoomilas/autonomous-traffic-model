@@ -1,27 +1,16 @@
 using System.Collections.Generic;
 
-
-namespace RoadArchitect.Threading
-{
-    public static class TerrainCalcsStatic
-    {
-        public static void RunMe(ref List<Terraforming.TempTerrainData> _TTDList, SplineC _spline, Road _road)
-        {
-            float Step = (_road.roadDefinition * 0.4f) / _spline.distance;
-            if (Step > 2f)
-            {
-                Step = 2f;
-            }
-            if (Step < 1f)
-            {
-                Step = 1f;
-            }
+namespace RoadArchitect.Threading {
+    public static class TerrainCalcsStatic {
+        public static void RunMe(ref List<Terraforming.TempTerrainData> _TTDList, SplineC _spline, Road _road) {
+            var Step = _road.roadDefinition * 0.4f / _spline.distance;
+            if (Step > 2f) Step = 2f;
+            if (Step < 1f) Step = 1f;
             //float tDistance = tRoad.RoadWidth()*2f;
 
             //Vector3 tVect,POS;
 
-            foreach (Terraforming.TempTerrainData TTD in _TTDList)
-            {
+            foreach (var TTD in _TTDList) {
                 //float PrevHeight = 0f;
                 //float FinalMax = 1f;
                 //float StartMin = 0f;
@@ -68,12 +57,12 @@ namespace RoadArchitect.Threading
                 //	}
                 //}
             }
+
             _spline.HeightHistory.Sort(Compare1);
         }
 
 
-        private static int Compare1(KeyValuePair<float, float> _a, KeyValuePair<float, float> _b)
-        {
+        private static int Compare1(KeyValuePair<float, float> _a, KeyValuePair<float, float> _b) {
             return _a.Key.CompareTo(_b.Key);
         }
     }

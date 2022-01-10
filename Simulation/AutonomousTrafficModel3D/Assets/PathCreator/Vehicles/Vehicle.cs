@@ -6,29 +6,25 @@ using UnityEngine;
 
 namespace PathCreator.Vehicles {
     public static class Extensions {
-        public static T InstantiateComponent<T>(this GameObject gameObject) where T: Component {
+        public static T InstantiateComponent<T>(this GameObject gameObject) where T : Component {
             var component = gameObject.GetComponent<T>();
-            if (component == null) {
-                component = gameObject.AddComponent<T>();
-            }
+            if (component == null) component = gameObject.AddComponent<T>();
 
             return component;
         }
     }
 
-    
     public class Vehicle : MonoBehaviour {
-        // TODO: Different implementations, one with PathFollower
-        // TODO: one with vertexDriver
-        // TODO: Takes / Generates a list of pathNodes,
-        // TODO: Drives through them.
-        
-        // Vehicle should have: BoxCollider, RigidBody, 
-        // VehicleController (providing driving-to-point / drviving-to-point-in-time methods)
-        public bool shouldLoop = false;
-        public bool generateNewPathOnLoopFinished = false;
+        public bool shouldLoop;
+        public bool generateNewPathOnLoopFinished;
         public PathNode startNode;
+        [HideInInspector] public VehiclePointsFollower follower;
+        [HideInInspector] public Rigidbody rigidBody;
+        [HideInInspector] public BoxCollider boxCollider;
+        [HideInInspector] public VehicleController controller;
         private PathProviderMethod providerMethod = PathProviderMethod.AlwaysRandomRightForward;
+
+        [HideInInspector] public IVehiclePathProvider vehiclePathProvider; // TODO: Change to interface
 
         public PathProviderMethod ProviderMethod
         {
@@ -41,26 +37,8 @@ namespace PathCreator.Vehicles {
                 SetNewPointsToFollow();
             }
         }
-        
-        [HideInInspector] public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
-        [HideInInspector] public VehiclePointsFollower follower;
-        [HideInInspector] public Rigidbody rigidBody;
-        [HideInInspector] public BoxCollider boxCollider;
-        [HideInInspector] public VehicleController controller; 
 
-        private void InstantiateComponents() {
-            rigidBody = gameObject.InstantiateComponent<Rigidbody>();
-            boxCollider = gameObject.InstantiateComponent<BoxCollider>();
-            controller = gameObject.InstantiateComponent<VehicleController>(); 
-            vehiclePathProvider = gameObject.InstantiateComponent<VehiclePathProvider>();
-            follower = gameObject.InstantiateComponent<VehiclePointsFollower>();
-        }
-
-        void Reset() {
-            Start();
-        }
-
-        private void OnValidate() {
+        private void Reset() {
             Start();
         }
 
@@ -69,27 +47,35 @@ namespace PathCreator.Vehicles {
             SetNewPointsToFollow();
         }
 
-        private void SetNewPointsToFollow() {
-            follower.PointsToFollow = new List<Transform>();
-            var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform ).ToList();
-            follower.PointsToFollow = list;  
-        }
-
         private void Update() {
             OnVehiclePathFinished(OnPathFinishedNewLoopHandler);
         }
 
+        private void OnValidate() {
+            Start();
+        }
+
+        private void InstantiateComponents() {
+            rigidBody = gameObject.InstantiateComponent<Rigidbody>();
+            boxCollider = gameObject.InstantiateComponent<BoxCollider>();
+            controller = gameObject.InstantiateComponent<VehicleController>();
+            vehiclePathProvider = gameObject.InstantiateComponent<VehiclePathProvider>();
+            follower = gameObject.InstantiateComponent<VehiclePointsFollower>();
+        }
+
+        private void SetNewPointsToFollow() {
+            follower.PointsToFollow = new List<Transform>();
+            var list = vehiclePathProvider.Provide(startNode).Select(_ => _.transform).ToList();
+            follower.PointsToFollow = list;
+        }
+
         public void OnVehiclePathFinished(Action toDo) {
-            if (follower.CurrentDriveStatus == VehiclePointsFollower.DriveStatus.Finished) {
-                toDo(); 
-            }
+            if (follower.CurrentDriveStatus == VehiclePointsFollower.DriveStatus.Finished) toDo();
         }
 
         public void OnPathFinishedNewLoopHandler() {
             if (shouldLoop) {
-                if (generateNewPathOnLoopFinished) {
-                    SetNewPointsToFollow();
-                }
+                if (generateNewPathOnLoopFinished) SetNewPointsToFollow();
 
                 follower.CurrentPoint = follower.PointsToFollow.FirstOrDefault();
                 follower.CurrentDriveStatus = VehiclePointsFollower.DriveStatus.Start;

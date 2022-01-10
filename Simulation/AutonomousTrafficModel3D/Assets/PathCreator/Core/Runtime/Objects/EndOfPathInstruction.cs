@@ -1,3 +1,8 @@
 ﻿namespace PathCreation {
-	public enum EndOfPathInstruction {Loop, Reverse, Stop, RailStop};
+    public enum EndOfPathInstruction {
+        Loop,
+        Reverse,
+        Stop,
+        RailStop
+    }
 }

@@ -1,128 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using RoadArchitect.Threading;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Object = UnityEngine.Object;
 
-
-namespace RoadArchitect
-{
-    public static class Terraforming
-    {
-        public class TempTerrainData
-        {
-            public int HM;
-            public int HMHeight;
-            public float[,] heights;
-            public bool[,] tHeights;
-
-            public float HMRatio;
-            public float MetersPerHM = 0f;
-
-            //Heights:
-            public ushort[] cX;
-            public ushort[] cY;
-            public float[] cH;
-            public float[] oldH;
-            public int Count = 0;
-            public int TerrainMaxIndex;
-
-            //Details:
-            public int DetailLayersCount;
-
-            public List<ushort> MainDetailsX;
-            public List<ushort> MainDetailsY;
-
-            public List<List<ushort>> DetailsX;
-            public List<List<ushort>> DetailsY;
-            public List<List<ushort>> OldDetailsValue;
-            //public Dictionary<int,int[,]> DetailValues;
-            public int[] detailsCount;
-            public float DetailToHeightRatio;
-
-
-            //public Dictionary<int,bool[,]> DetailHasProcessed;
-
-            public HashSet<int> DetailHasProcessed;
-
-            //public List<List<bool>> OldDetailsValue;
-
-            public int DetailMaxIndex;
-            public HashSet<int> DetailLayersSkip;
-
-            //Trees
-            public List<TreeInstance> TreesCurrent;
-            public List<TreeInstance> TreesOld;
-            public int treesCount;
-            public int TreeSize;
-
-            public Vector3 TerrainSize;
-            public Vector3 TerrainPos;
-            [UnityEngine.Serialization.FormerlySerializedAs("GSDID")]
-            public int uID;
-
-
-            public void Nullify()
-            {
-                heights = null;
-                tHeights = null;
-                cX = null;
-                cY = null;
-                cH = null;
-                oldH = null;
-                //DetailsX = null;
-                //DetailsY = null;
-                //DetailValues = null;
-                OldDetailsValue = null;
-                //DetailsI = null;
-                TreesCurrent = null;
-                TreesOld = null;
-            }
-        }
+namespace RoadArchitect {
+    public static class Terraforming {
 
 
         /// <summary> Checks all terrains and adds RoadTerrain if necessary </summary>
-        private static void CheckAllTerrains()
-        {
-            Object[] allTerrains = GameObject.FindObjectsOfType<Terrain>();
+        private static void CheckAllTerrains() {
+            Object[] allTerrains = Object.FindObjectsOfType<Terrain>();
             RoadTerrain TID;
             GameObject terrainObj;
-            foreach (Terrain terrain in allTerrains)
-            {
+            foreach (Terrain terrain in allTerrains) {
                 terrainObj = terrain.transform.gameObject;
                 TID = terrainObj.GetComponent<RoadTerrain>();
-                if (TID == null)
-                {
-                    TID = terrainObj.AddComponent<RoadTerrain>();
-                }
+                if (TID == null) TID = terrainObj.AddComponent<RoadTerrain>();
                 TID.CheckID();
             }
         }
 
 
         /// <summary> Checks if every Terrain uses a RoadTerrain script and set it to 0 on y </summary>
-        public static void CheckAllTerrainsHeight0()
-        {
+        public static void CheckAllTerrainsHeight0() {
             CheckAllTerrains();
-            Object[] allTerrains = GameObject.FindObjectsOfType<Terrain>();
+            Object[] allTerrains = Object.FindObjectsOfType<Terrain>();
             foreach (Terrain terrain in allTerrains)
-            {
-                if (!RootUtils.IsApproximately(terrain.transform.position.y, 0f, 0.0001f))
-                {
-                    Vector3 tVect = terrain.transform.position;
+                if (!RootUtils.IsApproximately(terrain.transform.position.y, 0f, 0.0001f)) {
+                    var tVect = terrain.transform.position;
                     tVect.y = 0f;
                     terrain.transform.position = tVect;
                 }
-            }
         }
 
 
         /// <summary> Stores terrain infos and starts terrain calculations </summary>
-        public static void ProcessRoadTerrainHook1(SplineC _spline, Road _road, bool _isMultithreaded = true)
-        {
+        public static void ProcessRoadTerrainHook1(SplineC _spline, Road _road, bool _isMultithreaded = true) {
             ProcessRoadTerrainHook1Do(ref _spline, ref _road, _isMultithreaded);
         }
 
 
-        private static void ProcessRoadTerrainHook1Do(ref SplineC _spline, ref Road _road, bool _isMultithreaded)
-        {
+        private static void ProcessRoadTerrainHook1Do(ref SplineC _spline, ref Road _road, bool _isMultithreaded) {
             RootUtils.StartProfiling(_road, "ProcessRoadTerrainHook1");
             //First lets make sure all terrains have a RoadTerrain script:
             CheckAllTerrains();
@@ -132,75 +52,61 @@ namespace RoadArchitect
             TerrainsReset(_road);
             RootUtils.EndProfiling(_road);
 
-            float heightDistance = _road.matchHeightsDistance;
+            var heightDistance = _road.matchHeightsDistance;
             //float treeDistance = _road.clearTreesDistance;
-            float detailDistance = _road.clearDetailsDistance;
+            var detailDistance = _road.clearDetailsDistance;
 
-            Dictionary<Terrain, TempTerrainData> TempTerrainDict = new Dictionary<Terrain, TempTerrainData>();
+            var TempTerrainDict = new Dictionary<Terrain, TempTerrainData>();
             //Populate dictionary:
-            Object[] allTerrains = GameObject.FindObjectsOfType<Terrain>();
+            Object[] allTerrains = Object.FindObjectsOfType<Terrain>();
             RoadTerrain TID;
-            int aSize = 0;
-            int dSize = 0;
+            var aSize = 0;
+            var dSize = 0;
             TempTerrainData TTD;
-            bool isContaining = false;
+            var isContaining = false;
             Construction2DRect tRect = null;
             //Construction2DRect rRect = null;
 
 
-            foreach (Terrain terrain in allTerrains)
-            {
-                if (terrain.terrainData == null)
-                {
-                    continue;
-                }
+            foreach (Terrain terrain in allTerrains) {
+                if (terrain.terrainData == null) continue;
                 tRect = GetTerrainBounds(terrain);
                 isContaining = false;
                 //Debug.Log(terrain.transform.name + " bounds: " + tRect.ToStringRA());
                 //Debug.Log("  Road bounds: " + tSpline.RoadV0 + "," + tSpline.RoadV1 + "," + tSpline.RoadV2 + "," + tSpline.RoadV3);
 
                 // Check if the terrain overlaps with a part of the spline
-                if (isContaining != true && tRect.Contains(ref _spline.RoadV0))
-                {
+                if (isContaining != true && tRect.Contains(ref _spline.RoadV0)) {
                     isContaining = true;
                 }
-                else if (isContaining != true && tRect.Contains(ref _spline.RoadV1))
-                {
+                else if (isContaining != true && tRect.Contains(ref _spline.RoadV1)) {
                     isContaining = true;
                 }
-                else if (isContaining != true && tRect.Contains(ref _spline.RoadV2))
-                {
+                else if (isContaining != true && tRect.Contains(ref _spline.RoadV2)) {
                     isContaining = true;
                 }
-                else if (isContaining != true && tRect.Contains(ref _spline.RoadV3))
-                {
+                else if (isContaining != true && tRect.Contains(ref _spline.RoadV3)) {
                     isContaining = true;
                 }
-                else
-                {
-                    int nodeCount = _road.spline.GetNodeCount();
-                    Vector2 tVect2D_321 = default(Vector2);
-                    for (int index = 0; index < nodeCount; index++)
-                    {
+                else {
+                    var nodeCount = _road.spline.GetNodeCount();
+                    var tVect2D_321 = default(Vector2);
+                    for (var index = 0; index < nodeCount; index++) {
                         tVect2D_321 = new Vector2(_road.spline.nodes[index].pos.x, _road.spline.nodes[index].pos.z);
-                        if (tRect.Contains(ref tVect2D_321))
-                        {
+                        if (tRect.Contains(ref tVect2D_321)) {
                             isContaining = true;
                             break;
                         }
                     }
 
-                    if (!isContaining)
-                    {
-                        float tDef = 5f / _spline.distance;
-                        Vector2 x2D = default(Vector2);
-                        Vector3 x3D = default(Vector3);
-                        for (float index = 0f; index <= 1f; index += tDef)
-                        {
+                    if (!isContaining) {
+                        var tDef = 5f / _spline.distance;
+                        var x2D = default(Vector2);
+                        var x3D = default(Vector3);
+                        for (var index = 0f; index <= 1f; index += tDef) {
                             x3D = _spline.GetSplineValue(index);
                             x2D = new Vector2(x3D.x, x3D.z);
-                            if (tRect.Contains(ref x2D))
-                            {
+                            if (tRect.Contains(ref x2D)) {
                                 isContaining = true;
                                 break;
                             }
@@ -211,25 +117,22 @@ namespace RoadArchitect
                 //rRect = new RoadUtility.Construction2DRect(tSpline.RoadV0,tSpline.RoadV1,tSpline.RoadV2,tSpline.RoadV3);
 
 
-                if (isContaining && !TempTerrainDict.ContainsKey(terrain))
-                {
+                if (isContaining && !TempTerrainDict.ContainsKey(terrain)) {
                     TTD = new TempTerrainData();
                     TTD.HM = terrain.terrainData.heightmapResolution;
                     TTD.HMHeight = terrain.terrainData.heightmapResolution;
-                    TTD.heights = terrain.terrainData.GetHeights(0, 0, terrain.terrainData.heightmapResolution, terrain.terrainData.heightmapResolution);
+                    TTD.heights = terrain.terrainData.GetHeights(0, 0, terrain.terrainData.heightmapResolution,
+                        terrain.terrainData.heightmapResolution);
                     TTD.HMRatio = TTD.HM / terrain.terrainData.size.x;
                     TTD.MetersPerHM = terrain.terrainData.size.x / terrain.terrainData.heightmapResolution;
-                    float DetailRatio = terrain.terrainData.detailResolution / terrain.terrainData.size.x;
+                    var DetailRatio = terrain.terrainData.detailResolution / terrain.terrainData.size.x;
 
                     //Heights:
                     RootUtils.StartProfiling(_road, "Heights");
-                    if (_road.isHeightModificationEnabled)
-                    {
+                    if (_road.isHeightModificationEnabled) {
                         aSize = (int)_spline.distance * ((int)(heightDistance * 1.65f * TTD.HMRatio) + 2);
-                        if (aSize > (terrain.terrainData.heightmapResolution * terrain.terrainData.heightmapResolution))
-                        {
+                        if (aSize > terrain.terrainData.heightmapResolution * terrain.terrainData.heightmapResolution)
                             aSize = terrain.terrainData.heightmapResolution * terrain.terrainData.heightmapResolution;
-                        }
                         TTD.cX = new ushort[aSize];
                         TTD.cY = new ushort[aSize];
                         TTD.oldH = new float[aSize];
@@ -238,10 +141,10 @@ namespace RoadArchitect
                         TTD.TerrainMaxIndex = terrain.terrainData.heightmapResolution;
                         TTD.TerrainSize = terrain.terrainData.size;
                         TTD.TerrainPos = terrain.transform.position;
-                        TTD.tHeights = new bool[terrain.terrainData.heightmapResolution, terrain.terrainData.heightmapResolution];
+                        TTD.tHeights = new bool[terrain.terrainData.heightmapResolution,
+                            terrain.terrainData.heightmapResolution];
                         TID = terrain.transform.gameObject.GetComponent<RoadTerrain>();
-                        if (TID != null)
-                        {
+                        if (TID != null) {
                             TTD.uID = TID.UID;
                             TempTerrainDict.Add(terrain, TTD);
                         }
@@ -249,8 +152,7 @@ namespace RoadArchitect
 
                     //Details:
                     RootUtils.EndStartProfiling(_road, "Details");
-                    if (_road.isDetailModificationEnabled)
-                    {
+                    if (_road.isDetailModificationEnabled) {
                         //TTD.DetailValues = new Dictionary<int, int[,]>();
                         TTD.DetailLayersCount = terrain.terrainData.detailPrototypes.Length;
                         //TTD.DetailHasProcessed = new Dictionary<int, bool[,]>();
@@ -258,7 +160,8 @@ namespace RoadArchitect
                         TTD.MainDetailsX = new List<ushort>();
                         TTD.MainDetailsY = new List<ushort>();
                         TTD.detailsCount = new int[TTD.DetailLayersCount];
-                        TTD.DetailToHeightRatio = (float)((float)terrain.terrainData.detailResolution) / ((float)terrain.terrainData.heightmapResolution);
+                        TTD.DetailToHeightRatio = terrain.terrainData.detailResolution /
+                                                  (float)terrain.terrainData.heightmapResolution;
                         TTD.DetailMaxIndex = terrain.terrainData.detailResolution;
                         TTD.DetailLayersSkip = new HashSet<int>();
 
@@ -305,10 +208,8 @@ namespace RoadArchitect
 
 
                         dSize = (int)_spline.distance * ((int)(detailDistance * 3f * DetailRatio) + 2);
-                        if (dSize > (terrain.terrainData.detailResolution * terrain.terrainData.detailResolution))
-                        {
+                        if (dSize > terrain.terrainData.detailResolution * terrain.terrainData.detailResolution)
                             dSize = terrain.terrainData.detailResolution * terrain.terrainData.detailResolution;
-                        }
 
                         //TTD.DetailsX = new List<ushort[]>();
                         //TTD.DetailsY = new List<ushort[]>();
@@ -318,8 +219,7 @@ namespace RoadArchitect
                         TTD.OldDetailsValue = new List<List<ushort>>();
                         //TTD.DetailHasProcessed = new List<List<bool>>();
 
-                        for (int index = 0; index < TTD.DetailLayersCount; index++)
-                        {
+                        for (var index = 0; index < TTD.DetailLayersCount; index++) {
                             //if(TTD.DetailLayersSkip.Contains(index))
                             //{ 
                             //	TTD.DetailsX.Add(new ushort[0]);
@@ -359,69 +259,60 @@ namespace RoadArchitect
 
                     //Trees:
                     RootUtils.EndStartProfiling(_road, "Trees");
-                    if (_road.isTreeModificationEnabled)
-                    {
+                    if (_road.isTreeModificationEnabled) {
                         TTD.TreesCurrent = new List<TreeInstance>(terrain.terrainData.treeInstances);
                         TTD.TreeSize = TTD.TreesCurrent.Count;
                         TTD.treesCount = 0;
                         TTD.TreesOld = new List<TreeInstance>();
                     }
+
                     RootUtils.EndProfiling(_road);
                 }
             }
 
             //Figure out relevant TTD to spline:
-            List<TempTerrainData> EditorTTDList = new List<TempTerrainData>();
+            var EditorTTDList = new List<TempTerrainData>();
             if (TempTerrainDict != null)
-            {
                 foreach (Terrain tTerrain in allTerrains)
-                {
                     if (TempTerrainDict.ContainsKey(tTerrain))
-                    {
                         EditorTTDList.Add(TempTerrainDict[tTerrain]);
-                    }
-                }
-            }
 
             RootUtils.EndProfiling(_road);
 
             //Start job now, for each relevant TTD:
             _road.SetEditorTerrainCalcs(ref EditorTTDList);
-            if (_isMultithreaded)
-            {
-                Threading.TerrainCalcs terrainJob = new Threading.TerrainCalcs();
+            if (_isMultithreaded) {
+                var terrainJob = new TerrainCalcs();
                 terrainJob.Setup(ref EditorTTDList, _spline, _road);
                 _road.TerrainCalcsJob = terrainJob;
                 terrainJob.Start();
             }
-            else
-            {
-                Threading.TerrainCalcsStatic.RunMe(ref EditorTTDList, _spline, _road);
+            else {
+                TerrainCalcsStatic.RunMe(ref EditorTTDList, _spline, _road);
             }
         }
 
 
         /// <summary> Returns an 2D rect of the terrain </summary>
-        public static Construction2DRect GetTerrainBounds(Terrain _terrain)
-        {
-            float terrainWidth = _terrain.terrainData.size.x;
-            float terrainLength = _terrain.terrainData.size.z;
+        public static Construction2DRect GetTerrainBounds(Terrain _terrain) {
+            var terrainWidth = _terrain.terrainData.size.x;
+            var terrainLength = _terrain.terrainData.size.z;
             //Vector3 tPos = tTerrain.transform.TransformPoint(tTerrain.transform.position);
 
-            Vector3 X0 = new Vector3(0f, 0f, 0f);
-            Vector3 X1 = new Vector3(terrainWidth, 0f, 0f);
-            Vector3 X2 = new Vector3(terrainWidth, 0f, terrainLength);
-            Vector3 X3 = new Vector3(0f, 0f, terrainLength);
+            var X0 = new Vector3(0f, 0f, 0f);
+            var X1 = new Vector3(terrainWidth, 0f, 0f);
+            var X2 = new Vector3(terrainWidth, 0f, terrainLength);
+            var X3 = new Vector3(0f, 0f, terrainLength);
 
             X0 = _terrain.transform.TransformPoint(X0);
             X1 = _terrain.transform.TransformPoint(X1);
             X2 = _terrain.transform.TransformPoint(X2);
             X3 = _terrain.transform.TransformPoint(X3);
 
-            Vector2 P0 = new Vector2(X0.x, X0.z);
-            Vector2 P1 = new Vector2(X1.x, X1.z);
-            Vector2 P2 = new Vector2(X2.x, X2.z);
-            Vector2 P3 = new Vector2(X3.x, X3.z);
+            var P0 = new Vector2(X0.x, X0.z);
+            var P1 = new Vector2(X1.x, X1.z);
+            var P2 = new Vector2(X2.x, X2.z);
+            var P3 = new Vector2(X3.x, X3.z);
 
 
             //OLD CODE:
@@ -440,207 +331,226 @@ namespace RoadArchitect
 
 
         /// <summary> Assign calculated values to terrains </summary>
-        public static void ProcessRoadTerrainHook2(SplineC _spline, ref List<TempTerrainData> _TTDList)
-        {
+        public static void ProcessRoadTerrainHook2(SplineC _spline, ref List<TempTerrainData> _TTDList) {
             RootUtils.StartProfiling(_spline.road, "ProcessRoadTerrainHook2");
             ProcessRoadTerrainHook2Do(ref _spline, ref _TTDList);
             RootUtils.EndProfiling(_spline.road);
         }
 
 
-        private static void ProcessRoadTerrainHook2Do(ref SplineC _spline, ref List<TempTerrainData> _TTDList)
-        {
-            if (!_spline.road.isTreeModificationEnabled && !_spline.road.isHeightModificationEnabled && !_spline.road.isDetailModificationEnabled)
-            {
+        private static void ProcessRoadTerrainHook2Do(ref SplineC _spline, ref List<TempTerrainData> _TTDList) {
+            if (!_spline.road.isTreeModificationEnabled && !_spline.road.isHeightModificationEnabled &&
+                !_spline.road.isDetailModificationEnabled)
                 //Exit if no mod taking place.
                 return;
-            }
-            Object[] TIDs = GameObject.FindObjectsOfType<RoadTerrain>();
+            Object[] TIDs = Object.FindObjectsOfType<RoadTerrain>();
             Terrain terrain;
             int[,] tDetails = null;
-            int IntBufferX = 0;
-            int IntBufferY = 0;
-            int tVal = 0;
-            foreach (TempTerrainData TTD in _TTDList)
-            {
-                foreach (RoadTerrain TID in TIDs)
-                {
-                    if (TID.UID != TTD.uID)
-                    {
-                        continue;
-                    }
+            var IntBufferX = 0;
+            var IntBufferY = 0;
+            var tVal = 0;
+            foreach (var TTD in _TTDList)
+            foreach (RoadTerrain TID in TIDs) {
+                if (TID.UID != TTD.uID) continue;
 
-                    terrain = TID.transform.gameObject.GetComponent<Terrain>();
-                    if (terrain == null)
-                    {
-                        continue;
-                    }
+                terrain = TID.transform.gameObject.GetComponent<Terrain>();
+                if (terrain == null) continue;
 
-                    //Details:
-                    if (_spline.road.isDetailModificationEnabled)
-                    {
-                        for (int index = 0; index < TTD.DetailLayersCount; index++)
-                        {
-                            //if(TTD.DetailLayersSkip.Contains(i) || TTD.DetailValues[i] == null)
-                            //{
-                            //  continue;
-                            //}
-                            //if(TTD.DetailsI[i] > 0)
-                            //{
-                            //	tTerrain.terrainData.SetDetailLayer(0, 0, i, TTD.DetailValues[i]);	
-                            //}
+                //Details:
+                if (_spline.road.isDetailModificationEnabled) {
+                    for (var index = 0; index < TTD.DetailLayersCount; index++) {
+                        //if(TTD.DetailLayersSkip.Contains(i) || TTD.DetailValues[i] == null)
+                        //{
+                        //  continue;
+                        //}
+                        //if(TTD.DetailsI[i] > 0)
+                        //{
+                        //	tTerrain.terrainData.SetDetailLayer(0, 0, i, TTD.DetailValues[i]);	
+                        //}
 
-                            if (TTD.DetailLayersSkip.Contains(index) || TTD.MainDetailsX == null || TTD.MainDetailsX.Count < 1)
-                            {
-                                continue;
+                        if (TTD.DetailLayersSkip.Contains(index) || TTD.MainDetailsX == null ||
+                            TTD.MainDetailsX.Count < 1) continue;
+                        tDetails = terrain.terrainData.GetDetailLayer(0, 0, TTD.DetailMaxIndex, TTD.DetailMaxIndex,
+                            index);
+
+                        var MaxCount = TTD.MainDetailsX.Count;
+                        for (var j = 0; j < MaxCount; j++) {
+                            IntBufferX = TTD.MainDetailsX[j];
+                            IntBufferY = TTD.MainDetailsY[j];
+                            tVal = tDetails[IntBufferX, IntBufferY];
+                            if (tVal > 0) {
+                                TTD.DetailsX[index].Add((ushort)IntBufferX);
+                                TTD.DetailsY[index].Add((ushort)IntBufferY);
+                                TTD.OldDetailsValue[index].Add((ushort)tVal);
+                                tDetails[IntBufferX, IntBufferY] = 0;
                             }
-                            tDetails = terrain.terrainData.GetDetailLayer(0, 0, TTD.DetailMaxIndex, TTD.DetailMaxIndex, index);
-
-                            int MaxCount = TTD.MainDetailsX.Count;
-                            for (int j = 0; j < MaxCount; j++)
-                            {
-                                IntBufferX = TTD.MainDetailsX[j];
-                                IntBufferY = TTD.MainDetailsY[j];
-                                tVal = tDetails[IntBufferX, IntBufferY];
-                                if (tVal > 0)
-                                {
-                                    TTD.DetailsX[index].Add((ushort)IntBufferX);
-                                    TTD.DetailsY[index].Add((ushort)IntBufferY);
-                                    TTD.OldDetailsValue[index].Add((ushort)tVal);
-                                    tDetails[IntBufferX, IntBufferY] = 0;
-                                }
-                            }
-                            TTD.detailsCount[index] = TTD.DetailsX[index].Count;
-
-                            terrain.terrainData.SetDetailLayer(0, 0, index, tDetails);
-                            tDetails = null;
-                            TTD.DetailHasProcessed = null;
                         }
-                        TTD.MainDetailsX = null;
-                        TTD.MainDetailsY = null;
-                        System.GC.Collect();
+
+                        TTD.detailsCount[index] = TTD.DetailsX[index].Count;
+
+                        terrain.terrainData.SetDetailLayer(0, 0, index, tDetails);
+                        tDetails = null;
+                        TTD.DetailHasProcessed = null;
                     }
-                    //Trees:
-                    if (_spline.road.isTreeModificationEnabled && TTD.TreesCurrent != null && TTD.treesCount > 0)
-                    {
-                        terrain.terrainData.treeInstances = TTD.TreesCurrent.ToArray();
-                    }
-                    //Heights:
-                    if (_spline.road.isHeightModificationEnabled && TTD.heights != null && TTD.Count > 0)
-                    {
-                        //Do heights last to trigger collisions and stuff properly:
-                        terrain.terrainData.SetHeights(0, 0, TTD.heights);
-                    }
+
+                    TTD.MainDetailsX = null;
+                    TTD.MainDetailsY = null;
+                    GC.Collect();
                 }
+
+                //Trees:
+                if (_spline.road.isTreeModificationEnabled && TTD.TreesCurrent != null && TTD.treesCount > 0)
+                    terrain.terrainData.treeInstances = TTD.TreesCurrent.ToArray();
+                //Heights:
+                if (_spline.road.isHeightModificationEnabled && TTD.heights != null && TTD.Count > 0)
+                    //Do heights last to trigger collisions and stuff properly:
+                    terrain.terrainData.SetHeights(0, 0, TTD.heights);
             }
         }
 
 
-        public static void TerrainsReset(Road _road)
-        {
-            if (_road.TerrainHistory == null)
-            {
-                return;
-            }
-            if (_road.TerrainHistory.Count < 1)
-            {
-                return;
-            }
+        public static void TerrainsReset(Road _road) {
+            if (_road.TerrainHistory == null) return;
+            if (_road.TerrainHistory.Count < 1) return;
 
-            Object[] TIDs = GameObject.FindObjectsOfType<RoadTerrain>();
+            Object[] TIDs = Object.FindObjectsOfType<RoadTerrain>();
             float[,] heights;
             int[,] tDetails;
             int ArrayCount;
-            foreach (TerrainHistoryMaker TH in _road.TerrainHistory)
-            {
+            foreach (var TH in _road.TerrainHistory) {
                 Terrain terrain = null;
                 foreach (RoadTerrain TID in TIDs)
-                {
                     if (TID.UID == TH.terrainID)
-                    {
                         terrain = TID.terrain;
-                    }
-                }
-                if (!terrain)
-                {
-                    continue;
-                }
+                if (!terrain) continue;
 
-                if (TH.heightmapResolution != terrain.terrainData.heightmapResolution)
-                {
+                if (TH.heightmapResolution != terrain.terrainData.heightmapResolution) {
                     TH.Nullify();
                     continue;
                 }
 
                 //Heights:
-                if (TH.x1 != null)
-                {
-                    heights = terrain.terrainData.GetHeights(0, 0, terrain.terrainData.heightmapResolution, terrain.terrainData.heightmapResolution);
+                if (TH.x1 != null) {
+                    heights = terrain.terrainData.GetHeights(0, 0, terrain.terrainData.heightmapResolution,
+                        terrain.terrainData.heightmapResolution);
                     ArrayCount = TH.Count;
-                    for (int index = 0; index < ArrayCount; index++)
-                    {
+                    for (var index = 0; index < ArrayCount; index++)
                         heights[TH.x1[index], TH.y1[index]] = TH.height[index];
-                    }
                     terrain.terrainData.SetHeights(0, 0, heights);
                 }
-                //Details:
-                if (TH.detailsCount != null && TH.detailsX != null && TH.detailsY != null && TH.detailsOldValue != null)
-                {
-                    int RealLayerCount = terrain.terrainData.detailPrototypes.Length;
-                    int StartIndex = 0;
-                    int EndIndex = 0;
-                    for (int index = 0; index < TH.detailLayersCount; index++)
-                    {
-                        if (index >= RealLayerCount)
-                        {
-                            break;
-                        }
-                        if (TH.detailsX.Length <= index)
-                        {
-                            break;
-                        }
-                        if (TH.detailsY.Length <= index)
-                        {
-                            break;
-                        }
-                        if (TH.detailsX.Length < 1)
-                        {
-                            continue;
-                        }
 
-                        tDetails = terrain.terrainData.GetDetailLayer(0, 0, terrain.terrainData.detailWidth, terrain.terrainData.detailHeight, index);
+                //Details:
+                if (TH.detailsCount != null && TH.detailsX != null && TH.detailsY != null &&
+                    TH.detailsOldValue != null) {
+                    var RealLayerCount = terrain.terrainData.detailPrototypes.Length;
+                    var StartIndex = 0;
+                    var EndIndex = 0;
+                    for (var index = 0; index < TH.detailLayersCount; index++) {
+                        if (index >= RealLayerCount) break;
+                        if (TH.detailsX.Length <= index) break;
+                        if (TH.detailsY.Length <= index) break;
+                        if (TH.detailsX.Length < 1) continue;
+
+                        tDetails = terrain.terrainData.GetDetailLayer(0, 0, terrain.terrainData.detailWidth,
+                            terrain.terrainData.detailHeight, index);
                         ArrayCount = TH.detailsCount[index];
-                        if (ArrayCount == 0)
-                        {
-                            continue;
-                        }
+                        if (ArrayCount == 0) continue;
                         EndIndex += ArrayCount;
-                        for (int j = StartIndex; j < EndIndex; j++)
-                        {
+                        for (var j = StartIndex; j < EndIndex; j++)
                             tDetails[TH.detailsX[j], TH.detailsY[j]] = TH.detailsOldValue[j];
-                        }
                         StartIndex = EndIndex;
                         terrain.terrainData.SetDetailLayer(0, 0, index, tDetails);
                         tDetails = null;
                     }
                 }
+
                 //Trees:
-                TreeInstance[] xTress = TH.MakeTrees();
-                if (xTress != null)
-                {
+                var xTress = TH.MakeTrees();
+                if (xTress != null) {
                     ArrayCount = xTress.Length;
-                    if (ArrayCount > 0 && TH.oldTrees != null)
-                    {
-                        int TerrainTreeCount = terrain.terrainData.treeInstances.Length;
-                        TreeInstance[] tTrees = new TreeInstance[ArrayCount + TerrainTreeCount];
-                        System.Array.Copy(terrain.terrainData.treeInstances, 0, tTrees, 0, TerrainTreeCount);
-                        System.Array.Copy(xTress, 0, tTrees, TerrainTreeCount, ArrayCount);
+                    if (ArrayCount > 0 && TH.oldTrees != null) {
+                        var TerrainTreeCount = terrain.terrainData.treeInstances.Length;
+                        var tTrees = new TreeInstance[ArrayCount + TerrainTreeCount];
+                        Array.Copy(terrain.terrainData.treeInstances, 0, tTrees, 0, TerrainTreeCount);
+                        Array.Copy(xTress, 0, tTrees, TerrainTreeCount, ArrayCount);
                         terrain.terrainData.treeInstances = tTrees;
                     }
+
                     xTress = null;
                 }
             }
-            System.GC.Collect();
+
+            GC.Collect();
+        }
+
+        public class TempTerrainData {
+            public float[] cH;
+            public int Count;
+
+            //Heights:
+            public ushort[] cX;
+            public ushort[] cY;
+
+
+            //public Dictionary<int,bool[,]> DetailHasProcessed;
+
+            public HashSet<int> DetailHasProcessed;
+
+            //Details:
+            public int DetailLayersCount;
+            public HashSet<int> DetailLayersSkip;
+
+            //public List<List<bool>> OldDetailsValue;
+
+            public int DetailMaxIndex;
+
+            //public Dictionary<int,int[,]> DetailValues;
+            public int[] detailsCount;
+
+            public List<List<ushort>> DetailsX;
+            public List<List<ushort>> DetailsY;
+            public float DetailToHeightRatio;
+            public float[,] heights;
+            public int HM;
+            public int HMHeight;
+
+            public float HMRatio;
+
+            public List<ushort> MainDetailsX;
+            public List<ushort> MainDetailsY;
+            public float MetersPerHM;
+            public List<List<ushort>> OldDetailsValue;
+            public float[] oldH;
+            public int TerrainMaxIndex;
+            public Vector3 TerrainPos;
+
+            public Vector3 TerrainSize;
+            public bool[,] tHeights;
+            public int treesCount;
+
+            //Trees
+            public List<TreeInstance> TreesCurrent;
+            public int TreeSize;
+            public List<TreeInstance> TreesOld;
+
+            [FormerlySerializedAs("GSDID")] public int uID;
+
+
+            public void Nullify() {
+                heights = null;
+                tHeights = null;
+                cX = null;
+                cY = null;
+                cH = null;
+                oldH = null;
+                //DetailsX = null;
+                //DetailsY = null;
+                //DetailValues = null;
+                OldDetailsValue = null;
+                //DetailsI = null;
+                TreesCurrent = null;
+                TreesOld = null;
+            }
         }
     }
 }
