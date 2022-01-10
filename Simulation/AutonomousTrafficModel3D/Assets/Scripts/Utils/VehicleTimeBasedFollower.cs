@@ -25,7 +25,7 @@ public class VehicleTimeBasedFollower : MonoBehaviour
     public Transform thingToMoveTo;
     public List<Transform> PointsToFollow; // TODO Change to nodes?
     public float duration = 1f;
-    public VehiclePointsListFollower.DriveStatus CurrentDriveStatus;
+    public VehiclePointsFollower.DriveStatus CurrentDriveStatus;
 
     void Start()
     {
@@ -33,7 +33,7 @@ public class VehicleTimeBasedFollower : MonoBehaviour
     }
 
     void Update() {
-        if (CurrentDriveStatus == VehiclePointsListFollower.DriveStatus.Finished) return;
+        if (CurrentDriveStatus == VehiclePointsFollower.DriveStatus.Finished) return;
         if (PointsToFollow != null) {
             if(PointsToFollow.Count > 0) {
                 Start();

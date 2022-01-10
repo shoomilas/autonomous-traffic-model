@@ -39,18 +39,18 @@ public class VehicleController : MonoBehaviour {
     }
 
     public void GroundCheckAndSetEnabled() {
-        if(gameObject.GetComponent<VehiclePointsListFollower>()) {
+        if(gameObject.GetComponent<VehiclePointsFollower>()) {
             if(Physics.Raycast(transform.position, Vector3.down, distToGround))
             {
                 isGrounded = true;
-                this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = true;
+                this.gameObject.GetComponent<VehiclePointsFollower>().enabled = true;
             }
             else
             {
                 isGrounded = false;
                 // this.gameObject.GetComponent<Rigidbody>().AddForce(transform.up * -1000);
                 this.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y - Time.deltaTime * fallSpeed, transform.position.z);
-                this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = false;
+                this.gameObject.GetComponent<VehiclePointsFollower>().enabled = false;
             }
         }
     }
@@ -197,18 +197,18 @@ public class VehicleController2 : MonoBehaviour {
     }
 
     public void GroundCheckAndSetEnabled() {
-        if(gameObject.GetComponent<VehiclePointsListFollower>()) {
+        if(gameObject.GetComponent<VehiclePointsFollower>()) {
             if(Physics.Raycast(transform.position, Vector3.down, distToGround))
             {
                 isGrounded = true;
-                this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = true;
+                this.gameObject.GetComponent<VehiclePointsFollower>().enabled = true;
             }
             else
             {
                 isGrounded = false;
                 // this.gameObject.GetComponent<Rigidbody>().AddForce(transform.up * -1000);
                 this.gameObject.transform.position = new Vector3(transform.position.x, transform.position.y - Time.deltaTime * fallSpeed, transform.position.z);
-                this.gameObject.GetComponent<VehiclePointsListFollower>().enabled = false;
+                this.gameObject.GetComponent<VehiclePointsFollower>().enabled = false;
             }
         }
     }

@@ -43,7 +43,7 @@ namespace PathCreator.Vehicles {
         }
         
         [HideInInspector] public IVehiclePathProvider vehiclePathProvider;   // TODO: Change to interface
-        [HideInInspector] public VehiclePointsListFollower follower;
+        [HideInInspector] public VehiclePointsFollower follower;
         [HideInInspector] public Rigidbody rigidBody;
         [HideInInspector] public BoxCollider boxCollider;
         [HideInInspector] public VehicleController controller; 
@@ -53,7 +53,7 @@ namespace PathCreator.Vehicles {
             boxCollider = gameObject.InstantiateComponent<BoxCollider>();
             controller = gameObject.InstantiateComponent<VehicleController>(); 
             vehiclePathProvider = gameObject.InstantiateComponent<VehiclePathProvider>();
-            follower = gameObject.InstantiateComponent<VehiclePointsListFollower>();
+            follower = gameObject.InstantiateComponent<VehiclePointsFollower>();
         }
 
         void Reset() {
@@ -80,7 +80,7 @@ namespace PathCreator.Vehicles {
         }
 
         public void OnVehiclePathFinished(Action toDo) {
-            if (follower.CurrentDriveStatus == VehiclePointsListFollower.DriveStatus.Finished) {
+            if (follower.CurrentDriveStatus == VehiclePointsFollower.DriveStatus.Finished) {
                 toDo(); 
             }
         }
@@ -92,7 +92,7 @@ namespace PathCreator.Vehicles {
                 }
 
                 follower.CurrentPoint = follower.PointsToFollow.FirstOrDefault();
-                follower.CurrentDriveStatus = VehiclePointsListFollower.DriveStatus.Start;
+                follower.CurrentDriveStatus = VehiclePointsFollower.DriveStatus.Start;
             }
         }
     }
