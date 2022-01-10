@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace PathCreator.Intersection {
     public interface IIntersectionGenerator {
-        void RegenerateIntersection(PathIntersection intersection);
-        void RemoveIntersectionSplines(PathIntersection intersection);
+        void RegenerateIntersection(Intersection intersection);
+        void RemoveIntersectionSplines(Intersection intersection);
 
-        void AnchorPathNodesToIntersection(PathIntersection intersection,
+        void AnchorPathNodesToIntersection(Intersection intersection,
             IntersectionPositionData intersectionPositionData);
     }
 
     public class DefaultIntersectionGenerator : IIntersectionGenerator {
-        public void RegenerateIntersection(PathIntersection intersection) {
+        public void RegenerateIntersection(Intersection intersection) {
             Debug.Log("Default Intersection Generation");
             var i = intersection;
             RemoveIntersectionSplines(i);
@@ -37,7 +37,7 @@ namespace PathCreator.Intersection {
                 i.OutputsC);
         }
 
-        public void RemoveIntersectionSplines(PathIntersection intersection) {
+        public void RemoveIntersectionSplines(Intersection intersection) {
             ClearInputNodes(
                 intersection.InputsA, intersection.InputsB, intersection.InputsC, intersection.InputsD
             );
@@ -46,7 +46,7 @@ namespace PathCreator.Intersection {
             );
         }
 
-        public void AnchorPathNodesToIntersection(PathIntersection intersection,
+        public void AnchorPathNodesToIntersection(Intersection intersection,
             IntersectionPositionData intersectionPositionData) {
             SetPathNodesToGivenCoords(intersection.InputsA, intersectionPositionData.InsOuts.InsA);
             SetPathNodesToGivenCoords(intersection.InputsB, intersectionPositionData.InsOuts.InsB);
@@ -91,15 +91,23 @@ namespace PathCreator.Intersection {
             GenerateSplinesBetweenIntersectionNodes(inputNode, outputLeft, Direction.Left);
         }
 
-        private void ManyLaneIntersectionGeneratorForGivenInputNodes(List<PathNode> inputs, List<PathNode> outputsRight,
-            List<PathNode> outputsForward, List<PathNode> outputsLeft) {
+        private void ManyLaneIntersectionGeneratorForGivenInputNodes(List<PathNode> inputs,
+            List<PathNode> outputsRight,
+            List<PathNode> outputsForward,
+            List<PathNode> outputsLeft) {
             inputs?.ForEach(inputNode => {
                 outputsRight?.ForEach(outputRight =>
-                    GenerateSplinesBetweenIntersectionNodes(inputNode, outputRight, Direction.Right));
+                    GenerateSplinesBetweenIntersectionNodes(inputNode,
+                        outputRight,
+                        Direction.Right));
                 outputsForward?.ForEach(outputForward =>
-                    GenerateSplinesBetweenIntersectionNodes(inputNode, outputForward, Direction.Forward));
+                    GenerateSplinesBetweenIntersectionNodes(inputNode,
+                        outputForward,
+                        Direction.Forward));
                 outputsLeft?.ForEach(outputLeft =>
-                    GenerateSplinesBetweenIntersectionNodes(inputNode, outputLeft, Direction.Left));
+                    GenerateSplinesBetweenIntersectionNodes(inputNode,
+                        outputLeft,
+                        Direction.Left));
             });
         }
 
@@ -121,7 +129,7 @@ namespace PathCreator.Intersection {
         }
     }
 
-    public class PathIntersection : MonoBehaviour {
+    public class Intersection : MonoBehaviour {
         [Range(0.3f, 20f)] public float size = 5f;
         [ItemCanBeNull] public List<PathNode> InputsA = new List<PathNode>();
         [ItemCanBeNull] public List<PathNode> InputsB = new List<PathNode>();

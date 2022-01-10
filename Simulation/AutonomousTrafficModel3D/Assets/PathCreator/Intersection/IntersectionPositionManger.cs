@@ -6,7 +6,7 @@ using PathCreator.Intersection;
 using UnityEngine;
 
 [Serializable]
-public class IntersectionSides {
+public struct IntersectionSides {
     public Vector3 A;
     public Vector3 B;
     public Vector3 C;
@@ -14,7 +14,7 @@ public class IntersectionSides {
 }
 
 [Serializable]
-public class IntersectionCorners {
+public struct IntersectionCorners {
     public Vector3 AB;
     public Vector3 BC;
     public Vector3 CD;
@@ -22,7 +22,7 @@ public class IntersectionCorners {
 }
 
 [Serializable]
-public class IntersectionInsOuts {
+public struct IntersectionInsOuts {
     public List<Vector3> InsA;
     public List<Vector3> InsB;
     public List<Vector3> InsC;
@@ -42,8 +42,8 @@ public class IntersectionPositionData {
     public IntersectionInsOuts InsOuts;
 }
 
-public class PathIntersectionPositionManger : MonoBehaviour {
-    public PathIntersection Intersection;
+public class IntersectionPositionManger : MonoBehaviour {
+    public Intersection Intersection;
     public Vector3 Center;
     public float Size;
     public IntersectionSides Sides;
@@ -51,11 +51,11 @@ public class PathIntersectionPositionManger : MonoBehaviour {
     public IntersectionInsOuts InsOuts;
 
     private void Start() {
-        Intersection = gameObject.GetComponent<PathIntersection>();
+        Intersection = gameObject.GetComponent<Intersection>();
         PrepData(Intersection);
     }
 
-    public IntersectionPositionData PrepData(PathIntersection intersection) {
+    public IntersectionPositionData PrepData(Intersection intersection) {
         Intersection = intersection;
         Center = Intersection.transform.position;
         Size = Intersection.size;

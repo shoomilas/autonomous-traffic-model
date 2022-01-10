@@ -22,20 +22,18 @@ namespace PathCreator.Vehicles {
     }
 
     public static class EnumExtensions {
-        public static T EnumGetRandomValue<T>() where T : Enum {
-            return Enum.GetValues(typeof(T))
-                .OfType<T>()
-                .OrderBy(_ => Guid.NewGuid())
-                .FirstOrDefault();
-        }
+public static T EnumGetRandomValue<T>() where T : Enum =>
+    Enum.GetValues(typeof(T))
+        .OfType<T>()
+        .OrderBy(_ => Guid.NewGuid())
+        .FirstOrDefault();
 
-        public static T EnumGetRandomValue<T>(params T[] allowedValues) where T : Enum {
-            return Enum.GetValues(typeof(T))
-                .OfType<T>()
-                .Where(allowedValues.Contains)
-                .OrderBy(_ => Guid.NewGuid())
-                .FirstOrDefault();
-        }
+public static T EnumGetRandomValue<T>(params T[] allowedValues) where T : Enum =>
+    Enum.GetValues(typeof(T))
+        .OfType<T>()
+        .Where(allowedValues.Contains)
+        .OrderBy(_ => Guid.NewGuid())
+        .FirstOrDefault();
     }
 
     public class VehiclePathProvider : MonoBehaviour, IVehiclePathProvider {
@@ -49,25 +47,33 @@ namespace PathCreator.Vehicles {
         }
 
 
-        public List<PathNode> Provide(PathNode startNode) {
-            var path = currentMethod switch
-            {
-                PathProviderMethod.FirstFound => GetPathNodes(startNode),
-                PathProviderMethod.AlwaysRight => GetPathNodesAlwaysInDirection(startNode, Direction.Right),
-                PathProviderMethod.AlwaysForward => GetPathNodesAlwaysInDirection(startNode, Direction.Forward),
-                PathProviderMethod.AlwaysLeft => GetPathNodesAlwaysInDirection(startNode, Direction.Left),
-                PathProviderMethod.AlwaysRandom => GetPathNodesAlwaysInDirection(startNode,
-                    EnumExtensions.EnumGetRandomValue(Direction.Left, Direction.Right, Direction.Forward)),
-                PathProviderMethod.AlwaysRandomRightForward => GetPathNodesAlwaysInDirection(startNode,
-                    EnumExtensions.EnumGetRandomValue(Direction.Right, Direction.Forward)),
-                PathProviderMethod.AlwaysRandomLeftRight => GetPathNodesAlwaysInDirection(startNode,
-                    EnumExtensions.EnumGetRandomValue(Direction.Left, Direction.Right)),
-                PathProviderMethod.AlwaysRandomLeftForward => GetPathNodesAlwaysInDirection(startNode,
-                    EnumExtensions.EnumGetRandomValue(Direction.Left, Direction.Forward)),
-                _ => new List<PathNode>()
-            };
-            return path.ToList();
-        }
+public List<PathNode> Provide(PathNode startNode) {
+    var path = currentMethod switch
+    {
+        PathProviderMethod.FirstFound => GetPathNodes(startNode),
+        PathProviderMethod.AlwaysRight => GetPathNodesAlwaysInDirection(startNode,
+            Direction.Right),
+        PathProviderMethod.AlwaysForward => GetPathNodesAlwaysInDirection(startNode,
+            Direction.Forward),
+        PathProviderMethod.AlwaysLeft => GetPathNodesAlwaysInDirection(startNode,
+            Direction.Left),
+        PathProviderMethod.AlwaysRandom => GetPathNodesAlwaysInDirection(startNode,
+            EnumExtensions.EnumGetRandomValue(Direction.Left,
+                Direction.Right,
+                Direction.Forward)),
+        PathProviderMethod.AlwaysRandomRightForward => GetPathNodesAlwaysInDirection(startNode,
+            EnumExtensions.EnumGetRandomValue(Direction.Right,
+                Direction.Forward)),
+        PathProviderMethod.AlwaysRandomLeftRight => GetPathNodesAlwaysInDirection(startNode,
+            EnumExtensions.EnumGetRandomValue(Direction.Left,
+                Direction.Right)),
+        PathProviderMethod.AlwaysRandomLeftForward => GetPathNodesAlwaysInDirection(startNode,
+            EnumExtensions.EnumGetRandomValue(Direction.Left,
+                Direction.Forward)),
+        _ => new List<PathNode>()
+    };
+    return path.ToList();
+}
 
         public IEnumerable<PathNode> GetPathNodes(PathNode firstNode) {
             if (firstNode == null) {

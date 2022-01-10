@@ -4,20 +4,20 @@ using UnityEditor;
 using UnityEngine;
 
 namespace DefaultNamespace {
-    [CustomEditor(typeof(PathIntersection))]
-    public class PathIntersectionEditor : Editor {
+    [CustomEditor(typeof(Intersection))]
+    public class IntersectionEditor : Editor {
         private const string TextRegenerateIntersectionButton = "Regenerate Intersection";
         private const string TextRemoveIntersectionSplinesButton = "Remove Intersection Splines";
         private const string TextAnchorPathNodesButton = "Anchor Path Nodes";
-        public PathIntersectionPositionManger PositionManager;
+        public IntersectionPositionManger PositionManager;
         public IntersectionPositionData PositionData;
-        private PathIntersection typedTarget;
+        private Intersection typedTarget;
 
         private void OnEnable() {
-            typedTarget = (PathIntersection)target;
-            PositionManager = typedTarget.GetComponent<PathIntersectionPositionManger>();
+            typedTarget = (Intersection)target;
+            PositionManager = typedTarget.GetComponent<IntersectionPositionManger>();
             if (PositionManager == null)
-                PositionManager = typedTarget.gameObject.AddComponent<PathIntersectionPositionManger>();
+                PositionManager = typedTarget.gameObject.AddComponent<IntersectionPositionManger>();
 
             PositionData = PositionManager.PrepData(typedTarget);
             typedTarget.minimalHandles = false;
@@ -30,7 +30,7 @@ namespace DefaultNamespace {
         }
 
         private void OnValidate() {
-            typedTarget = (PathIntersection)target;
+            typedTarget = (Intersection)target;
             SceneView.duringSceneGui += CustomOnSceneGUI;
         }
 
