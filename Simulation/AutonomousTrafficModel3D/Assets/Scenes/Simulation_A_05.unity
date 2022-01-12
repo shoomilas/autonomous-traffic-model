@@ -2293,8 +2293,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 2.7
-  interval: 4
+  offset: 0
+  interval: 4.8
   reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
@@ -3809,8 +3809,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 3.8
-  interval: 4
+  offset: 1.2
+  interval: 4.8
   reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
@@ -6230,8 +6230,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 1.5
-  interval: 4
+  offset: 3.6
+  interval: 4.8
   reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
@@ -7335,8 +7335,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 0.7
-  interval: 4
+  offset: 2.4
+  interval: 4.8
   reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
