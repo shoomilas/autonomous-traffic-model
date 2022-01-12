@@ -2293,9 +2293,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 0
+  offset: 2.7
   interval: 4
-  reachedTargetDistance: 3.5
+  reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
   gizmoSize: 2.5
@@ -3809,9 +3809,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 2.9
+  offset: 3.8
   interval: 4
-  reachedTargetDistance: 3.5
+  reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
   gizmoSize: 2.5
@@ -6230,9 +6230,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 1.81
+  offset: 1.5
   interval: 4
-  reachedTargetDistance: 3.5
+  reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
   gizmoSize: 2.5
@@ -7335,9 +7335,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recurring: 1
   hardInstantiationLimit: 100
-  offset: 2.85
+  offset: 0.7
   interval: 4
-  reachedTargetDistance: 3.5
+  reachedTargetDistance: 3.6
   stoppingSpeed: 40
   onReachedTargetBreakEngageSpeed: 15
   gizmoSize: 2.5
